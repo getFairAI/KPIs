@@ -37,9 +37,10 @@ import {
   CREATOR,
   USER_THREE,
   USER_DEPLOY_TEST,
+  SCRIPT,
 } from './constants'
 
-export const fairWallets = [ MARKETPLACE, OPERATOR_ONE, OPERATOR_TWO, CURATOR, USER_ONE, USER_TWO, USER_THREE, CREATOR, USER_DEPLOY_TEST];
+export const fairWallets = [ MARKETPLACE, OPERATOR_ONE, OPERATOR_TWO, CURATOR, USER_ONE, USER_TWO, USER_THREE, CREATOR, USER_DEPLOY_TEST, SCRIPT];
 export const tagsKpiUsers = [
   {
     name: TAG_NAMES.appName,
