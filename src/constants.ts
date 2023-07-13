@@ -1,3 +1,21 @@
+/*
+ * Fair Protocol - KPIs
+ * Copyright (C) 2023 Fair Protocol
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
+
 export const APP_NAME = 'Fair Protocol';
 export const APP_VERSION = '0.1';
 
@@ -111,5 +129,9 @@ export const CURATOR = '28x8B6eWAMSXs8MyndatFuUZbJBfpmr7VXe4N1JxTU8';
 export const USER_ONE = 'z5fyErzDaCCyVk3_RwbO9IbL88SLaeJuN7nivehwGfQ';
 
 export const USER_TWO = 'rwSMutooUrtLmfdvP3q07g4zXjr7Y1ArKT-xV1gTGWA';
+
+export const USER_THREE = 'nZqqoOjoUzAm-z_WhpvfTurNyWUlLtL9IxOP8XegsAg';
+
+export const USER_DEPLOY_TEST = 'Ek7mFHbmmEwUHsVoPPU66Ek8bLoJn8EiIl16_eJ1FHk';
 
 export const CREATOR = 'Ufhjmk8m8ztCp0_JQzvYyuaVXZn3Hz2mIuYgjwfGWX0';
