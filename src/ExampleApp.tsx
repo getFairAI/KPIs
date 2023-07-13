@@ -1,4 +1,21 @@
-import React from 'react';
+/*
+ * Fair Protocol - KPIs
+ * Copyright (C) 2023 Fair Protocol
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
+
 import './App.css';
 import LineChart from './LineChart';
 import DonutChart from './DonutChart';
@@ -55,10 +72,8 @@ function App() {
   // Access the data returned by the query
   const { transactions: { edges } } = data;
   const uniqueOwnersScriptPayment = createOwnerUnixTimeMap(edges);
-  console.log(edges);
   const mondays = getMondayDateAndUnixTimeList(new Date('2023-05-14'),new Date());
   const kpiNewUsersPerWeek = generateChartInfo('Day','New users','New users per week','Users in this week',mondays,uniqueOwnersScriptPayment);
-  console.log('kpi',kpiNewUsersPerWeek);
   return (
     <div className="App">
      <LineChart chartInfo={kpiNewUsersPerWeek.chartInfo} series={kpiNewUsersPerWeek.series}/>
