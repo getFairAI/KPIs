@@ -21,7 +21,8 @@ import { useState, useEffect } from 'react';
 import LineChart from './LineChart';
 import DonutChart from './DonutChart';
 import ColumnChart from './ColumnChart';
-import { TAG_NAMES } from './constants'
+import { TAG_NAMES } from './constants';
+import CircularProgress from '@mui/material/CircularProgress';
 import { getMondayDateAndUnixTimeList,
    createOwnerUnixTimeMap,
    generateChartInfo,
@@ -56,6 +57,7 @@ const donutInfo = {
 
 
 function App() {
+  const [isLoading, setLoading] = useState(true); 
   const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiNewModelsData, setChartKpiNewModelsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
@@ -127,7 +129,7 @@ function App() {
      const modelCreationTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(modelCreationPaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
      const kpiPaymentsPerWeek = paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, 'Payments per week');
      setChartKpiPaymentsData(kpiPaymentsPerWeek);
-
+     setLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -139,6 +141,11 @@ function App() {
   return (
     <div className="App">
       <h1>Fair Protocol KPIs</h1>
+        {isLoading && 
+          <div style={{ display: 'flex',justifyContent: 'center', alignItems: 'center',minHeight: '80vh', }}>
+          <CircularProgress size={100} />
+          </div>
+        }
       <div className='chart-grid'>
       {chartKpiNewUsersData && chartKpiActiveUsersData && chartKpiNewModelsData && 
        chartKpiNewScriptsData && chartKpiActiveOperatorsData && chartKpiPaymentsData &&( 
