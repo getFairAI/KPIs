@@ -68,7 +68,7 @@ export const TAG_NAMES = {
   registrationFee: 'Registration-Fee',
 };
 
-
+export const ACTIVE_USERS = 5;
 
 // Operation Names
 export const MODEL_CREATION = 'Model Creation';

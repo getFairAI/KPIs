@@ -15,11 +15,63 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-
- 
-.App {
+ .title {
+  width: 100%;
   text-align: center;
+  padding: 20px;
 }
+
+.content-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.side-panel {
+  flex: 0 0 20%;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 250px;
+}
+
+.side-panel h2 {
+  margin-bottom: 20px;
+}
+
+.date-picker {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.date-picker label {
+  margin-right: 10px;
+}
+
+.update-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.update-button:hover {
+  background-color: #45a049;
+}
+
+.chart-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+  margin-left: 10px;
+}
+
+
 
 .App-logo {
   height: 40vmin;
@@ -31,14 +83,25 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-.chart-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 20px;
-}
+
 
 .chart-item {
   width: 100%;
+}
+
+.checkbox-container {
+  margin-bottom: 10px;
+}
+
+.checkbox-container label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  margin-right: 8px;
 }
 
 .App-header {
@@ -55,6 +118,7 @@
 .App-link {
   color: #61dafb;
 }
+
 
 @keyframes App-logo-spin {
   from {
