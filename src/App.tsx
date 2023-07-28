@@ -21,7 +21,7 @@ import { useState, useEffect } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
 import SidePanel from './sidePanel';
-import { TAG_NAMES, ACTIVE_USERS } from './constants';
+import { TAG_NAMES, ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from './constants';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMondayDateAndUnixTimeList,
    createOwnerUnixTimeMap,
@@ -56,6 +56,7 @@ function App() {
   const [isLoading, setLoading] = useState(true); 
   const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
+  const [chartKpiUsersData, setChartKpiUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiNewModelsData, setChartKpiNewModelsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiNewScriptsData, setChartKpiNewScriptsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiActiveOperatorsData, setChartKpiActiveOperatorsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
@@ -74,14 +75,21 @@ function App() {
         const uniqueOwnersScriptPayment = createOwnerUnixTimeMap(requestsInferenceTransactionsFiltered);
         
         const mapTxByWeekActiveUsers = createWeekTransactionsMap(requestsInferenceTransactionsFiltered,mondays);
-        const mapWeekCountX = mapNumberTxsPerWeek(mapTxByWeekActiveUsers,ACTIVE_USERS);
+        const mapWeekCountXActiveUsers = mapNumberTxsPerWeek(mapTxByWeekActiveUsers,ACTIVE_USERS_PER_WEEK);
 
-        const kpiActiveUsersPerWeek = generateChartInfoCountsXPerWeek('Week', 'Active users', 'Active users per week', 'Active users in this week',mapTxByWeekActiveUsers,mapWeekCountX,mondaysMap);
+        
+        const kpiActiveUsersPerWeek = generateChartInfoCountsXPerWeek('Week', 'Active users', 'Active users per week', 'Active users in this week',mapTxByWeekActiveUsers,mapWeekCountXActiveUsers,mondaysMap);
         const kpiNewUsersPerWeek = generateChartInfo('Week', 'New users', 'New users per week', 'Users in this week', mondays, uniqueOwnersScriptPayment);
         setChartKpiNewUsersData(kpiNewUsersPerWeek);
 
         setChartKpiActiveUsersData(kpiActiveUsersPerWeek);
 
+        // Users per week (at least one prompt)
+        const mapWeekCountXUsersPerWeek = mapNumberTxsPerWeek(mapTxByWeekActiveUsers,USERS_PER_WEEK);
+        const kpiUsersPerWeek = generateChartInfoCountsXPerWeek('Week', 'Users', 'Users per week', 'Users in this week',mapTxByWeekActiveUsers,mapWeekCountXUsersPerWeek,mondaysMap);
+        setChartKpiUsersData(kpiUsersPerWeek);
+
+        // operators
         const activeOperatorsTransactionsRaw = await fetchAllTransactions(tagsKpiOperatorsRegistration);
         const activeOperatorsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(activeOperatorsTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
 
@@ -122,17 +130,18 @@ function App() {
 
      // Payments
      
-     const inferencePaymentTransactionsRaw = await fetchAllTransactions(tagsKpiInferencePayment);
-     const inferencePaymentTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(inferencePaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
-     const scriptPaymentTransactionsRaw = await fetchAllTransactions(tagsKpiSciptPayment);
-     const scriptPaymentTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(scriptPaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
+      const inferencePaymentTransactionsRaw = await fetchAllTransactions(tagsKpiInferencePayment);
+      const inferencePaymentTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(inferencePaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
+      const scriptPaymentTransactionsRaw = await fetchAllTransactions(tagsKpiSciptPayment);
+      const scriptPaymentTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(scriptPaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
 
-     const modelCreationPaymentTransactionsRaw = await fetchAllTransactions(tagsKpiModelCreationPayment); 
-     const modelCreationTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(modelCreationPaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
-     const kpiPaymentsPerWeek = paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, 'Payments per week');
-     setChartKpiPaymentsData(kpiPaymentsPerWeek);
-     setLoading(false);
-     console.log('fetched');
+      const modelCreationPaymentTransactionsRaw = await fetchAllTransactions(tagsKpiModelCreationPayment); 
+      const modelCreationTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(modelCreationPaymentTransactionsRaw, [TAG_NAMES.appVersion],fairWallets,tagsToExclude);
+      const kpiPaymentsPerWeek = paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, 'Payments per week');
+      setChartKpiPaymentsData(kpiPaymentsPerWeek);
+
+
+      setLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -175,31 +184,46 @@ function App() {
           </div>
         )}
         <div className="chart-grid">
-          {chartKpiNewUsersData &&
-            chartKpiActiveUsersData &&
-            chartKpiPaymentsData && (
-              <>
-                <div className="chart-item">
-                  <LineChart
-                    chartInfo={chartKpiNewUsersData.chartInfo}
-                    series={chartKpiNewUsersData.series}
-                  />
-                </div>
-                <div className="chart-item">
-                  <ColumnChart
-                    chartInfo={chartKpiPaymentsData.chartInfo}
-                    series={chartKpiPaymentsData.series}
-                  />
-                </div>
-                <div className="chart-item">
-                  <LineChart
-                    chartInfo={chartKpiActiveUsersData.chartInfo}
-                    series={chartKpiActiveUsersData.series}
-                  />
-                </div>
-              </>
-            )}
-
+          {!isLoading && chartKpiNewUsersData && (
+            <>
+              <div className="chart-item">
+                    <LineChart
+                      chartInfo={chartKpiNewUsersData.chartInfo}
+                      series={chartKpiNewUsersData.series}
+                    />
+                  </div>
+            </>
+          )}
+          {!isLoading && chartKpiPaymentsData && (
+            <>
+              <div className="chart-item">
+                    <ColumnChart
+                      chartInfo={chartKpiPaymentsData.chartInfo}
+                      series={chartKpiPaymentsData.series}
+                    />
+                  </div>
+            </>
+          )}
+          {!isLoading && chartKpiActiveUsersData && (
+            <>
+              <div className="chart-item">
+                    <LineChart
+                      chartInfo={chartKpiActiveUsersData.chartInfo}
+                      series={chartKpiActiveUsersData.series}
+                    />
+                  </div>
+            </>
+          )}
+          {!isLoading && chartKpiUsersData && (
+            <>
+              <div className="chart-item">
+                    <LineChart
+                      chartInfo={chartKpiUsersData.chartInfo}
+                      series={chartKpiUsersData.series}
+                    />
+                  </div>
+            </>
+          )}
           {isExtraChartsEnabled &&
             chartKpiNewModelsData &&
             chartKpiNewScriptsData &&
