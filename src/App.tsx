@@ -64,7 +64,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
+        setLoading(true);
         // TIME 
         const mondays = getMondayDateAndUnixTimeList(startDate,endDate);
         const mondaysMap = getMondayDateAndUnixTimeMap(startDate,endDate);
