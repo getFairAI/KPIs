@@ -42,6 +42,7 @@ import { tagsKpiUsers,
   tagsKpiOperatorsRegistration, 
   tagsToExclude, 
   tagsKpiInferenceResponse,
+  tagsKpiInferenceResponseNFTS,
   tagsKpiOperatorCancel,
   tagsKpiInferencePayment,
   tagsKpiSciptPayment,
@@ -120,10 +121,17 @@ function App() {
         const cancelOperatorsTransactionsRaw = await fetchAllTransactions(tagsKpiOperatorCancel);
         const cancelOperatorsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(cancelOperatorsTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
         
-        const ResponseInferenceTransactionsRaw = await fetchAllTransactions(tagsKpiInferenceResponse);
-        const ResponseInferenceTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(ResponseInferenceTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
+        // before using NFTs
+        const responseInferenceTransactionsRaw = await fetchAllTransactions(tagsKpiInferenceResponse);
+        const responseInferenceTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(responseInferenceTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
+        // responses as NFTs
+        const responseNFTInferenceTransactionsRaw = await fetchAllTransactions(tagsKpiInferenceResponseNFTS);
+        const responseNFTInferenceTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(responseNFTInferenceTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
 
-        const mapTxActiveOperatorsByWeek = operatorsPrepareData(requestsInferenceTransactionsFiltered, ResponseInferenceTransactionsFiltered, activeOperatorsTransactionsFiltered, cancelOperatorsTransactionsFiltered, mondays);
+        //join both queries
+        const combinedInferenceFilteredTransactions = [...responseInferenceTransactionsFiltered, ...responseNFTInferenceTransactionsFiltered,];
+        console.log('txs',combinedInferenceFilteredTransactions);
+        const mapTxActiveOperatorsByWeek = operatorsPrepareData(requestsInferenceTransactionsFiltered, combinedInferenceFilteredTransactions, activeOperatorsTransactionsFiltered, cancelOperatorsTransactionsFiltered, mondays);
         kpiActiveOperatorsPerWeek = generateChartInfoTxsPerWeek('Week', 'active operators per week', 'Active operators per week', 'active operators this week',mapTxActiveOperatorsByWeek,mondaysMap);  
         setChartKpiActiveOperatorsData(kpiActiveOperatorsPerWeek);
       }

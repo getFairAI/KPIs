@@ -19,6 +19,9 @@
 export const APP_NAME = 'Fair Protocol';
 export const APP_VERSION = '0.1';
 
+export const CUSTOM_APP_NAME = 'Fair Protocol';
+export const CUSTOM_APP_VERSION = '0.3';
+
 export const MARKETPLACE_FEE = '0.1';
 export const OPERATOR_REGISTRATION_AR_FEE = '0.05';
 export const INFERENCE_PERCENTAGE_FEE = 0.05;
@@ -28,6 +31,8 @@ export const INFERENCE_PERCENTAGE_FEE = 0.05;
 export const TAG_NAMES = {
   appName: 'App-Name',
   appVersion: 'App-Version',
+  customAppName: 'Custom-App-Name',
+  customAppVersion: 'Custom-App-Version',
   sequenceOwner: 'Sequencer-Owner',
   contentType: 'Content-Type',
   unixTime: 'Unix-Time',
@@ -130,13 +135,9 @@ export const CURATOR = '28x8B6eWAMSXs8MyndatFuUZbJBfpmr7VXe4N1JxTU8';
 
 export const USER_ONE = 'z5fyErzDaCCyVk3_RwbO9IbL88SLaeJuN7nivehwGfQ';
 
-export const USER_TWO = 'rwSMutooUrtLmfdvP3q07g4zXjr7Y1ArKT-xV1gTGWA';
-
 export const USER_THREE = 'nZqqoOjoUzAm-z_WhpvfTurNyWUlLtL9IxOP8XegsAg';
 
 export const USER_FOUR = '2mHSMCECIXimknoryHrHw7Vvy0QbIB7WGFGO5YN-Q9A'
-
-export const USER_FIVE = 'rwSMutooUrtLmfdvP3q07g4zXjr7Y1ArKT-xV1gTGWA';
 
 export const USER_DEPLOY_TEST = 'Ek7mFHbmmEwUHsVoPPU66Ek8bLoJn8EiIl16_eJ1FHk';
 

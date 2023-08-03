@@ -17,7 +17,7 @@
  */
 
 import { QUERY_TXS_WITH } from './queries/queries';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 
 
 export const client = new ApolloClient({
