@@ -33,16 +33,14 @@ import {
   OPERATOR_TWO, 
   CURATOR, 
   USER_ONE, 
-  USER_TWO, 
   CREATOR,
   USER_THREE,
   USER_FOUR,
-  USER_FIVE,
   USER_DEPLOY_TEST,
   SCRIPT,
 } from './constants'
 
-export const fairWallets = [ MARKETPLACE, OPERATOR_ONE, OPERATOR_TWO, CURATOR, USER_ONE, USER_TWO, USER_THREE, USER_FOUR, USER_FIVE, CREATOR, USER_DEPLOY_TEST, SCRIPT];
+export const fairWallets = [ MARKETPLACE, OPERATOR_ONE, OPERATOR_TWO, CURATOR, USER_ONE, USER_THREE, USER_FOUR, CREATOR, USER_DEPLOY_TEST, SCRIPT];
 export const tagsKpiUsers = [
   {
     name: TAG_NAMES.appName,
@@ -86,6 +84,16 @@ export const tagsKpiOperatorsRegistration = [
 export const tagsKpiInferenceResponse = [
   {
     name: TAG_NAMES.appName,
+    values: [APP_NAME],
+  },
+  {
+  name: TAG_NAMES.operationName,
+  values: [SCRIPT_INFERENCE_RESPONSE],
+},];
+
+export const tagsKpiInferenceResponseNFTS = [
+  {
+    name: TAG_NAMES.customAppName,
     values: [APP_NAME],
   },
   {
