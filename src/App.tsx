@@ -130,7 +130,6 @@ function App() {
 
         //join both queries
         const combinedInferenceFilteredTransactions = [...responseInferenceTransactionsFiltered, ...responseNFTInferenceTransactionsFiltered,];
-        console.log('txs',combinedInferenceFilteredTransactions);
         const mapTxActiveOperatorsByWeek = operatorsPrepareData(requestsInferenceTransactionsFiltered, combinedInferenceFilteredTransactions, activeOperatorsTransactionsFiltered, cancelOperatorsTransactionsFiltered, mondays);
         kpiActiveOperatorsPerWeek = generateChartInfoTxsPerWeek('Week', 'active operators per week', 'Active operators per week', 'active operators this week',mapTxActiveOperatorsByWeek,mondaysMap);  
         setChartKpiActiveOperatorsData(kpiActiveOperatorsPerWeek);
