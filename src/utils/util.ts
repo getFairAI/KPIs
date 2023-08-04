@@ -26,6 +26,9 @@ export const filterTransactionsByTag = (transactions: Transaction[], tag: string
     });
   };
   
+export const findTag = (tags: Tag[], tagName: string): Tag | undefined => {
+    return tags.find((tag) => tag.name === tagName);
+}
 
 export const filterTransactionsIncludeTagNamesAndExcludeTags = (
     transactions: Transaction[],

@@ -153,5 +153,28 @@ export const tagsToExclude = [
   },
   ];
 
+ export const tagsToExcludeForModels = [
+  {
+    name: TAG_NAMES.appVersion,
+    values: ['0.1'],
+  },
+  {
+    name: TAG_NAMES.appVersion,
+    values: ['0.2'],
+  },
+  {
+    name: TAG_NAMES.appVersion,
+    values: ['Fair Protocol'],
+  },
+  {
+    name: TAG_NAMES.modelName,
+    values: ['test large file'],
+  },
+  {
+    name: TAG_NAMES.modelName,
+    values: ['asdas'],
+  },
+  ];
+
 
   

@@ -33,7 +33,8 @@ import { getMondayDateAndUnixTimeList,
    createWeekNumberOfTransactionsMap,
    operatorsPrepareData,
    generateChartInfoTxsPerWeek,
-   paymentsPrepareData } from './kpisFunctions'
+   paymentsPrepareData,
+  modelsPerWeekPrepareData } from './kpisFunctions'
 import { fetchAllTransactions } from './queryAll';
 import { filterTransactionsIncludeTagNamesAndExcludeTags } from './utils/util'
 import { tagsKpiUsers, 
@@ -41,6 +42,7 @@ import { tagsKpiUsers,
   tagsKpiUploadScripts,
   tagsKpiOperatorsRegistration, 
   tagsToExclude, 
+  tagsToExcludeForModels,
   tagsKpiInferenceResponse,
   tagsKpiInferenceResponseNFTS,
   tagsKpiOperatorCancel,
@@ -62,6 +64,7 @@ function App() {
   const [chartKpiNewScriptsData, setChartKpiNewScriptsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiActiveOperatorsData, setChartKpiActiveOperatorsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   const [chartKpiPaymentsData, setChartKpiPaymentsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
+  const [chartModelsUsedPerWeek,setChartKpiModelsUsedPerWeekData] = useState<{ series: any[]; chartInfo: any } | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -90,15 +93,17 @@ function App() {
         const kpiUsersPerWeek = generateChartInfoCountsXPerWeek('Week', 'Users', 'Users per week', 'Users in this week',mapTxByWeekActiveUsers,mapWeekCountXUsersPerWeek,mondaysMap);
         setChartKpiUsersData(kpiUsersPerWeek);
 
+        // this queries will be used for other charts besides of the ExtraCharts, so they are here
         // operators
         const activeOperatorsTransactionsRaw = await fetchAllTransactions(tagsKpiOperatorsRegistration);
         const activeOperatorsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(activeOperatorsTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
+        const uploadModelsTransactionsRaw = await fetchAllTransactions(tagsKpiUploadModels);
+        const uploadScriptsransactionsRaw = await fetchAllTransactions(tagsKpiUploadScripts);
 
       if(isExtraChartsEnabled) {
       
         // KPI NEW MODELS
         let kpiNewModelsPerWeek = [];
-        const uploadModelsTransactionsRaw = await fetchAllTransactions(tagsKpiUploadModels);
         const uploadModelsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
         const mapTxByWeekNewModels = createWeekNumberOfTransactionsMap(uploadModelsTransactionsFiltered,mondays);
         kpiNewModelsPerWeek = generateChartInfoTxsPerWeek('Week', 'new models per week', 'New models per week', 'New models this week',mapTxByWeekNewModels,mondaysMap);
@@ -107,7 +112,7 @@ function App() {
 
         // KPI NEW SCRIPTS 
         let kpiNewScriptsPerWeek = [];
-        const uploadScriptsransactionsRaw = await fetchAllTransactions(tagsKpiUploadScripts);
+        
         const uploadScriptsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
         const mapTxByWeekNewScripts = createWeekNumberOfTransactionsMap(uploadScriptsTransactionsFiltered,mondays);
         kpiNewScriptsPerWeek = generateChartInfoTxsPerWeek('Week', 'new scripts per week', 'New scripts per week', 'New scripts this week',mapTxByWeekNewScripts,mondaysMap);
@@ -148,6 +153,11 @@ function App() {
       setChartKpiPaymentsData(kpiPaymentsPerWeek);
 
 
+      //models per week
+      const uploadModelsTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.appVersion],[],[...tagsToExclude,...tagsToExcludeForModels]);
+      const uploadScriptTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.appVersion],[],tagsToExclude);
+      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,'Models used per week'));
+  
       setLoading(false);
       } catch (error) {
         console.error(error);
@@ -207,6 +217,16 @@ function App() {
                     <ColumnChart
                       chartInfo={chartKpiPaymentsData.chartInfo}
                       series={chartKpiPaymentsData.series}
+                    />
+                  </div>
+            </>
+          )}
+          {!isLoading && chartModelsUsedPerWeek && (
+            <>
+              <div className="chart-item">
+                    <ColumnChart
+                      chartInfo={chartModelsUsedPerWeek.chartInfo}
+                      series={chartModelsUsedPerWeek.series}
                     />
                   </div>
             </>
