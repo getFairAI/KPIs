@@ -76,3 +76,13 @@ export interface Block {
     };
   }
   
+  export interface ChartData {
+    name: string;
+    data: number[];
+  }
+  
+  export interface ChartInfoSimple {
+    categories: string[];
+    chartTitle: string;
+  }
+  

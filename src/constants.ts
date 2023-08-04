@@ -73,6 +73,8 @@ export const TAG_NAMES = {
   registrationFee: 'Registration-Fee',
 };
 
+export const SECONDS_PER_WEEK = 604800;
+
 export const ACTIVE_USERS_PER_WEEK = 5;
 
 export const USERS_PER_WEEK = 1;

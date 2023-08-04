@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { TAG_NAMES } from "./constants";
+import { TAG_NAMES, SECONDS_PER_WEEK } from "./constants";
 import { DateInfo, Transaction, OperatorTX } from "./interfaces";
 import { findTag } from './utils/util';
 
@@ -104,7 +104,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
       name: seriesTitle,
       data: dates.map((date) => {
         const addressesInRange = Array.from(ownerUnixTimeMap.values()).filter((unixTime) => {
-          return unixTime >= date.unixTime && unixTime <= date.unixTime + (7 * 24 * 60 * 60);
+          return unixTime >= date.unixTime && unixTime <= date.unixTime + (SECONDS_PER_WEEK);
         });
         return addressesInRange.length;
       }),
@@ -191,7 +191,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   
   const findWeekByTimestamp = (timestamp: number, dateInfo: DateInfo[]): DateInfo | undefined => {
     return dateInfo.find((week) => {
-      const weekEndTimestamp = week.unixTime + (7 * 24 * 60 * 60);
+      const weekEndTimestamp = week.unixTime + (SECONDS_PER_WEEK);
       return timestamp >= week.unixTime && timestamp <= weekEndTimestamp;
     });
   };
@@ -289,7 +289,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
       
       for (const week of dateInfo) {
         const weekStartTimestamp = week.unixTime;
-        const weekEndTimestamp = week.unixTime + (7 * 24 * 60 * 60);
+        const weekEndTimestamp = week.unixTime + (SECONDS_PER_WEEK);
   
         const transactionsInWeek = type.transactions.filter((transaction) => {
           const timestamp = transaction.node.block?.timestamp;
@@ -318,7 +318,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     const cancelOperatorTx = extractOperatorCancelTx(opCancelTx);
 
     dateInfo.forEach((week) => {
-      const weekTimeStamp = week.unixTime + (7 * 24 * 60 * 60); // Add one week duration
+      const weekTimeStamp = week.unixTime + (SECONDS_PER_WEEK); // Add one week duration
       const activeOperators = registrationsOperatorTx.filter((tx) => {
         const txTimeStamp = tx.unixTime;
         const cancelTx = cancelOperatorTx.find(
@@ -448,7 +448,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   
       for (const week of dateInfo) {
         const weekStartTimestamp = week.unixTime;
-        const weekEndTimestamp = week.unixTime + 7 * 24 * 60 * 60;
+        const weekEndTimestamp = week.unixTime + SECONDS_PER_WEEK;
   
         let uniqueTransactions: Set<string> = new Set();
   
@@ -509,16 +509,12 @@ const createPaymentTxMap = (transactions : Transaction[], tagToSearch: string): 
   return txMap;
 }
 
-
-
-
-
-
 export const modelsPerWeekPrepareData = (
   mainTx: Transaction[],
   modelCreationTx: Transaction[],
   scriptCreationTx: Transaction[],
   inferencePaymentTx: Transaction[],
+  isToCalculateFailedPayments: boolean = false,
   dateInfo: DateInfo[],
   chartTitle: string,
 ): any => {
@@ -536,7 +532,7 @@ export const modelsPerWeekPrepareData = (
 
     for (const week of dateInfo) {
       const weekStartTimestamp = week.unixTime;
-      const weekEndTimestamp = week.unixTime + 7 * 24 * 60 * 60;
+      const weekEndTimestamp = week.unixTime + SECONDS_PER_WEEK;
       let numberOfRequests = 0;
 
       for (const transaction of mainTx) {
@@ -546,7 +542,7 @@ export const modelsPerWeekPrepareData = (
       
         if (timestamp && timestamp >= weekStartTimestamp && timestamp < weekEndTimestamp) {
           const tag = findTag(tags,TAG_NAMES.scriptTransaction);
-          if(tag && scriptTxModelTxMap.get(tag.value) === key && inferenceTxMap.has(txId)) {
+          if(tag && scriptTxModelTxMap.get(tag.value) === key && ((!isToCalculateFailedPayments && inferenceTxMap.has(txId)) || (isToCalculateFailedPayments && !inferenceTxMap.has(txId)) )) {
             numberOfRequests++;
           }
 
