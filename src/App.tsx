@@ -52,19 +52,25 @@ import { tagsKpiUsers,
   fairWallets,
 } from './commonVars'
 
+import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
+
 function App() {
   const [isExtraChartsEnabled, setExtraChartsEnabled] = useState(false);
   const [startDate, setStartDate] = useState<Date>(new Date('2023-05-14'));
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [isLoading, setLoading] = useState(true); 
-  const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartKpiUsersData, setChartKpiUsersData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartKpiNewModelsData, setChartKpiNewModelsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartKpiNewScriptsData, setChartKpiNewScriptsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartKpiActiveOperatorsData, setChartKpiActiveOperatorsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartKpiPaymentsData, setChartKpiPaymentsData] = useState<{ series: any[]; chartInfo: any } | null>(null);
-  const [chartModelsUsedPerWeek,setChartKpiModelsUsedPerWeekData] = useState<{ series: any[]; chartInfo: any } | null>(null);
+  const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+  const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+  const [chartKpiUsersData, setChartKpiUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+  const [chartKpiPaymentsData, setChartKpiPaymentsData] = useState<{ series: ChartData[]; chartInfo: ChartInfoSimple } | null>(null);
+  const [chartModelsUsedPerWeek,setChartKpiModelsUsedPerWeekData] = useState<{ series: ChartData[]; chartInfo: ChartInfoSimple } | null>(null);
+  const [chartFailedPaymentsModelsPerWeek,setChartKpiFailedPaymentsModelsPerWeekData] = useState<{ series: ChartData[]; chartInfo: ChartInfoSimple } | null>(null);
+
+  // extra charts
+  const [chartKpiNewModelsData, setChartKpiNewModelsData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+  const [chartKpiNewScriptsData, setChartKpiNewScriptsData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+  const [chartKpiActiveOperatorsData, setChartKpiActiveOperatorsData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -156,8 +162,13 @@ function App() {
       //models per week
       const uploadModelsTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.appVersion],[],[...tagsToExclude,...tagsToExcludeForModels]);
       const uploadScriptTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.appVersion],[],tagsToExclude);
-      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,'Models used per week'));
+      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,false,mondays,'Models used per week'));
   
+      // failed payments per week
+
+      setChartKpiFailedPaymentsModelsPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,true,mondays,'Failed payments per week by model'));
+
+
       setLoading(false);
       } catch (error) {
         console.error(error);
@@ -227,6 +238,16 @@ function App() {
                     <ColumnChart
                       chartInfo={chartModelsUsedPerWeek.chartInfo}
                       series={chartModelsUsedPerWeek.series}
+                    />
+                  </div>
+            </>
+          )}
+           {!isLoading && chartFailedPaymentsModelsPerWeek && (
+            <>
+              <div className="chart-item">
+                    <ColumnChart
+                      chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
+                      series={chartFailedPaymentsModelsPerWeek.series}
                     />
                   </div>
             </>
