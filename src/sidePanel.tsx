@@ -19,7 +19,6 @@
 
 import React, { useState } from 'react';
 import './App.css';
-// Define the prop types
 interface SidePanelProps {
     onUpdatedCharts: (startDate: Date, endDate: Date, isExtraEnabled: boolean) => void;
   }

@@ -18,6 +18,7 @@
 
 import { TAG_NAMES } from "./constants";
 import { DateInfo, Transaction, OperatorTX } from "./interfaces";
+import { findTag } from './utils/util';
 
 export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): DateInfo[] => {
     const dateList: DateInfo[] = [];
@@ -423,7 +424,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   };
   
   export const paymentsPrepareData = (
-    inferenceTx: Transaction[],
+    mainTx: Transaction[],
     modelCreationTx: Transaction[],
     scriptCreationTx: Transaction[],
     operatorRegistrationTx: Transaction[],
@@ -431,7 +432,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     chartTitle: string,
   ): any => {
     const transactionTypes = [
-      { name: 'Inference Payment', transactions: inferenceTx, tagName: 'Inference-Transaction' },
+      { name: 'Inference Payment', transactions: mainTx, tagName: 'Inference-Transaction' },
       { name: 'Model Creation', transactions: modelCreationTx },
       { name: 'Script Creation', transactions: scriptCreationTx },
       { name: 'Operator Registration', transactions: operatorRegistrationTx },
@@ -476,3 +477,87 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     return { series, chartInfo };
   };
   
+// models used per week
+const createGenericTransactionMap = (transactions : Transaction[], tagToSearch: string): Map<string, string> => {
+  const txMap: Map<string, string> = new Map();
+  
+  transactions.forEach((tx) => {
+    const txID = tx.node?.id;
+
+    if(txID && !txMap.has(txID)) {
+      const tag = findTag(tx.node.tags,tagToSearch);
+      if(tag) {
+        txMap.set(txID,tag.value);
+      }
+    }
+
+  });
+
+  return txMap;
+}
+
+const createPaymentTxMap = (transactions : Transaction[], tagToSearch: string): Map<string, boolean> => {
+  const txMap: Map<string, boolean> = new Map();
+
+  transactions.forEach((tx) => {
+    const tag = findTag(tx.node.tags,tagToSearch);
+    if(tag && !txMap.has(tag.value)) {
+      txMap.set(tag.value,true);
+    }
+  });
+
+  return txMap;
+}
+
+
+
+
+
+
+export const modelsPerWeekPrepareData = (
+  mainTx: Transaction[],
+  modelCreationTx: Transaction[],
+  scriptCreationTx: Transaction[],
+  inferencePaymentTx: Transaction[],
+  dateInfo: DateInfo[],
+  chartTitle: string,
+): any => {
+  const series: { name: string; data: number[] }[] = [];
+  const chartInfo = {
+      categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
+      chartTitle: chartTitle,
+  }
+  const modelTxNameMap = createGenericTransactionMap(modelCreationTx,TAG_NAMES.modelName);
+  const scriptTxModelTxMap = createGenericTransactionMap(scriptCreationTx,TAG_NAMES.modelTransaction);
+  const inferenceTxMap = createPaymentTxMap(inferencePaymentTx,TAG_NAMES.inferenceTransaction);
+
+  for (const [key, value] of modelTxNameMap) {
+    const data: number[] = [];
+
+    for (const week of dateInfo) {
+      const weekStartTimestamp = week.unixTime;
+      const weekEndTimestamp = week.unixTime + 7 * 24 * 60 * 60;
+      let numberOfRequests = 0;
+
+      for (const transaction of mainTx) {
+        const timestamp = transaction.node.block?.timestamp;
+        const tags = transaction.node.tags;
+        const txId = transaction.node.id;
+      
+        if (timestamp && timestamp >= weekStartTimestamp && timestamp < weekEndTimestamp) {
+          const tag = findTag(tags,TAG_NAMES.scriptTransaction);
+          if(tag && scriptTxModelTxMap.get(tag.value) === key && inferenceTxMap.has(txId)) {
+            numberOfRequests++;
+          }
+
+        }
+      }
+
+      data.push(numberOfRequests);
+    }
+
+    series.push({ name: value, data });
+  }
+
+  return { series, chartInfo };
+};
