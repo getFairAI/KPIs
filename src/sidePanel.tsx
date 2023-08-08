@@ -20,7 +20,7 @@
 import React, { useState } from 'react';
 import './App.css';
 interface SidePanelProps {
-    onUpdatedCharts: (startDate: Date, endDate: Date, isExtraEnabled: boolean) => void;
+    onUpdatedCharts: (startDate: Date, endDate: Date, isExtraEnabled: boolean, walletsContent: string) => void;
   }
   
   const SidePanel: React.FC<SidePanelProps> = ({ onUpdatedCharts }) => {
@@ -29,10 +29,11 @@ interface SidePanelProps {
     const [isExtraChartsEnabled, setExtraChartsEnabled] = useState(false);
     const [startDate, setStartDate] = useState<Date>(initialDate);
     const [endDate, setEndDate] = useState<Date>(finalDate);
+    const [walletsContent, setWalletsContent] = useState<string>('');
 
   const handleDateChange = () => {
     if (startDate && endDate) {
-        onUpdatedCharts(startDate, endDate,isExtraChartsEnabled);
+        onUpdatedCharts(startDate, endDate,isExtraChartsEnabled,walletsContent);
     }
   };
 
@@ -48,6 +49,10 @@ interface SidePanelProps {
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setExtraChartsEnabled(e.target.checked);
+  };
+
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setWalletsContent(e.target.value);
   };
 
 
@@ -66,6 +71,12 @@ interface SidePanelProps {
             <label>
                 Show Extra Charts
                 <input type="checkbox" checked={isExtraChartsEnabled} onChange={handleCheckboxChange} />
+            </label>
+         </div>
+         <div className='textarea-container'>
+            <label>
+                Wallets to include
+            <textarea  value={walletsContent} onChange={handleTextAreaChange} rows={7} cols={35} placeholder='address1 address2'/>
             </label>
          </div>
         <button className="update-button" onClick={handleDateChange}>Update Charts</button>

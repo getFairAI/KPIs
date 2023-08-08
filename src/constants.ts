@@ -43,6 +43,7 @@ export const TAG_NAMES = {
   modelFee: 'Model-Fee',
   modelUser: 'Model-User',
   operationName: 'Operation-Name',
+  input: 'Input',
   notes: 'Notes',
   category: 'Category',
   avatarUrl: 'AvatarUrl',
@@ -73,7 +74,15 @@ export const TAG_NAMES = {
   registrationFee: 'Registration-Fee',
 };
 
+export const DECIMAL_PLACES = 2;
+
 export const SECONDS_PER_WEEK = 604800;
+
+export const U_SUB_UNITS = 1000000;
+
+export const U_TRANFER_FUNCTION = 'transfer';
+
+export const U_TOKEN = '$U';
 
 export const ACTIVE_USERS_PER_WEEK = 5;
 
@@ -127,6 +136,8 @@ export const VOTE_FOR_SCRIPT = 'Vote For Script';
 export const VOTE_FOR_OPERATOR = 'Vote For Operator';
 
 //Our wallets addresses 
+export const VAULT_ADDRESS = 'tXd-BOaxmxtgswzwMLnryROAYlX5uDC9-XK2P4VNCQQ';
+
 export const MARKETPLACE = 'RQFarhgXPXYkgRM0Lzv088MllseKQWEdnEiRUggteIo';
 
 export const OPERATOR_ONE = 'rM9K69Uv7olZeKA0bOZ9dwo-GvyYprkjqafhtjeSx2M';

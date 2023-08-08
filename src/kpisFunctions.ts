@@ -16,9 +16,11 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { TAG_NAMES, SECONDS_PER_WEEK } from "./constants";
+import { TAG_NAMES, SECONDS_PER_WEEK, U_SUB_UNITS, U_TRANFER_FUNCTION, U_TOKEN, DECIMAL_PLACES } from "./constants";
+import { targetUWallets } from './commonVars';
 import { DateInfo, Transaction, OperatorTX } from "./interfaces";
 import { findTag } from './utils/util';
+import { getCombinedModifierFlags } from "typescript";
 
 export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): DateInfo[] => {
     const dateList: DateInfo[] = [];
@@ -514,15 +516,16 @@ export const modelsPerWeekPrepareData = (
   modelCreationTx: Transaction[],
   scriptCreationTx: Transaction[],
   inferencePaymentTx: Transaction[],
-  isToCalculateFailedPayments: boolean = false,
   dateInfo: DateInfo[],
   chartTitle: string,
+  isToCalculateFailedPayments: boolean = false,
 ): any => {
   const series: { name: string; data: number[] }[] = [];
   const chartInfo = {
       categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
       chartTitle: chartTitle,
   }
+  
   const modelTxNameMap = createGenericTransactionMap(modelCreationTx,TAG_NAMES.modelName);
   const scriptTxModelTxMap = createGenericTransactionMap(scriptCreationTx,TAG_NAMES.modelTransaction);
   const inferenceTxMap = createPaymentTxMap(inferencePaymentTx,TAG_NAMES.inferenceTransaction);
@@ -557,3 +560,50 @@ export const modelsPerWeekPrepareData = (
 
   return { series, chartInfo };
 };
+
+
+// U Payments
+
+export const AmountUTokenPaymentsPrepareData = (
+  paymentsTx: Transaction[],
+  dateInfo: DateInfo[],
+  chartTitle: string,
+  extraWalletsToCheck: string = '',
+): any => {
+  const series: { name: string; data: number[] }[] = [];
+  const chartInfo = {
+      categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
+      chartTitle: chartTitle,
+  }
+
+  const fairWalletsSingleText = targetUWallets.join(' ');
+  const combinedWallets : string = `${fairWalletsSingleText} ${extraWalletsToCheck}`;
+  const data: number[] = [];
+
+    for (const week of dateInfo) {
+      const weekStartTimestamp = week.unixTime;
+      const weekEndTimestamp = week.unixTime + SECONDS_PER_WEEK;
+      let amountU = 0;
+
+      for (const transaction of paymentsTx) {
+        const timestamp = transaction.node.block?.timestamp;
+        const tags = transaction.node.tags;
+        
+      
+        if (timestamp && timestamp >= weekStartTimestamp && timestamp < weekEndTimestamp) {
+          const tag = findTag(tags,TAG_NAMES.input);
+          const jsonValue = tag && JSON.parse(tag.value);
+
+          if(jsonValue && jsonValue.function === U_TRANFER_FUNCTION && combinedWallets.includes(jsonValue.target)) {
+            amountU += jsonValue.qty !== undefined ? jsonValue.qty/U_SUB_UNITS : 0;
+          }
+
+        }
+      }
+
+      data.push(Number(amountU.toFixed(DECIMAL_PLACES)));
+    }
+    series.push({ name: U_TOKEN, data });
+  return { series, chartInfo };
+};
+  
