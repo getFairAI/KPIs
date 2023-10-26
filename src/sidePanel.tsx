@@ -18,22 +18,25 @@
 
 
 import React, { useState } from 'react';
-import './App.css';
+import {ViewOptions} from './Enum';
+import './styles.css';
 interface SidePanelProps {
-    onUpdatedCharts: (startDate: Date, endDate: Date, isExtraEnabled: boolean, walletsContent: string) => void;
+    onUpdatedCharts: (startDate: Date, endDate: Date, isExtraEnabled: boolean, walletsContent: string,view: string) => void;
+    initialDate: Date; 
+    finalDate: Date;
   }
   
-  const SidePanel: React.FC<SidePanelProps> = ({ onUpdatedCharts }) => {
-    const initialDate = new Date('2023-05-14');
-    const finalDate = new Date();
+  const SidePanel: React.FC<SidePanelProps> = ({ initialDate, finalDate, onUpdatedCharts }) => {
+   
     const [isExtraChartsEnabled, setExtraChartsEnabled] = useState(false);
     const [startDate, setStartDate] = useState<Date>(initialDate);
     const [endDate, setEndDate] = useState<Date>(finalDate);
     const [walletsContent, setWalletsContent] = useState<string>('');
+    const [viewOption, setViewOption] = useState(ViewOptions.WEEKLY);
 
   const handleDateChange = () => {
     if (startDate && endDate) {
-        onUpdatedCharts(startDate, endDate,isExtraChartsEnabled,walletsContent);
+        onUpdatedCharts(startDate, endDate,isExtraChartsEnabled,walletsContent,viewOption);
     }
   };
 
@@ -55,10 +58,32 @@ interface SidePanelProps {
     setWalletsContent(e.target.value);
   };
 
+  const handleViewOptionChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    setViewOption(e.target.value);
+  }
+
 
   return (
     <div className="side-panel">
         <h2>Configuration</h2>
+        <div className='view-selector'>
+          <label>View: </label>
+          <div className='radio-option'>
+            <label>
+            <input type='radio' value={ViewOptions.DAILY} checked={viewOption === ViewOptions.DAILY} name='View' onChange={handleViewOptionChange}/> Daily
+            </label> 
+          </div>
+          <div className='radio-option'>
+            <label>
+              <input type='radio' value={ViewOptions.WEEKLY} checked={viewOption === ViewOptions.WEEKLY} name='View' onChange={handleViewOptionChange}/> Weekly
+            </label> 
+          </div>
+          <div className='radio-option'>
+            <label>
+            <input type='radio' value={ViewOptions.MONTHLY} checked={viewOption === ViewOptions.MONTHLY} name='View' onChange={handleViewOptionChange}/> Monthly
+            </label> 
+          </div>
+        </div>
         <div className="date-picker">
             <label>Start Date: </label>
             <input type="date" value={startDate.toISOString().slice(0, 10)} onChange={handleStartDateChange} />
@@ -76,7 +101,7 @@ interface SidePanelProps {
          <div className='textarea-container'>
             <label>
                 Wallets to include
-            <textarea  value={walletsContent} onChange={handleTextAreaChange} rows={7} cols={35} placeholder='address1 address2'/>
+            <textarea  value={walletsContent} onChange={handleTextAreaChange} rows={7} cols={35} style={{maxWidth: '100%'}} placeholder='address1 address2'/>
             </label>
          </div>
         <button className="update-button" onClick={handleDateChange}>Update Charts</button>

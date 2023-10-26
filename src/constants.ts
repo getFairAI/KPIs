@@ -17,7 +17,7 @@
  */
 
 export const APP_NAME = 'Fair Protocol';
-export const APP_VERSION = '0.1';
+
 
 export const CUSTOM_APP_NAME = 'Fair Protocol';
 export const CUSTOM_APP_VERSION = '0.3';
@@ -29,8 +29,10 @@ export const INFERENCE_PERCENTAGE_FEE = 0.05;
 
 
 export const TAG_NAMES = {
-  appName: 'App-Name',
-  appVersion: 'App-Version',
+  alphaAppName: 'App-Name',
+  alphaAppVersion: 'App-Version',
+  appName: 'Protocol-Name',
+  appVersion: 'Protocol-Version',
   customAppName: 'Custom-App-Name',
   customAppVersion: 'Custom-App-Version',
   sequenceOwner: 'Sequencer-Owner',
@@ -77,6 +79,10 @@ export const TAG_NAMES = {
 export const DECIMAL_PLACES = 2;
 
 export const SECONDS_PER_WEEK = 604800;
+
+export const SECONDS_PER_MONTH = 2678400;
+
+export const SECONDS_PER_DAY = 86400;
 
 export const U_SUB_UNITS = 1000000;
 
@@ -136,11 +142,14 @@ export const VOTE_FOR_SCRIPT = 'Vote For Script';
 export const VOTE_FOR_OPERATOR = 'Vote For Operator';
 
 //Our wallets addresses 
+
 export const VAULT_ADDRESS = 'tXd-BOaxmxtgswzwMLnryROAYlX5uDC9-XK2P4VNCQQ';
 
 export const MARKETPLACE = 'RQFarhgXPXYkgRM0Lzv088MllseKQWEdnEiRUggteIo';
 
 export const OPERATOR_ONE = 'rM9K69Uv7olZeKA0bOZ9dwo-GvyYprkjqafhtjeSx2M';
+
+export const MAIN_OPERATOR = 'SsoNc_AAEgS1S0cMVUUg3qRUTuNtwQyzsQbGrtTAs-Q';
 
 export const OPERATOR_TWO = 'ZCM0XYhxtYcfwIeNaV_ZQyJkj1Cd6KeIZxe9NOaI13M';
 
@@ -152,8 +161,12 @@ export const USER_THREE = 'nZqqoOjoUzAm-z_WhpvfTurNyWUlLtL9IxOP8XegsAg';
 
 export const USER_FOUR = '2mHSMCECIXimknoryHrHw7Vvy0QbIB7WGFGO5YN-Q9A'
 
+export const USER_TWITTER = '9Z8PtQwYxuQ3cDZgSjJ8HvSntVTrJo6XPH5e8-6-ptM';
+
 export const USER_DEPLOY_TEST = 'Ek7mFHbmmEwUHsVoPPU66Ek8bLoJn8EiIl16_eJ1FHk';
 
 export const CREATOR = 'Ufhjmk8m8ztCp0_JQzvYyuaVXZn3Hz2mIuYgjwfGWX0';
 
 export const SCRIPT = 'wGT06tKaEGXuF6QR2dXqqmO7B_TF41rELP4D1IX4-IA';
+
+export const TEST_MODELS = 'Z3rkVtxGkbGD-ix3aJPVQWB16QcCJCq6AKsmrVJacdA';
