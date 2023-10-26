@@ -19,9 +19,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import './styles.css';
+import Beta from './BetaVersion';
 import { ApolloProvider } from '@apollo/client';
 import { client } from './queryAll';
+import App from './App';
+import { BrowserRouter} from 'react-router-dom';
 
 
 const root = ReactDOM.createRoot(
@@ -29,9 +32,11 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    <BrowserRouter>
     <ApolloProvider client={client}>
-    <App />
+      <App/>
     </ApolloProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

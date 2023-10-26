@@ -85,4 +85,9 @@ export interface Block {
     categories: string[];
     chartTitle: string;
   }
+
+  export interface CustomLinkProperties {
+    to: string,
+    children: React.ReactNode,
+  }
   

@@ -16,20 +16,20 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { TAG_NAMES, SECONDS_PER_WEEK, U_SUB_UNITS, U_TRANFER_FUNCTION, U_TOKEN, DECIMAL_PLACES } from "./constants";
+import { TAG_NAMES, U_SUB_UNITS, U_TRANFER_FUNCTION, U_TOKEN, DECIMAL_PLACES } from "./constants";
 import { targetUWallets } from './commonVars';
 import { DateInfo, Transaction, OperatorTX } from "./interfaces";
-import { findTag } from './utils/util';
-import { getCombinedModifierFlags } from "typescript";
+import { findTag, sumArraySlice, getSecondsByViewOption} from './utils/util';
+import { ViewOptions } from "./Enum";
 
-export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): DateInfo[] => {
+export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, view: string): DateInfo[] => {
     const dateList: DateInfo[] = [];
   
     let currentDate = new Date(startDate);
     currentDate.setHours(0, 0, 0, 0);
 
     while (currentDate <= endDate) {
-      if (currentDate.getDay() === 1) { // Check if it's Monday (0: Sunday, 1: Monday, ...)
+      if ((view === ViewOptions.WEEKLY && currentDate.getDay() === 1) || (view === ViewOptions.MONTHLY && currentDate.getDate() === 1) || view === ViewOptions.DAILY) { // Check if it's Monday (0: Sunday, 1: Monday, ...)
         const unixTime = Math.floor(currentDate.getTime() / 1000); // Convert milliseconds to seconds
         dateList.push({ date: new Date(currentDate), unixTime });
       }
@@ -39,16 +39,17 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     return dateList;
   };
 
-  export const getMondayDateAndUnixTimeMap = (startDate: Date, endDate: Date): Map<number, Date> => {
+  export const getMondayDateAndUnixTimeMap = (startDate: Date, endDate: Date, view: string): Map<number, Date> => {
     const dateMap: Map<number, Date> = new Map();
     let currentDate = new Date(startDate);
     currentDate.setHours(0, 0, 0, 0);
-  
+
     while (currentDate <= endDate) {
-      if (currentDate.getDay() === 1) { // Check if it's Monday (0: Sunday, 1: Monday, ...)
+      if ((view === ViewOptions.WEEKLY && currentDate.getDay() === 1) || (view === ViewOptions.MONTHLY && currentDate.getDate() === 1) || view === ViewOptions.DAILY) { // Check if it's Monday (0: Sunday, 1: Monday, ...)
         const unixTime = Math.floor(currentDate.getTime() / 1000); // Convert milliseconds to seconds
         dateMap.set(unixTime, new Date(currentDate));
       }
+  
       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
     }
   
@@ -76,6 +77,8 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     });
   
     return ownerUnixTimeMap;
+
+   
   };
 
   export const createOwnerUnixTimeMap = (transactions: Transaction[]): Map<string, number> => {
@@ -99,14 +102,14 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
       
     return ownerUnixTimeMap;
   };
-
-  export const generateChartInfo = (categoriesTitle: string, yTitle: string, chartTitle: string, seriesTitle: string,  dates: DateInfo[], ownerUnixTimeMap: Map<string, number>): any => {
+ 
+  export const generateChartInfo = (categoriesTitle: string, yTitle: string, chartTitle: string, seriesTitle: string,  dates: DateInfo[], ownerUnixTimeMap: Map<string, number>, view: string): any => {
     
     const series = [{
       name: seriesTitle,
       data: dates.map((date) => {
         const addressesInRange = Array.from(ownerUnixTimeMap.values()).filter((unixTime) => {
-          return unixTime >= date.unixTime && unixTime <= date.unixTime + (SECONDS_PER_WEEK);
+          return unixTime >= date.unixTime && unixTime <= date.unixTime + (getSecondsByViewOption(view));
         });
         return addressesInRange.length;
       }),
@@ -129,7 +132,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
 
 
 
-  export const createWeekTransactionsMap = (transactions: Transaction[], dateInfo: DateInfo[]): Map<number, Transaction[]> => {
+  export const createWeekTransactionsMap = (transactions: Transaction[], dateInfo: DateInfo[],view: string): Map<number, Transaction[]> => {
     const weekUnixTransactionsMap: Map<number, Transaction[]> = new Map();
     
     dateInfo.forEach((week) => {
@@ -141,7 +144,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   
       if (block && block.timestamp && owner) {
         const timestamp = block.timestamp;
-        const week = findWeekByTimestamp(timestamp, dateInfo);
+        const week = findWeekByTimestamp(timestamp, dateInfo,view);
   
         if (week) {
           if (!weekUnixTransactionsMap.has(week.unixTime)) {
@@ -155,13 +158,53 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
         }
       }
     });
-  
+    
     return weekUnixTransactionsMap;
+  };
+
+  // calculate new users Acc - users with transactions this week that dont have transactions in the previous week but can have in the other ones behind
+  export const createWeekNumberOfUsersAccMap = (weekUnixTransactionsMap: Map<number, Transaction[]>): number[] => {
+    const uniqueOwnersPerWeek: number[] = [];
+    const uniqueOwnersByWeek: Map<number, Set<string>> = new Map();
+  
+    const keys = Array.from(weekUnixTransactionsMap.keys());
+
+    // Initialize the map with empty sets for each key
+    keys.forEach((key) => {
+      uniqueOwnersByWeek.set(key, new Set());
+    });
+
+    for(let i = 0; i < keys.length;i++) {
+      const txsWeek = weekUnixTransactionsMap.get(keys[i]);
+
+
+      txsWeek?.forEach((tx) => {
+        const owner = tx.node.owner?.address; 
+        if(owner) {
+          uniqueOwnersByWeek.get(keys[i])?.add(owner);
+        }
+      });
+    }
+
+    // first week we dont need to calculate the new users
+    const firstPositionSize = uniqueOwnersByWeek.get(keys[0])?.size ?? 0;
+    uniqueOwnersPerWeek.push(firstPositionSize);
+
+    for( let i = 1; i < keys.length; i++) {
+      const currentSet = uniqueOwnersByWeek.get(keys[i]);
+      const previousSet = uniqueOwnersByWeek.get(keys[i-1]);
+      
+      const difference = currentSet && previousSet ? new Set([...currentSet].filter(x => !previousSet.has(x))) : new Set();
+      const sizeOfDifference = difference.size;
+      uniqueOwnersPerWeek.push(sizeOfDifference);
+    }
+    return uniqueOwnersPerWeek;
   };
 
   export const createWeekNumberOfTransactionsMap = (
     transactions: Transaction[],
-    dateInfo: DateInfo[]
+    dateInfo: DateInfo[],
+    view: string
   ): Map<number, number> => {
     const weekTransactionCountMap: Map<number, number> = new Map();
   
@@ -175,7 +218,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   
       if (block && block.timestamp && owner) {
         const timestamp = block.timestamp;
-        const week = findWeekByTimestamp(timestamp, dateInfo);
+        const week = findWeekByTimestamp(timestamp, dateInfo,view);
   
         if (week) {
           const count = weekTransactionCountMap.get(week.unixTime);
@@ -191,9 +234,9 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   
   
   
-  const findWeekByTimestamp = (timestamp: number, dateInfo: DateInfo[]): DateInfo | undefined => {
+  const findWeekByTimestamp = (timestamp: number, dateInfo: DateInfo[], view: string): DateInfo | undefined => {
     return dateInfo.find((week) => {
-      const weekEndTimestamp = week.unixTime + (SECONDS_PER_WEEK);
+      const weekEndTimestamp = week.unixTime + (getSecondsByViewOption(view));
       return timestamp >= week.unixTime && timestamp <= weekEndTimestamp;
     });
   };
@@ -272,6 +315,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     operatorRegistrationTx: Transaction[],
     dateInfo: DateInfo[],
     chartTitle: string,
+    view: string,
   ): any => {
     const transactionTypes = [
       { name: 'Inference Payment', transactions: inferenceTx },
@@ -291,7 +335,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
       
       for (const week of dateInfo) {
         const weekStartTimestamp = week.unixTime;
-        const weekEndTimestamp = week.unixTime + (SECONDS_PER_WEEK);
+        const weekEndTimestamp = week.unixTime + (getSecondsByViewOption(view));
   
         const transactionsInWeek = type.transactions.filter((transaction) => {
           const timestamp = transaction.node.block?.timestamp;
@@ -314,13 +358,14 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     opRegistrationsTx: Transaction[],
     opCancelTx: Transaction[],
     dateInfo: DateInfo[],
+    view: string,
   ): Map<number, number> => {
     const activeOperatorsMap: Map<number, number> = new Map();
     const registrationsOperatorTx = extractOperatorRegistrationTx(opRegistrationsTx);
     const cancelOperatorTx = extractOperatorCancelTx(opCancelTx);
 
     dateInfo.forEach((week) => {
-      const weekTimeStamp = week.unixTime + (SECONDS_PER_WEEK); // Add one week duration
+      const weekTimeStamp = week.unixTime + (getSecondsByViewOption(view)); // Add one week duration
       const activeOperators = registrationsOperatorTx.filter((tx) => {
         const txTimeStamp = tx.unixTime;
         const cancelTx = cancelOperatorTx.find(
@@ -432,6 +477,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
     operatorRegistrationTx: Transaction[],
     dateInfo: DateInfo[],
     chartTitle: string,
+    view: string
   ): any => {
     const transactionTypes = [
       { name: 'Inference Payment', transactions: mainTx, tagName: 'Inference-Transaction' },
@@ -450,7 +496,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date): Da
   
       for (const week of dateInfo) {
         const weekStartTimestamp = week.unixTime;
-        const weekEndTimestamp = week.unixTime + SECONDS_PER_WEEK;
+        const weekEndTimestamp = week.unixTime + getSecondsByViewOption(view);
   
         let uniqueTransactions: Set<string> = new Set();
   
@@ -518,6 +564,7 @@ export const modelsPerWeekPrepareData = (
   inferencePaymentTx: Transaction[],
   dateInfo: DateInfo[],
   chartTitle: string,
+  view: string,
   isToCalculateFailedPayments: boolean = false,
 ): any => {
   const series: { name: string; data: number[] }[] = [];
@@ -535,7 +582,7 @@ export const modelsPerWeekPrepareData = (
 
     for (const week of dateInfo) {
       const weekStartTimestamp = week.unixTime;
-      const weekEndTimestamp = week.unixTime + SECONDS_PER_WEEK;
+      const weekEndTimestamp = week.unixTime + getSecondsByViewOption(view);
       let numberOfRequests = 0;
 
       for (const transaction of mainTx) {
@@ -568,6 +615,7 @@ export const AmountUTokenPaymentsPrepareData = (
   paymentsTx: Transaction[],
   dateInfo: DateInfo[],
   chartTitle: string,
+  view: string,
   extraWalletsToCheck: string = '',
 ): any => {
   const series: { name: string; data: number[] }[] = [];
@@ -582,7 +630,7 @@ export const AmountUTokenPaymentsPrepareData = (
 
     for (const week of dateInfo) {
       const weekStartTimestamp = week.unixTime;
-      const weekEndTimestamp = week.unixTime + SECONDS_PER_WEEK;
+      const weekEndTimestamp = week.unixTime + getSecondsByViewOption(view);
       let amountU = 0;
 
       for (const transaction of paymentsTx) {
@@ -607,3 +655,59 @@ export const AmountUTokenPaymentsPrepareData = (
   return { series, chartInfo };
 };
   
+
+export const calculateRetentionRateWithChartFormat = (
+  newUsersData: number [],
+  existingUsersSeries: Array<{ name: string; data: number[]; categoriesTitle: string }>,
+  categories: string[],
+  chartTitle: string,
+  isToCalculateAll: boolean = false
+) => {
+  if (newUsersData.length !== existingUsersSeries[0].data.length) {
+    throw new Error('Series lengths must match for calculating retention rate.');
+  }
+
+  const retentionRates: number [] = [];
+  retentionRates.push(0); // add first week -> 0
+
+  const existingUsersData = existingUsersSeries[0].data;
+
+  for (let i = 1; i< existingUsersData.length; i++) {
+
+    const existingUsersDataCurrentWeek = isToCalculateAll ? sumArraySlice(newUsersData,0, i -1) : existingUsersData[i-1];
+
+    
+    if(existingUsersDataCurrentWeek !== 0) {
+      const retainedCount = (((existingUsersData[i] - newUsersData[i]) / existingUsersDataCurrentWeek) * 100).toFixed(DECIMAL_PLACES);
+
+      retentionRates.push(Number(retainedCount));
+    } else {
+      retentionRates.push(0);
+    }
+  }
+
+  const categoriesTitle = existingUsersSeries[0].categoriesTitle;
+  const yTitle = 'Retention Rate (%)';
+
+  const chartInfo = {
+    categories,
+    categoriesTitle,
+    yTitle,
+    chartTitle,
+    yMin: 0,
+    yMax: 100,
+  };
+
+  const series = [
+    {
+      name: 'Retention Rate',
+      data: retentionRates,
+    },
+  ];
+
+  return {
+    series,
+    chartInfo,
+  };
+};
+

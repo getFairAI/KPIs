@@ -18,6 +18,8 @@
 
 
 import { Transaction, Tag} from "../interfaces";
+import { ViewOptions } from "@/Enum";
+import { SECONDS_PER_DAY, SECONDS_PER_WEEK, SECONDS_PER_MONTH } from "@/constants";
 
 export const filterTransactionsByTag = (transactions: Transaction[], tag: string): Transaction[] => {
     return transactions.filter((transaction) => {
@@ -59,3 +61,33 @@ export const filterTransactionsIncludeTagNamesAndExcludeTags = (
     return hasTagsToInclude && !hasExcludedTags && !isTransactionFromFair;
   });
 };
+
+export function sumArraySlice(arr: number[], start: number, end: number): number {
+  return arr.slice(start, end + 1).reduce((acc, current) => acc + current, 0);
+}
+
+export const getSecondsByViewOption = (view: string): number => {
+  switch(view) {
+    case ViewOptions.DAILY:
+      return SECONDS_PER_DAY;
+    case ViewOptions.WEEKLY:
+      return SECONDS_PER_WEEK;
+    case ViewOptions.MONTHLY:
+      return SECONDS_PER_MONTH;
+    default:
+      throw new Error('Please check your view option it seems we dont support that');
+  }
+}
+
+export const getLabelByViewOption = (view: string): string => {
+  switch(view) {
+    case ViewOptions.DAILY:
+      return 'Day';
+    case ViewOptions.WEEKLY:
+      return 'Week';
+    case ViewOptions.MONTHLY:
+      return 'Month';
+    default:
+      throw new Error('Please check your view option it seems we dont support that'); 
+  }
+}

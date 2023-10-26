@@ -17,21 +17,11 @@
  */
 
 import {
-  TAG_NAMES, 
-  APP_NAME, 
-  SCRIPT_INFERENCE_REQUEST, 
-  MODEL_CREATION, 
-  SCRIPT_CREATION, 
-  REGISTER_OPERATION, 
-  SCRIPT_INFERENCE_RESPONSE,
-  CANCEL_OPERATION,
-  INFERENCE_PAYMENT,
-  SCRIPT_CREATION_PAYMENT,
-  MODEL_CREATION_PAYMENT,
   MARKETPLACE,
   VAULT_ADDRESS,
   OPERATOR_ONE, 
   OPERATOR_TWO, 
+  MAIN_OPERATOR,
   CURATOR, 
   USER_ONE, 
   CREATOR,
@@ -39,146 +29,13 @@ import {
   USER_FOUR,
   USER_DEPLOY_TEST,
   SCRIPT,
+  USER_TWITTER,
+  TEST_MODELS,
 } from './constants'
 
-export const fairWallets = [ MARKETPLACE, VAULT_ADDRESS, OPERATOR_ONE, OPERATOR_TWO, CURATOR, USER_ONE, USER_THREE, USER_FOUR, CREATOR, USER_DEPLOY_TEST, SCRIPT];
+export const fairWallets = [ MARKETPLACE, VAULT_ADDRESS, OPERATOR_ONE, OPERATOR_TWO, MAIN_OPERATOR, CURATOR, USER_ONE, USER_THREE, USER_FOUR, USER_TWITTER, CREATOR, USER_DEPLOY_TEST, SCRIPT, TEST_MODELS];
 
-export const targetUWallets = [ MARKETPLACE, VAULT_ADDRESS, OPERATOR_ONE, OPERATOR_TWO, CURATOR, USER_ONE, SCRIPT];
-
-export const tagsKpiUsers = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [SCRIPT_INFERENCE_REQUEST],
-},];
-
-export const tagsKpiUploadModels = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [MODEL_CREATION],
-},];
-
-export const tagsKpiUploadScripts = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [SCRIPT_CREATION],
-},];
-
-export const tagsKpiOperatorsRegistration = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [REGISTER_OPERATION],
-},];
-
-export const tagsKpiInferenceResponse = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [SCRIPT_INFERENCE_RESPONSE],
-},];
-
-export const tagsKpiInferenceResponseNFTS = [
-  {
-    name: TAG_NAMES.customAppName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [SCRIPT_INFERENCE_RESPONSE],
-},];
-
-export const tagsKpiOperatorCancel = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [CANCEL_OPERATION],
-},];
-
-export const tagsKpiInferencePayment = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [INFERENCE_PAYMENT],
-},];
-
-export const tagsKpiSciptPayment = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [SCRIPT_CREATION_PAYMENT],
-},];
-
-export const tagsKpiModelCreationPayment = [
-  {
-    name: TAG_NAMES.appName,
-    values: [APP_NAME],
-  },
-  {
-  name: TAG_NAMES.operationName,
-  values: [MODEL_CREATION_PAYMENT],
-},];
-
-
-export const tagsToExclude = [
-  {
-    name: TAG_NAMES.appVersion,
-    values: ['test'],
-  },
-  {
-    name: TAG_NAMES.sequenceOwner,
-    values: fairWallets,
-  },
-  ];
-
- export const tagsToExcludeForModels = [
-  {
-    name: TAG_NAMES.appVersion,
-    values: ['0.1'],
-  },
-  {
-    name: TAG_NAMES.appVersion,
-    values: ['0.2'],
-  },
-  {
-    name: TAG_NAMES.appVersion,
-    values: ['Fair Protocol'],
-  },
-  {
-    name: TAG_NAMES.modelName,
-    values: ['test large file'],
-  },
-  {
-    name: TAG_NAMES.modelName,
-    values: ['asdas'],
-  },
-  ];
+export const targetUWallets = [ MARKETPLACE, VAULT_ADDRESS, OPERATOR_ONE, OPERATOR_TWO, MAIN_OPERATOR, CURATOR, USER_ONE, SCRIPT];
 
 
   
