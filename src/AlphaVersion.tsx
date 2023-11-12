@@ -224,11 +224,6 @@ function Alpha() {
         </div>
       )}
       <div className="content-container">
-        {!isLoading && (
-          <div className="side-panel">
-            <SidePanel initialDate={startDate} finalDate={endDate} onUpdatedCharts={handleDateChange} />
-          </div>
-        )}
         <div className="chart-grid">
           {!isLoading && chartKpiNewUsersData && (
             <>

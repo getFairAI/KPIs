@@ -17,7 +17,7 @@
  */
 
 import './styles.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
 import SidePanel from './sidePanel';
@@ -57,8 +57,10 @@ import {
 } from './betaCommonVars';
 import { ViewOptions } from './Enum';
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
+import { ConfigurationContext } from './context/configuration';
 
 function Beta() {
+  const { state: configState } = useContext(ConfigurationContext); 
   const [isExtraChartsEnabled, setExtraChartsEnabled] = useState(false);
   const [startDate, setStartDate] = useState<Date>(new Date('2023-09-17'));
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -195,17 +197,11 @@ function Beta() {
     if (startDate && endDate){
       fetchData();
     }
-        
-
   }, [startDate, endDate, isExtraChartsEnabled, walletsContent, viewOption]);
 
-  const handleDateChange = (start: Date, end: Date, isExtraEnabled: boolean, walletsContentText: string, view: string) => {
-    setExtraChartsEnabled(isExtraEnabled);
-    setStartDate(start);
-    setEndDate(end);
-    setWalletsContent(walletsContentText);
-    setViewOption(view);
-  };
+  useEffect(() => {
+    console.log(configState);
+  }, [configState]);
 
   return (
     <div className="App">
@@ -225,11 +221,6 @@ function Beta() {
         </div>
       )}
       <div className="content-container">
-        {!isLoading && (
-          <div className="side-panel">
-            <SidePanel initialDate={startDate} finalDate={endDate} onUpdatedCharts={handleDateChange} />
-          </div>
-        )}
         <div className="chart-grid">
           {!isLoading && chartKpiNewUsersData && (
             <>

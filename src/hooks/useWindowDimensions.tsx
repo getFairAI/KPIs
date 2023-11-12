@@ -16,40 +16,29 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
-import Root from '@/root';
-import './index.css';
-import Beta from './BetaVersion';
-import Alpha from './AlphaVersion';
-import '@/styles/ui.css';
-import '@/styles/main.css';
+import { useState, useEffect } from 'react';
 
-const router = createHashRouter([
-  {
-    path: '/',
-    element: <Root />,
-    children: [
-      {
-        path: '',
-        element: <Beta />,
-      },
-      {
-        path: 'beta',
-        element: <Beta />
-      },
-      {
-        path: 'alpha',
-        element:<Alpha />
-      },
-    ],
-  },
-]);
+const getWindowDimensions = () => {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+};
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
-);
+const useWindowDimensions = () => {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
 
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+};
+
+export default useWindowDimensions;

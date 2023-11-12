@@ -1,0 +1,100 @@
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+
+#root {
+  box-sizing: border-box;
+
+  position: relative;
+  border-radius: 36px;
+}
+
+.navbar {
+  /* height: 367px; */
+  left: 667px;
+  top: 100px;
+  border-radius: 5px;
+}
+
+.navbar-content {
+  /* Property 1=Chat */
+  position: absolute;
+  height: 107px;
+  left: 20px;
+  top: 22px;
+}
+
+.navbar-links.active {
+  font-family: Satoshi, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.navbar-right-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+}
+
+.feature-cards-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 36px;
+  flex-wrap: nowrap;
+}
+
+.ai-card-content {
+  width: 301px;
+  height: 74.46px;
+}
+
+.filter-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 30px 20px 30px 20px;
+  gap: 21px;
+}
+
+.text {
+  font-family: Satoshi, sans-serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 41px;
+  /* identical to box height */
+  color: linear-gradient(
+    101.22deg,
+    rgba(14, 255, 168, 0.58) 30.84%,
+    #9747ff 55.47%,
+    rgba(84, 81, 228, 0) 78.13%
+  );
+}
+
+.underline {
+  background: linear-gradient(-45deg, #31ab7f50, #422d5c50, #a1205d50, #00000000);
+  background-size: 600%;
+  animation: anime 16s linear infinite;
+}
+
+@keyframes anime {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.img-gradient::after {
+  background: linear-gradient(to bottom, #000000 10%, rgba(71, 71, 71, 0) 100%);
+  border-radius: 23px;
+}

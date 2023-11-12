@@ -16,40 +16,14 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
-import Root from '@/root';
-import './index.css';
-import Beta from './BetaVersion';
-import Alpha from './AlphaVersion';
-import '@/styles/ui.css';
-import '@/styles/main.css';
+import { Icon } from '@mui/material';
 
-const router = createHashRouter([
-  {
-    path: '/',
-    element: <Root />,
-    children: [
-      {
-        path: '',
-        element: <Beta />,
-      },
-      {
-        path: 'beta',
-        element: <Beta />
-      },
-      {
-        path: 'alpha',
-        element:<Alpha />
-      },
-    ],
-  },
-]);
+const Logo = () => {
+  return (
+    <Icon sx={{ height: '100%', width: '100%', display: 'flex' }}>
+      <img src={'./fair-protocol-outline.svg'} style={{ color: '#1F1F26' }} />
+    </Icon>
+  );
+};
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
-);
-
+export default Logo;

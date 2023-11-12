@@ -1,5 +1,5 @@
 export const ViewOptions = {
-    WEEKLY: 'weekly',
-    MONTHLY: 'monthly',
-    DAILY: 'daily',
-  };
+  WEEKLY: 'weekly',
+  MONTHLY: 'monthly',
+  DAILY: 'daily',
+};
