@@ -1,5 +1,5 @@
 /*
- * Fair Protocol, open source decentralised inference marketplace for artificial intelligence.
+ * Fair Protocol - KPIs
  * Copyright (C) 2023 Fair Protocol
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-
 
 import Bundlr from "@bundlr-network/client/build/esm/node/index";
 import fs from 'fs';
