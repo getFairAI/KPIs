@@ -98,7 +98,7 @@ const Navbar = ({
             </Typography>
             <Typography
               component={NavLink}
-              to='/beta'
+              to='/'
               className='navbar-links'
               sx={navbarLinkStyles}
             >

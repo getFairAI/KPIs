@@ -13,7 +13,7 @@ interface ConfigurationContext {
 }
 
 const initialState: ConfigurationValues = {
-  startDate: new Date(),
+  startDate: new Date('2023-09-17'),
   endDate: new Date(),
   isExtraEnabled: false,
   walletsContent: '',

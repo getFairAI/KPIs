@@ -20,7 +20,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Root from '@/root';
-import './index.css';
+import '@/styles/index.css';
 import Beta from './BetaVersion';
 import Alpha from './AlphaVersion';
 import '@/styles/ui.css';
@@ -34,10 +34,6 @@ const router = createHashRouter([
       {
         path: '',
         element: <Beta />,
-      },
-      {
-        path: 'beta',
-        element: <Beta />
       },
       {
         path: 'alpha',
