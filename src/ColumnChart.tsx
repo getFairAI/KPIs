@@ -82,7 +82,7 @@ function ColumnChart ({chartInfo,series}: Props) {
 
   return (
     <div>
-      <Chart options={options} series={series} type="bar" height={350} width={750} />
+      <Chart options={options} series={series} type="bar" height={350} width={600} />
     </div>
   );
 };

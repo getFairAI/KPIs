@@ -17,7 +17,7 @@
  */
 
 import './styles.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
 import SidePanel from './sidePanel';
@@ -55,15 +55,12 @@ import {
   tagsKpiSciptPayment,
   tagsKpiModelCreationPayment,
 } from './betaCommonVars';
-import { ViewOptions } from './Enum';
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
+import { ConfigurationContext } from './context/configuration';
+import { Box, Grid } from '@mui/material';
 
 function Beta() {
-  const [isExtraChartsEnabled, setExtraChartsEnabled] = useState(false);
-  const [startDate, setStartDate] = useState<Date>(new Date('2023-09-17'));
-  const [endDate, setEndDate] = useState<Date>(new Date());
-  const [walletsContent, setWalletsContent] = useState<string>('');
-  const [viewOption, setViewOption] = useState(ViewOptions.WEEKLY);
+  const { state: configState } = useContext(ConfigurationContext); 
   const [isLoading, setLoading] = useState(true); 
   const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
   const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
@@ -84,23 +81,23 @@ function Beta() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const labelTime = getLabelByViewOption(viewOption);
+        const labelTime = getLabelByViewOption(configState.view);
         // TIME 
-        const mondays = getMondayDateAndUnixTimeList(startDate,endDate,viewOption);
-        const mondaysMap = getMondayDateAndUnixTimeMap(startDate,endDate,viewOption);
+        const mondays = getMondayDateAndUnixTimeList(configState.startDate, configState.endDate, configState.view);
+        const mondaysMap = getMondayDateAndUnixTimeMap(configState.startDate, configState.endDate, configState.view);
 
         // requests
         const requestsInferenceTransactionsRaw = await fetchAllTransactions(tagsKpiUsers);
         const requestsInferenceTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(requestsInferenceTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude)
         const uniqueOwnersScriptPayment = createOwnerUnixTimeMap(requestsInferenceTransactionsFiltered);
         
-        const mapTxByWeekActiveUsers = createWeekTransactionsMap(requestsInferenceTransactionsFiltered,mondays,viewOption);
+        const mapTxByWeekActiveUsers = createWeekTransactionsMap(requestsInferenceTransactionsFiltered,mondays,configState.view);
         
         const mapWeekCountXActiveUsers = mapNumberTxsPerWeek(mapTxByWeekActiveUsers,ACTIVE_USERS_PER_WEEK);
 
         
         const kpiActiveUsersPerWeek = generateChartInfoCountsXPerWeek(labelTime, 'Active users', `Active users per ${labelTime}`, `Active users in this ${labelTime}`,mapTxByWeekActiveUsers,mapWeekCountXActiveUsers,mondaysMap);
-        const kpiNewUsersPerWeek = generateChartInfo(labelTime, 'New users', `New users per ${labelTime}`, `Users in ${labelTime}`, mondays, uniqueOwnersScriptPayment, viewOption);
+        const kpiNewUsersPerWeek = generateChartInfo(labelTime, 'New users', `New users per ${labelTime}`, `Users in ${labelTime}`, mondays, uniqueOwnersScriptPayment, configState.view);
         setChartKpiNewUsersData(kpiNewUsersPerWeek);
 
         setChartKpiActiveUsersData(kpiActiveUsersPerWeek);
@@ -134,23 +131,23 @@ function Beta() {
         setChartKpiRetentionWeekAcc(calculateRetentionRateWithChartFormat(mapNewUsersAccPerWeek,kpiUsersPerWeek.series,kpiUsersPerWeek.chartInfo.categories, `Retention rate ${labelTime} by ${labelTime} - Acc`,false));
 
 
-      if(isExtraChartsEnabled) {
+      if(configState.isExtraEnabled) {
       
         // KPI Payments
 
-        setChartKpiPaymentsData(paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, `Payments per ${labelTime}`, viewOption));
+        setChartKpiPaymentsData(paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, `Payments per ${labelTime}`, configState.view));
 
 
         // KPI NEW MODELS
         const uploadModelsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
-        const mapTxByWeekNewModels = createWeekNumberOfTransactionsMap(uploadModelsTransactionsFiltered,mondays, viewOption);
+        const mapTxByWeekNewModels = createWeekNumberOfTransactionsMap(uploadModelsTransactionsFiltered,mondays, configState.view);
         setChartKpiNewModelsData(generateChartInfoTxsPerWeek(labelTime, `new models per ${labelTime}`, `New models per ${labelTime}`, `New models this ${labelTime}`,mapTxByWeekNewModels,mondaysMap));
 
 
         // KPI NEW SCRIPTS 
         
         const uploadScriptsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude);
-        const mapTxByWeekNewScripts = createWeekNumberOfTransactionsMap(uploadScriptsTransactionsFiltered,mondays, viewOption);
+        const mapTxByWeekNewScripts = createWeekNumberOfTransactionsMap(uploadScriptsTransactionsFiltered,mondays, configState.view);
         setChartKpiNewScriptsData(generateChartInfoTxsPerWeek(labelTime, `new scripts per ${labelTime}`, `New scripts per ${labelTime}`, `New scripts this ${labelTime}`,mapTxByWeekNewScripts,mondaysMap));
 
 
@@ -168,22 +165,22 @@ function Beta() {
 
         //join both queries
         const combinedInferenceFilteredTransactions = [...responseInferenceTransactionsFiltered, ...responseNFTInferenceTransactionsFiltered,];
-        const mapTxActiveOperatorsByWeek = operatorsPrepareData(requestsInferenceTransactionsFiltered, combinedInferenceFilteredTransactions, activeOperatorsTransactionsFiltered, cancelOperatorsTransactionsFiltered, mondays, viewOption);
+        const mapTxActiveOperatorsByWeek = operatorsPrepareData(requestsInferenceTransactionsFiltered, combinedInferenceFilteredTransactions, activeOperatorsTransactionsFiltered, cancelOperatorsTransactionsFiltered, mondays, configState.view);
         setChartKpiActiveOperatorsData(generateChartInfoTxsPerWeek(labelTime, `active operators per ${labelTime}`, `Active operators per ${labelTime}`, `active operators this ${labelTime}`,mapTxActiveOperatorsByWeek,mondaysMap));
       }
 
       //models per week
       const uploadModelsTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.appVersion],[],[...tagsToExclude,...tagsToExcludeForModels]);
       const uploadScriptTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.appVersion],[],tagsToExclude);
-      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Models used per ${labelTime}`,viewOption, false));
+      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Models used per ${labelTime}`,configState.view, false));
   
       // U per week
       const allPayments = [...inferencePaymentTransactionsFiltered, ...modelCreationTransactionsFiltered, ...scriptPaymentTransactionsFiltered, ...activeOperatorsTransactionsFiltered];
-      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U per ${labelTime}`,viewOption,walletsContent));
+      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U per ${labelTime}`, configState.view, configState.walletsContent));
 
       // failed payments per week
 
-      setChartKpiFailedPaymentsModelsPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Failed payments per ${labelTime} by model`,viewOption, true));
+      setChartKpiFailedPaymentsModelsPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Failed payments per ${labelTime} by model`,configState.view, true));
 
 
       setLoading(false);
@@ -192,20 +189,11 @@ function Beta() {
       }
     };
 
-    if (startDate && endDate){
+    if (configState.startDate && configState.endDate){
+      console.log(configState);
       fetchData();
     }
-        
-
-  }, [startDate, endDate, isExtraChartsEnabled, walletsContent, viewOption]);
-
-  const handleDateChange = (start: Date, end: Date, isExtraEnabled: boolean, walletsContentText: string, view: string) => {
-    setExtraChartsEnabled(isExtraEnabled);
-    setStartDate(start);
-    setEndDate(end);
-    setWalletsContent(walletsContentText);
-    setViewOption(view);
-  };
+  }, [configState]);
 
   return (
     <div className="App">
@@ -224,125 +212,128 @@ function Beta() {
           <CircularProgress size={100} />
         </div>
       )}
-      <div className="content-container">
-        {!isLoading && (
-          <div className="side-panel">
-            <SidePanel initialDate={startDate} finalDate={endDate} onUpdatedCharts={handleDateChange} />
-          </div>
-        )}
-        <div className="chart-grid">
+       <Grid container spacing={2}>
+        <Grid item md={12} lg={6}>
           {!isLoading && chartKpiNewUsersData && (
-            <>
-              <div className="chart-item">
-                    <LineChart
-                      chartInfo={chartKpiNewUsersData.chartInfo}
-                      series={chartKpiNewUsersData.series}
-                    />
-                  </div>
-            </>
+            <Box display={'flex'} justifyContent={'center'}>
+              <LineChart
+                chartInfo={chartKpiNewUsersData.chartInfo}
+                series={chartKpiNewUsersData.series}
+              />
+            </Box>
           )}
+        </Grid>
+        <Grid item md={12} lg={6}>
           {!isLoading && chartModelsUsedPerWeek && (
-            <>
-              <div className="chart-item">
-                    <ColumnChart
-                      chartInfo={chartModelsUsedPerWeek.chartInfo}
-                      series={chartModelsUsedPerWeek.series}
-                    />
-                  </div>
-            </>
+            <Box display={'flex'} justifyContent={'center'}>
+              <ColumnChart
+                chartInfo={chartModelsUsedPerWeek.chartInfo}
+                series={chartModelsUsedPerWeek.series}
+              />
+            </Box>
           )}
+        </Grid>
+        <Grid item md={12} lg={6}>
           {!isLoading && chartUPaymentsPerWeek && (
-            <>
-              <div className="chart-item">
-                    <ColumnChart
-                      chartInfo={chartUPaymentsPerWeek.chartInfo}
-                      series={chartUPaymentsPerWeek.series}
-                    />
-                  </div>
-            </>
+            <Box display={'flex'} justifyContent={'center'}>
+              <ColumnChart
+                chartInfo={chartUPaymentsPerWeek.chartInfo}
+                series={chartUPaymentsPerWeek.series}
+              />
+            </Box>
           )}
-           {!isLoading && chartFailedPaymentsModelsPerWeek && (
-            <>
-              <div className="chart-item">
-                    <ColumnChart
-                      chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
-                      series={chartFailedPaymentsModelsPerWeek.series}
-                    />
-                  </div>
-            </>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {!isLoading && chartFailedPaymentsModelsPerWeek && (
+            <Box display={'flex'} justifyContent={'center'}>
+              <ColumnChart
+                chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
+                series={chartFailedPaymentsModelsPerWeek.series}
+              />
+            </Box>
           )}
+        </Grid>
+        <Grid item md={12} lg={6}>
           {!isLoading && chartKpiActiveUsersData && (
-            <>
-              <div className="chart-item">
-                    <LineChart
-                      chartInfo={chartKpiActiveUsersData.chartInfo}
-                      series={chartKpiActiveUsersData.series}
-                    />
-                  </div>
-            </>
+            <Box display={'flex'} justifyContent={'center'}>
+              <LineChart
+                chartInfo={chartKpiActiveUsersData.chartInfo}
+                series={chartKpiActiveUsersData.series}
+              />
+            </Box>
           )}
+        </Grid>
+        <Grid item md={12} lg={6}>
           {!isLoading && chartKpiUsersData && (
-            <>
-              <div className="chart-item">
-                    <LineChart
-                      chartInfo={chartKpiUsersData.chartInfo}
-                      series={chartKpiUsersData.series}
-                    />
-                  </div>
-            </>
+            <Box display={'flex'} justifyContent={'center'}>
+              <LineChart
+                chartInfo={chartKpiUsersData.chartInfo}
+                series={chartKpiUsersData.series}
+              />
+            </Box>
           )}
+        </Grid>
+        <Grid item md={12} lg={6}>
           {!isLoading && chartKpiRetentionWeekAcc && (
-            <>
-              <div className="chart-item">
-                    <LineChart
-                      chartInfo={chartKpiRetentionWeekAcc.chartInfo}
-                      series={chartKpiRetentionWeekAcc.series}
-                    />
-                  </div>
-            </>
+            <Box display={'flex'} justifyContent={'center'}>
+              <LineChart
+                chartInfo={chartKpiRetentionWeekAcc.chartInfo}
+                series={chartKpiRetentionWeekAcc.series}
+              />
+            </Box>
           )}
-          {isExtraChartsEnabled && chartKpiPaymentsData && (
-            <>
-              <div className="chart-item">
-                    <ColumnChart
-                      chartInfo={chartKpiPaymentsData.chartInfo}
-                      series={chartKpiPaymentsData.series}
-                    />
-                  </div>
-            </>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {!isLoading && chartFailedPaymentsModelsPerWeek && (
+            <Box display={'flex'} justifyContent={'center'}>
+              <ColumnChart
+                chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
+                series={chartFailedPaymentsModelsPerWeek.series}
+              />
+            </Box>
           )}
-          {isExtraChartsEnabled && chartKpiNewModelsData && (
-            <>
-            <div className="chart-item">
-                  <LineChart
-                    chartInfo={chartKpiNewModelsData.chartInfo}
-                    series={chartKpiNewModelsData.series}
-                  />
-                </div>
-            </>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {configState.isExtraEnabled && chartKpiPaymentsData && (
+            <Box display={'flex'} justifyContent={'center'}>
+              <ColumnChart
+                chartInfo={chartKpiPaymentsData.chartInfo}
+                series={chartKpiPaymentsData.series}
+              />
+            </Box>
           )}
-          {isExtraChartsEnabled && chartKpiNewScriptsData && (
-            <>
-            <div className="chart-item">
-                  <LineChart
-                    chartInfo={chartKpiNewScriptsData.chartInfo}
-                    series={chartKpiNewScriptsData.series}
-                  />
-                </div>
-            </>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {configState.isExtraEnabled && chartKpiNewModelsData && (
+            <Box display={'flex'} justifyContent={'center'}>
+              <LineChart
+                chartInfo={chartKpiNewModelsData.chartInfo}
+                series={chartKpiNewModelsData.series}
+              />
+            </Box>
           )}
-          {isExtraChartsEnabled && chartKpiActiveOperatorsData && (
-            <>
-            <div className="chart-item">
-                  <LineChart
-                    chartInfo={chartKpiActiveOperatorsData.chartInfo}
-                    series={chartKpiActiveOperatorsData.series}
-                  />
-                </div>
-            </>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {configState.isExtraEnabled && chartKpiNewScriptsData && (
+            <Box display={'flex'} justifyContent={'center'}>
+             <LineChart
+                chartInfo={chartKpiNewScriptsData.chartInfo}
+                series={chartKpiNewScriptsData.series}
+              />
+            </Box>
           )}
-        </div>
-      </div>
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {configState.isExtraEnabled && chartKpiActiveOperatorsData && (
+            <Box display={'flex'} justifyContent={'center'}>
+              <LineChart
+                chartInfo={chartKpiActiveOperatorsData.chartInfo}
+                series={chartKpiActiveOperatorsData.series}
+              />
+            </Box>
+          )}
+        </Grid>
+      </Grid>
     </div>
   );
 }

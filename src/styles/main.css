@@ -1,0 +1,112 @@
+/*
+ * Fair Protocol - KPIs
+ * Copyright (C) 2023 Fair Protocol
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ */
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  height: 100%;
+  overflow-y: hidden;
+}
+
+main {
+  overflow-y: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.MuiCardHeader-avatar {
+  margin-right: 0;
+}
+
+#root {
+  height: 100%;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+} */
+
+html {
+  color-scheme: dark;
+}
+
+/**
+ * ==============================================
+ * Dot Pulse
+ * ==============================================
+ */
+@keyframes dot-pulse-before {
+  0% {
+    box-shadow: 9984px 0 0 -5px;
+  }
+  30% {
+    box-shadow: 9984px 0 0 2px;
+  }
+  60%,
+  100% {
+    box-shadow: 9984px 0 0 -5px;
+  }
+}
+@keyframes dot-pulse {
+  0% {
+    box-shadow: 9999px 0 0 -5px;
+  }
+  30% {
+    box-shadow: 9999px 0 0 2px;
+  }
+  60%,
+  100% {
+    box-shadow: 9999px 0 0 -5px;
+  }
+}
+@keyframes dot-pulse-after {
+  0% {
+    box-shadow: 10014px 0 0 -5px;
+  }
+  30% {
+    box-shadow: 10014px 0 0 2px;
+  }
+  60%,
+  100% {
+    box-shadow: 10014px 0 0 -5px;
+  }
+}
+
+/* The typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: orange; }
+}
