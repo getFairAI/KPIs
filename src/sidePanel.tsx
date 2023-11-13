@@ -16,51 +16,69 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ConfigurationContext } from './context/configuration';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Box, Checkbox, TextField, IconButton, Typography } from '@mui/material';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Box, Checkbox, TextField, IconButton, Typography, Button } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import CloseIcon from '@mui/icons-material/Close';
+import { useLocation } from 'react-router-dom';
 
 type viewOption = 'daily' | 'weekly' | 'monthly';
 
 const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
-  const { state: configState, setState: setConfigState } = useContext(ConfigurationContext);
+  const { pathname } = useLocation();
+  const { setState: setConfigState } = useContext(ConfigurationContext);
   const [ viewValue, setViewValue ] = useState<viewOption>('weekly');
-  const [ startDateFilter, setStartDateFilter ] = useState<Date | null>(configState.startDate);
-  const [ endDateFilter, setEndDateFilter ] = useState<Date | null>(configState.endDate);
-  const [ isExtraEnabled, setIsExtraEnabled ] = useState<boolean>(configState.isExtraEnabled);
-  const [ walletsContent, setWalletsContent ] = useState<string>(configState.walletsContent);
+  const [ startDateFilter, setStartDateFilter ] = useState<Date | null>(new Date());
+  const [ endDateFilter, setEndDateFilter ] = useState<Date | null>(new Date());
+  const [ isExtraEnabled, setIsExtraEnabled ] = useState<boolean>(false);
+  const [ walletsContent, setWalletsContent ] = useState<string>('');
 
-  const handleStartDateChange = (e: Date | null) => {
+  useEffect(() => {
+    if (pathname.includes('beta')) {
+      setStartDateFilter(new Date('2023-04-25'));
+      setEndDateFilter(new Date('2023-09-17'));
+    } else {
+      setStartDateFilter(new Date('2023-09-17'));
+      setEndDateFilter(new Date());
+    }
+  }, [ pathname ]);
+
+  const handleStartDateChange = useCallback((e: Date | null) => {
     if (e) {
       setStartDateFilter(e);
-      setConfigState((previousState) => ({ ...previousState, startDate: e }));
     }
-  };
+  }, [ setStartDateFilter ]);
 
-  const handleEndDateChange = (e: Date | null) => {
+  const handleEndDateChange =  useCallback((e: Date | null) => {
     if (e) {
       setEndDateFilter(e);
-      setConfigState((previousState) => ({ ...previousState, startDate: e }));
     }
-  };
+  }, [ setEndDateFilter ]);
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange =  useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setIsExtraEnabled(e.target.checked);
-    setConfigState((previousState) => ({ ...previousState, isExtraChartsEnabled: e.target.checked }));
-  };
+  }, [ setIsExtraEnabled ]);
 
-  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextAreaChange =  useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setWalletsContent(e.target.value);
-    setConfigState((previousState) => ({ ...previousState, walletsContent: e.target.value }));
-  };
+  }, [ setWalletsContent ]);
 
-  const handleViewOptionChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const handleViewOptionChange =  useCallback((e:React.ChangeEvent<HTMLInputElement>) => {
     setViewValue(e.target.value as viewOption);
-    setConfigState((previousState) => ({ ...previousState, view: e.target.value as viewOption }));
-  }
+  }, [ setViewValue ]);
+
+  const handleUpdateCharts =  useCallback(() => {
+    setConfigState((previous) => ({
+      ...previous,
+      startDate: startDateFilter || new Date(),
+      endDate: endDateFilter || new Date(),
+      view: viewValue,
+      isExtraEnabled,
+      walletsContent,
+    }));
+  }, [ startDateFilter, endDateFilter, viewValue, walletsContent, isExtraEnabled, setConfigState ]);
 
   return (<>
     <Box display={'flex'} flexDirection={'column'} padding={'16px'} gap={'16px'}>
@@ -121,49 +139,10 @@ const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
           fullWidth
         />
       </Box>
+      <Box display={'flex'} justifyContent={'center'}>
+        <Button variant='outlined' onClick={handleUpdateCharts}>Update Charts</Button>
+      </Box>
     </Box>
-   
-    {/* <div className="side-panel">
-        <h2>Configuration</h2>
-        <div className='view-selector'>
-          <label>View: </label>
-          <div className='radio-option'>
-            <label>
-            <input type='radio' value={ViewOptions.DAILY} checked={configState.view === ViewOptions.DAILY} name='View' onChange={handleViewOptionChange}/> Daily
-            </label> 
-          </div>
-          <div className='radio-option'>
-            <label>
-              <input type='radio' value={ViewOptions.WEEKLY} checked={configState.view === ViewOptions.WEEKLY} name='View' onChange={handleViewOptionChange}/> Weekly
-            </label> 
-          </div>
-          <div className='radio-option'>
-            <label>
-            <input type='radio' value={ViewOptions.MONTHLY} checked={configState.view === ViewOptions.MONTHLY} name='View' onChange={handleViewOptionChange}/> Monthly
-            </label> 
-          </div>
-        </div>
-        <div className="date-picker">
-            <label>Start Date: </label>
-            <input type="date" value={configState.startDate.toISOString().slice(0, 10)} onChange={handleStartDateChange} />
-        </div>
-        <div className="date-picker">
-            <label>End Date: </label>
-            <input type="date" value={configState.endDate.toISOString().slice(0, 10)} onChange={handleEndDateChange} />
-        </div>
-        <div className="checkbox-container">
-            <label>
-                Show Extra Charts
-                <input type="checkbox" checked={configState.isExtraEnabled} onChange={handleCheckboxChange} />
-            </label>
-         </div>
-         <div className='textarea-container'>
-            <label>
-                Wallets to include
-            <textarea  value={configState.walletsContent} onChange={handleTextAreaChange} rows={7} cols={35} style={{maxWidth: '100%'}} placeholder='address1 address2'/>
-            </label>
-         </div>
-    </div> */}
   </>);
 };
 
