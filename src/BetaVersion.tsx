@@ -20,7 +20,6 @@ import './styles.css';
 import { useState, useEffect, useContext } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
-import SidePanel from './sidePanel';
 import { TAG_NAMES, ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from './constants';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMondayDateAndUnixTimeList,
@@ -58,6 +57,7 @@ import {
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
 import { ConfigurationContext } from './context/configuration';
 import { Box, Grid } from '@mui/material';
+import OperatorsChart from './operators-chart';
 
 function Beta() {
   const { state: configState } = useContext(ConfigurationContext); 
@@ -212,7 +212,7 @@ function Beta() {
           <CircularProgress size={100} />
         </div>
       )}
-       <Grid container spacing={2}>
+      <Grid container spacing={2}>
         <Grid item md={12} lg={6}>
           {!isLoading && chartKpiNewUsersData && (
             <Box display={'flex'} justifyContent={'center'}>
@@ -284,14 +284,7 @@ function Beta() {
           )}
         </Grid>
         <Grid item md={12} lg={6}>
-          {!isLoading && chartFailedPaymentsModelsPerWeek && (
-            <Box display={'flex'} justifyContent={'center'}>
-              <ColumnChart
-                chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
-                series={chartFailedPaymentsModelsPerWeek.series}
-              />
-            </Box>
-          )}
+          <OperatorsChart />
         </Grid>
         <Grid item md={12} lg={6}>
           {configState.isExtraEnabled && chartKpiPaymentsData && (

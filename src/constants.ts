@@ -74,6 +74,7 @@ export const TAG_NAMES = {
   allowText: 'Allow-Text',
   registrationTransaction: 'Registration-Transaction',
   registrationFee: 'Registration-Fee',
+  contract: 'Contract',
 };
 
 export const DECIMAL_PLACES = 2;
@@ -83,6 +84,8 @@ export const SECONDS_PER_WEEK = 604800;
 export const SECONDS_PER_MONTH = 2678400;
 
 export const SECONDS_PER_DAY = 86400;
+
+export const U_CONTRACT_ID = 'KTzTXT_ANmF84fWEKHzWURD1LWd9QaFR9yfYUwH2Lxw';
 
 export const U_SUB_UNITS = 1000000;
 
@@ -141,6 +144,7 @@ export const VOTE_FOR_SCRIPT = 'Vote For Script';
 
 export const VOTE_FOR_OPERATOR = 'Vote For Operator';
 
+export const U_ADDRESS = '';
 //Our wallets addresses 
 
 export const VAULT_ADDRESS = 'tXd-BOaxmxtgswzwMLnryROAYlX5uDC9-XK2P4VNCQQ';

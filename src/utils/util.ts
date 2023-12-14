@@ -91,3 +91,49 @@ export const getLabelByViewOption = (view: string): string => {
       throw new Error('Please check your view option it seems we dont support that'); 
   }
 }
+
+interface QueryContent {
+  transactions: {
+    edges: Transaction[];
+    pageInfo: {
+      hasNextPage: boolean;
+    };
+  };
+}
+
+export const commonUpdateQuery = (
+  prev: QueryContent,
+  { fetchMoreResult }: { fetchMoreResult: QueryContent },
+) => {
+  if (!fetchMoreResult) {
+    return prev;
+  }
+  const secondInMS = 1000;
+  const newData: Transaction[] = fetchMoreResult.transactions.edges;
+  newData.sort((a: Transaction, b: Transaction) => {
+    const aTimestamp =
+      parseInt(findTag(a.node.tags, 'unixTime')?.value ?? '', 10) ??
+      a.node.block?.timestamp ??
+      Date.now() / secondInMS;
+    const bTimestamp =
+      parseInt(findTag(b.node.tags, 'unixTime')?.value ?? '', 10) ??
+      b.node.block?.timestamp ??
+      Date.now() / secondInMS;
+
+    return aTimestamp - bTimestamp;
+  });
+
+  const merged: Transaction[] = prev?.transactions?.edges ? prev.transactions.edges.slice(0) : [];
+  for (const i of newData) {
+    if (!merged.find((el: Transaction) => el.node.id === i.node.id)) {
+      merged.push(i);
+    }
+  }
+
+  return Object.assign({}, prev, {
+    transactions: {
+      edges: merged,
+      pageInfo: fetchMoreResult.transactions.pageInfo,
+    },
+  });
+};
