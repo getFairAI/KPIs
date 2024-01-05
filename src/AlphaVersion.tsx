@@ -61,9 +61,6 @@ import { Box, Grid } from '@mui/material';
 
 function Alpha() {
   const { state: configState } = useContext(ConfigurationContext); 
-  const [startDate, setStartDate] = useState<Date>(new Date('2023-04-25'));
-  const [endDate, setEndDate] = useState<Date>(new Date('2023-09-17'));
-  const [walletsContent, setWalletsContent] = useState<string>('');
   const [isLoading, setLoading] = useState(true); 
   const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
   const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
@@ -178,7 +175,7 @@ function Alpha() {
   
       // U per week
       const allPayments = [...inferencePaymentTransactionsFiltered, ...modelCreationTransactionsFiltered, ...scriptPaymentTransactionsFiltered, ...activeOperatorsTransactionsFiltered];
-      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U per ${labelTime}`,configState.view,walletsContent));
+      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U per ${labelTime}`,configState.view,configState.walletsContent));
 
       // failed payments per week
 
@@ -191,7 +188,8 @@ function Alpha() {
       }
     };
 
-    if (startDate && endDate){
+    if (configState.startDate && configState.endDate){
+      console.log(configState);
       fetchData();
     }
         
