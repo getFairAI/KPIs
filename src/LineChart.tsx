@@ -64,6 +64,7 @@ function LineChart ({chartInfo,series}: Props) {
       size: 1
     },
     xaxis: {
+      type: 'datetime',
       categories: chartInfo.categories,
       title: {
         text: chartInfo.categoriesTitle

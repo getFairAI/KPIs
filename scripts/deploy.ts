@@ -28,15 +28,13 @@ const main = async () => {
   // the commented out line below to create a new Bundlr object.
   // const bundlr = new Bundlr("http://node1.bundlr.network", "arweave", jwk);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const bundlr = new Bundlr('https://node1.bundlr.network', 'arweave', jwk );
+  const bundlr = new Bundlr('https://up.arweave.net', 'arweave', jwk );
   
   // Get loaded balance in atomic units
   const atomicBalance = await bundlr.getLoadedBalance();
-  console.log(`node balance (atomic units) = ${atomicBalance}`);
   
   // Convert balance to an easier to read format
   const convertedBalance = bundlr.utils.unitConverter(atomicBalance);
-  console.log(`node balance (converted) = ${convertedBalance}`);
   
   // Print your wallet address
   console.log(`wallet address = ${bundlr.address}`);

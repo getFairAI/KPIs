@@ -17,6 +17,7 @@
  */
 
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 type viewOption = 'daily' | 'weekly' | 'monthly';
 
@@ -37,18 +38,46 @@ const initialState: ConfigurationValues = {
   view: 'weekly'
 };
 
+const initialStateAlpha: ConfigurationValues = {
+  startDate: new Date('2023-04-25'),
+  endDate: new Date('2023-09-17'),
+  isExtraEnabled: false,
+  walletsContent: '',
+  view: 'weekly'
+};
+
+
 export const ConfigurationContext = createContext<ConfigurationContext>({
   state: initialState,
   setState: () => null
 });
 
 export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
+  const { pathname } = useLocation();
   const [ currentConfig, setCurrentConfig ] = useState<ConfigurationValues>(initialState);
   
   const value = useMemo(() => ({ state: currentConfig, setState: setCurrentConfig }), [
     currentConfig,
     setCurrentConfig
   ]);
+
+  useEffect(() => {
+    if (pathname.includes('alpha')) {
+      setCurrentConfig((prevState) => ({
+        ...prevState,
+        startDate: new Date('2023-04-25'),
+        endDate: new Date('2023-09-17'),
+      }));
+ 
+    } else {
+      setCurrentConfig((prevState) => ({
+        ...prevState,
+        startDate: new Date('2023-09-17'),
+        endDate: new Date(),
+      }));
+    }
+  }, [ pathname ]);
+
 
   useEffect(() => console.log(currentConfig), [ currentConfig ]);
 

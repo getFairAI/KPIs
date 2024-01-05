@@ -18,7 +18,7 @@
 
 import { Box, Container, Drawer } from '@mui/material';
 import { ReactElement, useCallback, useLayoutEffect, useRef, useState } from 'react';
-import Navbar from './navbar';
+import Navbar from './NavBar';
 import useWindowDimensions from '@/hooks/useWindowDimensions';
 import useScroll from '@/hooks/useScroll';
 import SidePanel from './sidePanel';

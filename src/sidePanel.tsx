@@ -36,7 +36,7 @@ const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
   const [ walletsContent, setWalletsContent ] = useState<string>('');
 
   useEffect(() => {
-    if (pathname.includes('beta')) {
+    if (pathname.includes('alpha')) {
       setStartDateFilter(new Date('2023-04-25'));
       setEndDateFilter(new Date('2023-09-17'));
     } else {

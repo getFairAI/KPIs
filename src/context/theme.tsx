@@ -16,7 +16,8 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { ThemeProvider, createTheme, darken, useMediaQuery } from '@mui/material';
+import { darken, useMediaQuery } from '@mui/material';
+import { ThemeProvider, createTheme } from "@mui/material/styles"
 import { ReactNode, createContext, useEffect, useMemo, useState } from 'react';
 
 declare module '@mui/material/styles' {

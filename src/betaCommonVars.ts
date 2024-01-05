@@ -168,5 +168,33 @@ export const tagsToExclude = [
   },
   ];
 
+  export const uniqueWalletsAlpha = [
+    "rwSMutooUrtLmfdvP3q07g4zXjr7Y1ArKT-xV1gTGWA",
+    "vLRHFqCw1uHu75xqB4fCDW-QxpkpJxBtFD9g4QYUbfw",
+    "udOL7D7qkfFyfnkxfRQA0r1Eoz1-XRwUOSLfiCFee38",
+    "mIoV8gDHYakBa9WNgElEm3JbXHG86SoK-HCvc80Lpz4",
+    "h7wP8NjoGkJTdLXC6kwS6fLTNgfeYbZr9YoED5NFQX0",
+    "lFfVQOlfOd1cQYUKpmfMIQrma1y4E4tVcfmUfHczX-I",
+    "oNx0up9sRWDD_yl2LnqfctwFJK7o_zmsacPoXTFDh5k",
+    "HJT3UmHQTfbvdb5THR-qUpwgZGcB5RXur3wtw6zyA9Q",
+    "9qSYjiKtPmhx2HWBDLRPgJy4UjTVlvwuD0Hq4zkerxM",
+    "tOoI8YFZPnkatHux69mw3yO3XLcFye8DyGSByrCw2m8",
+    "3nnoNueymOSAondNDPFi9m53eKCYb4p7ny3VhkMX-XI",
+    "vh-NTHVvlKZqRxc8LyyTNok65yQ55a_PJ1zWLb9G2JI",
+    "A_nS8Da8uIK6RlC2UkZik2xQ83Lt1jMGin-SCQvoMI4",
+    "89tR0-C1m3_sCWCoVCChg4gFYKdiH5_ZDyZpdJ2DDRw",
+    "WL6tHXZFUtcjLf3uwLIG0GeIzD1pMpx74iyPB7-O5Eg",
+    "O6_T-gQG_hfz8FmWDamRqQWYnD7ybZx6Td1Xt6gV1Sw",
+    "hv4NIWngChaX8TkmyTdRS9CW1gquds3u9NlVoU9W9KM",
+    "0X39b8ImNcLR5Duwc0ppErqbU165vxYR1TP4FZqpLGc",
+    "XOXxc-49xz_ElNmMed58mmEn-rn-yFEDYhEsDsPKAwg",
+    "5rI0akgMdhlv5R19A5yY8WM6_AGGAAVOY1-SAU9IV7E",
+    "qqg_q69nWNQwEXUajdX-Zy3du9HMz-p0Wp-8tFQGDtU",
+    "2gJ8_yGjU2OK7uhRaRUrDp7-Z0InMPUPh_yAdigepXc",
+    "7nrFkEAaGVMhQ2tP_mA4-5uXXVKOkKmpcs-Qa1LJHEY",
+    "QAUKiuTTpVQ0Ozk4bUG69GdAY1mQP2xpGChQr68clWY",
+  ];
+  
+  
 
   
