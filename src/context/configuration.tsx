@@ -21,6 +21,8 @@ import { useLocation } from "react-router-dom";
 
 type viewOption = 'daily' | 'weekly' | 'monthly';
 
+const changeVersionsDate = '2023-09-17';
+
 interface ConfigurationValues {
   startDate: Date, endDate: Date, isExtraEnabled: boolean, walletsContent: string, view: viewOption
 }
@@ -31,21 +33,12 @@ interface ConfigurationContext {
 }
 
 const initialState: ConfigurationValues = {
-  startDate: new Date('2023-09-17'),
+  startDate: new Date(changeVersionsDate),
   endDate: new Date(),
   isExtraEnabled: false,
   walletsContent: '',
   view: 'weekly'
 };
-
-const initialStateAlpha: ConfigurationValues = {
-  startDate: new Date('2023-04-25'),
-  endDate: new Date('2023-09-17'),
-  isExtraEnabled: false,
-  walletsContent: '',
-  view: 'weekly'
-};
-
 
 export const ConfigurationContext = createContext<ConfigurationContext>({
   state: initialState,
@@ -66,13 +59,13 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
       setCurrentConfig((prevState) => ({
         ...prevState,
         startDate: new Date('2023-04-25'),
-        endDate: new Date('2023-09-17'),
+        endDate: new Date(changeVersionsDate),
       }));
  
     } else {
       setCurrentConfig((prevState) => ({
         ...prevState,
-        startDate: new Date('2023-09-17'),
+        startDate: new Date(changeVersionsDate),
         endDate: new Date(),
       }));
     }

@@ -20,7 +20,6 @@ import './styles.css';
 import { useState, useEffect, useContext } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
-import SidePanel from './sidePanel';
 import { TAG_NAMES, ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from './constants';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMondayDateAndUnixTimeList,

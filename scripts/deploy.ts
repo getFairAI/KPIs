@@ -30,12 +30,6 @@ const main = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bundlr = new Bundlr('https://up.arweave.net', 'arweave', jwk );
   
-  // Get loaded balance in atomic units
-  const atomicBalance = await bundlr.getLoadedBalance();
-  
-  // Convert balance to an easier to read format
-  const convertedBalance = bundlr.utils.unitConverter(atomicBalance);
-  
   // Print your wallet address
   console.log(`wallet address = ${bundlr.address}`);
   const dist = './dist/';

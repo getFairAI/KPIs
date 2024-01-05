@@ -424,7 +424,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     ];
   
     const chartInfo = {
-      categories: Array.from(weekUnixTransactionsMap.keys()).map((unixTime) => unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) || ''),
+      categories: Array.from(weekUnixTransactionsMap.keys()).map((unixTime) => unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) ?? ''),
       categoriesTitle: categoriesTitle,
       yTitle: yTitle,
       chartTitle: chartTitle,
@@ -456,7 +456,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
   
     const chartInfo = {
       categories: Array.from(mapNumberTxsPerWeek.keys()).map((unixTime) =>
-        unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) || ''
+        unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) ?? ''
       ),
       categoriesTitle: categoriesTitle,
       yTitle: yTitle,

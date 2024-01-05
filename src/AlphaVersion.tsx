@@ -20,7 +20,6 @@ import './styles.css';
 import { useState, useEffect, useContext } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
-import SidePanel from './sidePanel';
 import { TAG_NAMES, ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from './constants';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMondayDateAndUnixTimeList,
@@ -55,7 +54,6 @@ import {
   tagsKpiSciptPayment,
   tagsKpiModelCreationPayment,
 } from './alphaCommonVars'
-import { ViewOptions } from './Enum';
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
 import { ConfigurationContext } from './context/configuration';
 import { Box, Grid } from '@mui/material';
@@ -63,11 +61,9 @@ import { Box, Grid } from '@mui/material';
 
 function Alpha() {
   const { state: configState } = useContext(ConfigurationContext); 
-  const [isExtraChartsEnabled, setExtraChartsEnabled] = useState(false);
   const [startDate, setStartDate] = useState<Date>(new Date('2023-04-25'));
   const [endDate, setEndDate] = useState<Date>(new Date('2023-09-17'));
   const [walletsContent, setWalletsContent] = useState<string>('');
-  const [viewOption, setViewOption] = useState(ViewOptions.WEEKLY);
   const [isLoading, setLoading] = useState(true); 
   const [chartKpiNewUsersData, setChartKpiNewUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
   const [chartKpiActiveUsersData, setChartKpiActiveUsersData] = useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
@@ -201,14 +197,6 @@ function Alpha() {
         
 
   }, [configState]);
-
-  const handleDateChange = (start: Date, end: Date, isExtraEnabled: boolean, walletsContentText: string, view: string) => {
-    setExtraChartsEnabled(isExtraEnabled);
-    setStartDate(start);
-    setEndDate(end);
-    setWalletsContent(walletsContentText);
-    setViewOption(view);
-  };
 
   return (
     <div className="App">
