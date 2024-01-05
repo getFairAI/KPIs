@@ -20,7 +20,6 @@ import './styles.css';
 import { useState, useEffect, useContext } from 'react';
 import LineChart from './LineChart';
 import ColumnChart from './ColumnChart';
-import SidePanel from './sidePanel';
 import { TAG_NAMES, ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from './constants';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getMondayDateAndUnixTimeList,
@@ -54,6 +53,7 @@ import {
   tagsKpiInferencePayment,
   tagsKpiSciptPayment,
   tagsKpiModelCreationPayment,
+  uniqueWalletsAlpha,
 } from './betaCommonVars';
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
 import { ConfigurationContext } from './context/configuration';
@@ -89,7 +89,7 @@ function Beta() {
         // requests
         const requestsInferenceTransactionsRaw = await fetchAllTransactions(tagsKpiUsers);
         const requestsInferenceTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(requestsInferenceTransactionsRaw,[TAG_NAMES.appVersion],fairWallets,tagsToExclude)
-        const uniqueOwnersScriptPayment = createOwnerUnixTimeMap(requestsInferenceTransactionsFiltered);
+        const uniqueOwnersScriptPayment = createOwnerUnixTimeMap(requestsInferenceTransactionsFiltered,uniqueWalletsAlpha);
         
         const mapTxByWeekActiveUsers = createWeekTransactionsMap(requestsInferenceTransactionsFiltered,mondays,configState.view);
         
@@ -279,16 +279,6 @@ function Beta() {
               <LineChart
                 chartInfo={chartKpiRetentionWeekAcc.chartInfo}
                 series={chartKpiRetentionWeekAcc.series}
-              />
-            </Box>
-          )}
-        </Grid>
-        <Grid item md={12} lg={6}>
-          {!isLoading && chartFailedPaymentsModelsPerWeek && (
-            <Box display={'flex'} justifyContent={'center'}>
-              <ColumnChart
-                chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
-                series={chartFailedPaymentsModelsPerWeek.series}
               />
             </Box>
           )}

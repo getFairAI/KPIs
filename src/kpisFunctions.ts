@@ -81,7 +81,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
    
   };
 
-  export const createOwnerUnixTimeMap = (transactions: Transaction[]): Map<string, number> => {
+  export const createOwnerUnixTimeMap = (transactions: Transaction[], addressesFromDifferentVersions: string [] = []): Map<string, number> => {
     const ownerUnixTimeMap: Map<string, number> = new Map();
   
     transactions.forEach((transaction) => {
@@ -91,7 +91,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
           const timestamp = block.timestamp;
           const address = owner.address;
       
-          if (!isNaN(timestamp) && !ownerUnixTimeMap.has(address)) {
+          if (!isNaN(timestamp) && !ownerUnixTimeMap.has(address) && !addressesFromDifferentVersions.includes(address)) {
             ownerUnixTimeMap.set(address, timestamp);
           }
         }
@@ -99,6 +99,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
             console.log(transaction);
         }
       });
+
       
     return ownerUnixTimeMap;
   };
@@ -116,7 +117,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     }];
 
     const chartInfo = {
-        categories: dates.map((date) => date.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })), // Convert dates to ISO string format
+        categories: dates.map((date) => date.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })), // Convert dates to ISO string format
         categoriesTitle: categoriesTitle,
         yTitle: yTitle,
         chartTitle: chartTitle,
@@ -326,7 +327,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
   
     const series: { name: string; data: number[] }[] = [];
     const chartInfo = {
-        categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
+        categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
         chartTitle: chartTitle,
     }
   
@@ -423,7 +424,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     ];
   
     const chartInfo = {
-      categories: Array.from(weekUnixTransactionsMap.keys()).map((unixTime) => unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short' }) || ''),
+      categories: Array.from(weekUnixTransactionsMap.keys()).map((unixTime) => unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) ?? ''),
       categoriesTitle: categoriesTitle,
       yTitle: yTitle,
       chartTitle: chartTitle,
@@ -455,7 +456,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
   
     const chartInfo = {
       categories: Array.from(mapNumberTxsPerWeek.keys()).map((unixTime) =>
-        unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short' }) || ''
+        unixToDateMap.get(unixTime)?.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) ?? ''
       ),
       categoriesTitle: categoriesTitle,
       yTitle: yTitle,
@@ -488,7 +489,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
   
     const series: { name: string; data: number[] }[] = [];
     const chartInfo = {
-        categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
+        categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
         chartTitle: chartTitle,
     }
     for (const type of transactionTypes) {
@@ -569,7 +570,7 @@ export const modelsPerWeekPrepareData = (
 ): any => {
   const series: { name: string; data: number[] }[] = [];
   const chartInfo = {
-      categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
+      categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
       chartTitle: chartTitle,
   }
   
@@ -620,7 +621,7 @@ export const AmountUTokenPaymentsPrepareData = (
 ): any => {
   const series: { name: string; data: number[] }[] = [];
   const chartInfo = {
-      categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short' })),
+      categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
       chartTitle: chartTitle,
   }
 

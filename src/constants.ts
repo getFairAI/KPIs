@@ -165,6 +165,8 @@ export const USER_TWITTER = '9Z8PtQwYxuQ3cDZgSjJ8HvSntVTrJo6XPH5e8-6-ptM';
 
 export const USER_DEPLOY_TEST = 'Ek7mFHbmmEwUHsVoPPU66Ek8bLoJn8EiIl16_eJ1FHk';
 
+export const USER_DEMO_MG = '8hsz8u5sQrQmDI8rr5U8dHgE9Lta_pfYjXwf_2hJtlI';
+
 export const CREATOR = 'Ufhjmk8m8ztCp0_JQzvYyuaVXZn3Hz2mIuYgjwfGWX0';
 
 export const SCRIPT = 'wGT06tKaEGXuF6QR2dXqqmO7B_TF41rELP4D1IX4-IA';
