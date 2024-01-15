@@ -57,7 +57,7 @@ import {
 } from './betaCommonVars';
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
 import { ConfigurationContext } from './context/configuration';
-import { Box, Grid } from '@mui/material';
+import { Backdrop, Box, Grid, Typography } from '@mui/material';
 
 function Beta() {
   const { state: configState } = useContext(ConfigurationContext); 
@@ -201,16 +201,20 @@ function Beta() {
         <h1>KPIs - Beta</h1>
       </div>
       {isLoading && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "80vh",
+        <Backdrop
+          sx={{
+            position: 'absolute',
+            backdropFilter: 'blur(50px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignContent: 'center',
+            justifyContent: 'center',
           }}
+          open={true}
         >
           <CircularProgress size={100} />
-        </div>
+          <Typography variant='h2' fontWeight={500} ml={'32px'} mr={'32px'}> The Website is loading and processing multiple transactions. This operation usually takes around 3 minutes. Please be patient...</Typography>
+        </Backdrop>
       )}
        <Grid container spacing={2}>
         <Grid item md={12} lg={6}>
