@@ -21,7 +21,7 @@ import { useLocation } from "react-router-dom";
 
 type viewOption = 'daily' | 'weekly' | 'monthly';
 
-const changeVersionsDate = '2023-09-17';
+const changeVersionsDate = '2023-09-01';
 
 interface ConfigurationValues {
   startDate: Date, endDate: Date, isExtraEnabled: boolean, walletsContent: string, view: viewOption
@@ -37,7 +37,7 @@ const initialState: ConfigurationValues = {
   endDate: new Date(),
   isExtraEnabled: false,
   walletsContent: '',
-  view: 'weekly'
+  view: 'monthly'
 };
 
 export const ConfigurationContext = createContext<ConfigurationContext>({
