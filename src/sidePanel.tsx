@@ -29,18 +29,19 @@ type viewOption = 'daily' | 'weekly' | 'monthly';
 const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
   const { pathname } = useLocation();
   const { setState: setConfigState } = useContext(ConfigurationContext);
-  const [ viewValue, setViewValue ] = useState<viewOption>('weekly');
+  const [ viewValue, setViewValue ] = useState<viewOption>('monthly');
   const [ startDateFilter, setStartDateFilter ] = useState<Date | null>(new Date());
   const [ endDateFilter, setEndDateFilter ] = useState<Date | null>(new Date());
   const [ isExtraEnabled, setIsExtraEnabled ] = useState<boolean>(false);
   const [ walletsContent, setWalletsContent ] = useState<string>('');
+  const changeVersionsDate = '2023-09-01';
 
   useEffect(() => {
     if (pathname.includes('alpha')) {
       setStartDateFilter(new Date('2023-04-25'));
-      setEndDateFilter(new Date('2023-09-17'));
+      setEndDateFilter(new Date(changeVersionsDate));
     } else {
-      setStartDateFilter(new Date('2023-09-17'));
+      setStartDateFilter(new Date(changeVersionsDate));
       setEndDateFilter(new Date());
     }
   }, [ pathname ]);
