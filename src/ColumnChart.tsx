@@ -71,6 +71,10 @@ function ColumnChart ({chartInfo,series}: Props) {
         text: chartInfo.chartTitle,
         align: 'center'
       },
+    subtitle: {
+        text: chartInfo.subTitle,
+        align: 'center'
+    },
     legend: {
       position: 'right',
       offsetY: 40

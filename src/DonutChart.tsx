@@ -33,6 +33,10 @@ function DonutChart ({donutInfo,series}: Props) {
     title: {
         text: donutInfo.donutTitle
     },
+    subtitle: {
+      text: donutInfo.subTitle,
+      align: 'center'
+    },
     labels: donutInfo.labels,
     responsive: [{
       breakpoint: 480,

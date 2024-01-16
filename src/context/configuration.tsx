@@ -58,6 +58,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
     if (pathname.includes('alpha')) {
       setCurrentConfig((prevState) => ({
         ...prevState,
+        isExtraEnabled: false,
         startDate: new Date('2023-04-25'),
         endDate: new Date(changeVersionsDate),
       }));
@@ -65,6 +66,7 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
     } else {
       setCurrentConfig((prevState) => ({
         ...prevState,
+        isExtraEnabled: false,
         startDate: new Date(changeVersionsDate),
         endDate: new Date(),
       }));

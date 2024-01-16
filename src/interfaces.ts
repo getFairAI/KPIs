@@ -20,6 +20,7 @@ export interface ChartInfo {
     categories: string[];
     categoriesTitle: string;
     yTitle: string;
+    subTitle: string;
     chartTitle: string;
     yMin: number;
     yMax: number;
@@ -28,11 +29,13 @@ export interface ChartInfo {
   export interface ColumnChartInfo {
     categories: string[];
     chartTitle: string;
+    subTitle: string;
   }  
 
 export interface DonutInfo {
     labels: string[];
     donutTitle: string;
+    subTitle: string;
   }
   
  export interface DateInfo {
@@ -84,6 +87,7 @@ export interface Block {
   export interface ChartInfoSimple {
     categories: string[];
     chartTitle: string;
+    subTitle: string;
   }
 
   export interface CustomLinkProperties {

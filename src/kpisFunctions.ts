@@ -104,7 +104,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     return ownerUnixTimeMap;
   };
  
-  export const generateChartInfo = (categoriesTitle: string, yTitle: string, chartTitle: string, seriesTitle: string,  dates: DateInfo[], ownerUnixTimeMap: Map<string, number>, view: string): any => {
+  export const generateChartInfo = (categoriesTitle: string, yTitle: string, chartTitle: string,  subTitle: string, seriesTitle: string,  dates: DateInfo[], ownerUnixTimeMap: Map<string, number>, view: string): any => {
     
     const series = [{
       name: seriesTitle,
@@ -121,6 +121,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
         categoriesTitle: categoriesTitle,
         yTitle: yTitle,
         chartTitle: chartTitle,
+        subTitle: subTitle,
         yMin: Math.min(...series[0].data),
         yMax: Math.max(...series[0].data),
       };
@@ -316,6 +317,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     operatorRegistrationTx: Transaction[],
     dateInfo: DateInfo[],
     chartTitle: string,
+    subTitle: string,
     view: string,
   ): any => {
     const transactionTypes = [
@@ -329,6 +331,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     const chartInfo = {
         categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
         chartTitle: chartTitle,
+        subTitle: subTitle,
     }
   
     for (const type of transactionTypes) {
@@ -409,6 +412,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     categoriesTitle: string,
     yTitle: string,
     chartTitle: string,
+    subTitle: string,
     seriesTitle: string,
     weekUnixTransactionsMap: Map<number, Transaction[]>,
     mapNumberTxsPerWeek: Map<number, number>,
@@ -428,6 +432,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
       categoriesTitle: categoriesTitle,
       yTitle: yTitle,
       chartTitle: chartTitle,
+      subTitle: subTitle,
       yMin: Math.min(...series[0].data),
       yMax: Math.max(...series[0].data),
     };
@@ -443,6 +448,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     categoriesTitle: string,
     yTitle: string,
     chartTitle: string,
+    subTitle: string,
     seriesTitle: string,
     mapNumberTxsPerWeek: Map<number, number>,
     unixToDateMap: Map<number, Date>
@@ -461,6 +467,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
       categoriesTitle: categoriesTitle,
       yTitle: yTitle,
       chartTitle: chartTitle,
+      subTitle: subTitle,
       yMin: Math.min(...series[0].data),
       yMax: Math.max(...series[0].data),
     };
@@ -478,6 +485,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     operatorRegistrationTx: Transaction[],
     dateInfo: DateInfo[],
     chartTitle: string,
+    subTitle: string,
     view: string
   ): any => {
     const transactionTypes = [
@@ -491,6 +499,7 @@ export const getMondayDateAndUnixTimeList = (startDate: Date, endDate: Date, vie
     const chartInfo = {
         categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
         chartTitle: chartTitle,
+        subTitle: subTitle,
     }
     for (const type of transactionTypes) {
       const data: number[] = [];
@@ -565,6 +574,7 @@ export const modelsPerWeekPrepareData = (
   inferencePaymentTx: Transaction[],
   dateInfo: DateInfo[],
   chartTitle: string,
+  subTitle: string,
   view: string,
   isToCalculateFailedPayments: boolean = false,
 ): any => {
@@ -572,6 +582,7 @@ export const modelsPerWeekPrepareData = (
   const chartInfo = {
       categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
       chartTitle: chartTitle,
+      subTitle: subTitle,
   }
   
   const modelTxNameMap = createGenericTransactionMap(modelCreationTx,TAG_NAMES.modelName);
@@ -616,6 +627,7 @@ export const AmountUTokenPaymentsPrepareData = (
   paymentsTx: Transaction[],
   dateInfo: DateInfo[],
   chartTitle: string,
+  subTitle: string,
   view: string,
   extraWalletsToCheck: string = '',
 ): any => {
@@ -623,6 +635,7 @@ export const AmountUTokenPaymentsPrepareData = (
   const chartInfo = {
       categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
       chartTitle: chartTitle,
+      subTitle: subTitle,
   }
 
   const fairWalletsSingleText = targetUWallets.join(' ');
@@ -662,6 +675,7 @@ export const calculateRetentionRateWithChartFormat = (
   existingUsersSeries: Array<{ name: string; data: number[]; categoriesTitle: string }>,
   categories: string[],
   chartTitle: string,
+  subTitle: string,
   isToCalculateAll: boolean = false
 ) => {
   if (newUsersData.length !== existingUsersSeries[0].data.length) {
@@ -695,6 +709,7 @@ export const calculateRetentionRateWithChartFormat = (
     categoriesTitle,
     yTitle,
     chartTitle,
+    subTitle,
     yMin: 0,
     yMax: 100,
   };

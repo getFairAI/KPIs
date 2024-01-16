@@ -38,5 +38,21 @@ export const fairWallets = [ MARKETPLACE, VAULT_ADDRESS, OPERATOR_ONE, OPERATOR_
 
 export const targetUWallets = [ MARKETPLACE, VAULT_ADDRESS, OPERATOR_ONE, OPERATOR_TWO, MAIN_OPERATOR, CURATOR, USER_ONE, SCRIPT];
 
+export const activeUsersDescription = "Active users made at least 5 transactions in the specified time.";
 
+export const paymentsDescription = "One payment from this chart can mean multiple requests. Ex: 1 request can have N images.";
+
+export const usersPerXDescription = "Users who made at least 1 transaction in the specified time."
+
+export const failedPaymentDescription = "Requests for which the respective payments were not found.";
+
+export const newScriptsDescription = "One AI model can have multiple scripts associated.";
+
+export const retentionRateDescription = "The percentage of users who made at least 1 transaction in 2 consecutive periods.";
+
+export const newModelsDescription = "New models uploaded to the marketplace.";
+
+export const activeOperatorsDescription = "Operators can have multiple script registrations (one per script).";
+
+export const subTitle = "This website shows all transaction made on the Fair Protocol marketplace, excluding all test and personal wallets from the team that built it.";
   
