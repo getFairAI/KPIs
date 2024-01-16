@@ -38,7 +38,7 @@ import { getMondayDateAndUnixTimeList,
   calculateRetentionRateWithChartFormat,
   createWeekNumberOfUsersAccMap} from './kpisFunctions'
 import { fetchAllTransactions } from './queryAll';
-import { filterTransactionsIncludeTagNamesAndExcludeTags, getLabelByViewOption } from './utils/util'
+import { filterTransactionsIncludeTagNamesAndExcludeTags, getLabelByViewOption, getUPriceInUSD } from './utils/util'
 import { 
   fairWallets, 
   usersPerXDescription, 
@@ -145,7 +145,9 @@ function Alpha() {
   
       // U per week
       const allPayments = [...inferencePaymentTransactionsFiltered, ...modelCreationTransactionsFiltered, ...scriptPaymentTransactionsFiltered, ...activeOperatorsTransactionsFiltered];
-      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U Per ${labelTime}`, '' , configState.view,configState.walletsContent));
+      const uPrice = await getUPriceInUSD();
+      const revenueSubtitle = `Current $U Price: ${uPrice.toFixed(2)} USD (Source: https://app.redstone.finance/#/app/token/U`;
+      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U Per ${labelTime}`, revenueSubtitle , configState.view,configState.walletsContent, uPrice));
 
       if(configState.isExtraEnabled) {
       
@@ -203,6 +205,18 @@ function Alpha() {
 
   }, [configState]);
 
+  /**
+   * This useEffect is used to add a link to the subtitle of the u payments chart
+   * It will run on every render, but it will only change the subtitle once
+   */
+  useEffect(() => {
+    const uChartSubtitle = document.querySelectorAll('.apexcharts-subtitle-text')[2];
+    if (uChartSubtitle && uChartSubtitle.innerHTML.includes('(Source:')) {
+      const [text, link] = uChartSubtitle.innerHTML.split('(Source:');
+      uChartSubtitle.innerHTML = `${text} <a href=${link} target="_blank" style="TEXT-DECORATION: underline">(source)</a>`;
+    }
+  });
+
   return (
     <div className="App">
       <div className="title">
@@ -223,7 +237,7 @@ function Alpha() {
           open={true}
         >
           <CircularProgress size={100} />
-          <Typography variant='h2' fontWeight={500} ml={'32px'} mr={'32px'}> The Website is loading and processing multiple transactions. This operation usually takes around 3 minutes. Please be patient...</Typography>
+          <Typography variant='h2' fontWeight={500} ml={'32px'} mr={'32px'} textAlign={'center'} width={'60%'}> The Website is loading and processing multiple transactions. This operation usually takes around 3 minutes. Please be patient...</Typography>
         </Backdrop>
       )}
        <Grid container spacing={2}>

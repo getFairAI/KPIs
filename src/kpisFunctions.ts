@@ -630,12 +630,14 @@ export const AmountUTokenPaymentsPrepareData = (
   subTitle: string,
   view: string,
   extraWalletsToCheck: string = '',
+  uPrice: number,
 ): any => {
   const series: { name: string; data: number[] }[] = [];
   const chartInfo = {
       categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
       chartTitle: chartTitle,
       subTitle: subTitle,
+      formatter: (val: string) => `~ ${(Number(val) * uPrice).toFixed(2)}$`,
   }
 
   const fairWalletsSingleText = targetUWallets.join(' ');

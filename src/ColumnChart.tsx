@@ -55,6 +55,7 @@ function ColumnChart ({chartInfo,series}: Props) {
         dataLabels: {
           total: {
             enabled: true,
+            ...(!!chartInfo.formatter && { formatter: chartInfo.formatter }),
             style: {
               fontSize: '13px',
               fontWeight: 900
