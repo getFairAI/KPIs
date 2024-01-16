@@ -39,7 +39,17 @@ import { getMondayDateAndUnixTimeList,
   createWeekNumberOfUsersAccMap} from './kpisFunctions'
 import { fetchAllTransactions } from './queryAll';
 import { filterTransactionsIncludeTagNamesAndExcludeTags, getLabelByViewOption } from './utils/util'
-import { fairWallets } from './commonVars'
+import { 
+  fairWallets, 
+  usersPerXDescription, 
+  activeUsersDescription, 
+  failedPaymentDescription, 
+  newScriptsDescription, 
+  retentionRateDescription, 
+  newModelsDescription, 
+  activeOperatorsDescription,
+  paymentsDescription,
+  subTitle } from './commonVars'
 import {
   tagsKpiUsers, 
   tagsKpiUploadModels, 
@@ -56,7 +66,7 @@ import {
 } from './alphaCommonVars'
 import { ChartData, ChartInfo, ChartInfoSimple } from './interfaces';
 import { ConfigurationContext } from './context/configuration';
-import { Box, Grid } from '@mui/material';
+import { Backdrop, Box, Grid, Typography } from '@mui/material';
 
 
 function Alpha() {
@@ -96,15 +106,15 @@ function Alpha() {
         const mapWeekCountXActiveUsers = mapNumberTxsPerWeek(mapTxByWeekActiveUsers,ACTIVE_USERS_PER_WEEK);
 
         
-        const kpiActiveUsersPerWeek = generateChartInfoCountsXPerWeek(labelTime, 'Active users', `Active users ${labelTime}`, `Active users in this ${labelTime}`,mapTxByWeekActiveUsers,mapWeekCountXActiveUsers,mondaysMap);
-        const kpiNewUsersPerWeek = generateChartInfo(labelTime, 'New users', `New users per ${labelTime}`, `Users in this ${labelTime}`, mondays, uniqueOwnersScriptPayment,configState.view);
+        const kpiActiveUsersPerWeek = generateChartInfoCountsXPerWeek(labelTime, 'Active users', `Active Users Per ${labelTime}`, activeUsersDescription , `Active users in this ${labelTime}`,mapTxByWeekActiveUsers,mapWeekCountXActiveUsers,mondaysMap);
+        const kpiNewUsersPerWeek = generateChartInfo(labelTime, 'New users', `New Users Per ${labelTime}`, 'Users who made their first transaction in this period.' ,`Users in this ${labelTime}`, mondays, uniqueOwnersScriptPayment,configState.view);
         setChartKpiNewUsersData(kpiNewUsersPerWeek);
 
         setChartKpiActiveUsersData(kpiActiveUsersPerWeek);
 
         // Users per week (at least one prompt)
         const mapWeekCountXUsersPerWeek = mapNumberTxsPerWeek(mapTxByWeekActiveUsers,USERS_PER_WEEK);
-        const kpiUsersPerWeek = generateChartInfoCountsXPerWeek(labelTime, 'Users', `Users per ${labelTime}`, `Users in this ${labelTime}`,mapTxByWeekActiveUsers,mapWeekCountXUsersPerWeek,mondaysMap);
+        const kpiUsersPerWeek = generateChartInfoCountsXPerWeek(labelTime, 'Users', `Users Per ${labelTime}`, usersPerXDescription , `Users in this ${labelTime}`,mapTxByWeekActiveUsers,mapWeekCountXUsersPerWeek,mondaysMap);
         setChartKpiUsersData(kpiUsersPerWeek);
 
         // Payments
@@ -126,26 +136,35 @@ function Alpha() {
 
         // retention rate
         const mapNewUsersAccPerWeek = createWeekNumberOfUsersAccMap(mapTxByWeekActiveUsers);
-        setChartKpiRetentionWeekAcc(calculateRetentionRateWithChartFormat(mapNewUsersAccPerWeek,kpiUsersPerWeek.series,kpiUsersPerWeek.chartInfo.categories, `Retention rate ${labelTime} by ${labelTime} - Acc`,false));
+        setChartKpiRetentionWeekAcc(calculateRetentionRateWithChartFormat(mapNewUsersAccPerWeek,kpiUsersPerWeek.series,kpiUsersPerWeek.chartInfo.categories, `Retention Rate ${labelTime} By ${labelTime} - Acc`, retentionRateDescription , false));
+      
+        //models per week
+      const uploadModelsTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.alphaAppVersion],[],[...tagsToExclude,...tagsToExcludeForModels]);
+      const uploadScriptTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.alphaAppVersion],[],tagsToExclude);
+      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Models Used Per ${labelTime}`, paymentsDescription , configState.view, false));
+  
+      // U per week
+      const allPayments = [...inferencePaymentTransactionsFiltered, ...modelCreationTransactionsFiltered, ...scriptPaymentTransactionsFiltered, ...activeOperatorsTransactionsFiltered];
+      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U Per ${labelTime}`, '' , configState.view,configState.walletsContent));
 
       if(configState.isExtraEnabled) {
       
         // KPI Payments
 
-        setChartKpiPaymentsData(paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, `Payments per ${labelTime}`, configState.view));
+        setChartKpiPaymentsData(paymentsPrepareData(inferencePaymentTransactionsFiltered, modelCreationTransactionsFiltered, scriptPaymentTransactionsFiltered,activeOperatorsTransactionsFiltered,mondays, `Payments Per ${labelTime}`, paymentsDescription , configState.view));
 
 
         // KPI NEW MODELS
         const uploadModelsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.alphaAppVersion],fairWallets,tagsToExclude);
         const mapTxByWeekNewModels = createWeekNumberOfTransactionsMap(uploadModelsTransactionsFiltered,mondays, configState.view);
-        setChartKpiNewModelsData(generateChartInfoTxsPerWeek(labelTime, `new models per${labelTime}`, `New models per ${labelTime}`, `New models this ${labelTime}`,mapTxByWeekNewModels,mondaysMap));
+        setChartKpiNewModelsData(generateChartInfoTxsPerWeek(labelTime, `new models per ${labelTime}`, `New Models Per ${labelTime}`, newModelsDescription , `New models this ${labelTime}`,mapTxByWeekNewModels,mondaysMap));
 
 
         // KPI NEW SCRIPTS 
         
         const uploadScriptsTransactionsFiltered = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.alphaAppVersion],fairWallets,tagsToExclude);
         const mapTxByWeekNewScripts = createWeekNumberOfTransactionsMap(uploadScriptsTransactionsFiltered,mondays, configState.view);
-        setChartKpiNewScriptsData(generateChartInfoTxsPerWeek(labelTime, `new scripts per ${labelTime}`, `New scripts per ${labelTime}`, `New scripts this ${labelTime}`,mapTxByWeekNewScripts,mondaysMap));
+        setChartKpiNewScriptsData(generateChartInfoTxsPerWeek(labelTime, `new scripts per ${labelTime}`, `New Scripts Per ${labelTime}`, newScriptsDescription , `New scripts this ${labelTime}`,mapTxByWeekNewScripts,mondaysMap));
 
 
         // KPI ACTIVE OPERATORS
@@ -163,23 +182,11 @@ function Alpha() {
         //join both queries
         const combinedInferenceFilteredTransactions = [...responseInferenceTransactionsFiltered, ...responseNFTInferenceTransactionsFiltered,];
         const mapTxActiveOperatorsByWeek = operatorsPrepareData(requestsInferenceTransactionsFiltered, combinedInferenceFilteredTransactions, activeOperatorsTransactionsFiltered, cancelOperatorsTransactionsFiltered, mondays, configState.view);
-        setChartKpiActiveOperatorsData(generateChartInfoTxsPerWeek(labelTime, `active operators per ${labelTime}`, `Active operators per ${labelTime}`, `active operators this ${labelTime}`,mapTxActiveOperatorsByWeek,mondaysMap));
+        setChartKpiActiveOperatorsData(generateChartInfoTxsPerWeek(labelTime, `active operators per ${labelTime}`, `Active Operators Per ${labelTime}`, activeOperatorsDescription , `active operators this ${labelTime}`,mapTxActiveOperatorsByWeek,mondaysMap));
+
+        // failed payments per week
+        setChartKpiFailedPaymentsModelsPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Failed Payments Per ${labelTime} By Model`, failedPaymentDescription , configState.view, true));
       }
-
-
-
-      //models per week
-      const uploadModelsTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadModelsTransactionsRaw,[TAG_NAMES.alphaAppVersion],[],[...tagsToExclude,...tagsToExcludeForModels]);
-      const uploadScriptTransactionsFilteredExtended = filterTransactionsIncludeTagNamesAndExcludeTags(uploadScriptsransactionsRaw,[TAG_NAMES.alphaAppVersion],[],tagsToExclude);
-      setChartKpiModelsUsedPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Models used per ${labelTime}`,configState.view, false));
-  
-      // U per week
-      const allPayments = [...inferencePaymentTransactionsFiltered, ...modelCreationTransactionsFiltered, ...scriptPaymentTransactionsFiltered, ...activeOperatorsTransactionsFiltered];
-      setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U per ${labelTime}`,configState.view,configState.walletsContent));
-
-      // failed payments per week
-
-      setChartKpiFailedPaymentsModelsPerWeekData(modelsPerWeekPrepareData(requestsInferenceTransactionsFiltered,uploadModelsTransactionsFilteredExtended,uploadScriptTransactionsFilteredExtended,inferencePaymentTransactionsFiltered,mondays,`Failed payments per ${labelTime} by model`,configState.view, true));
 
 
       setLoading(false);
@@ -199,19 +206,25 @@ function Alpha() {
   return (
     <div className="App">
       <div className="title">
-        <h1>KPIs - Alpha</h1>
-        </div>
+        <h1 style={{ display: 'inline-block', verticalAlign: 'middle' }}>KPIs - Alpha</h1>
+        <h3 style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: '10px' }}>(2023-04-25 until 2023-09-17)</h3>
+        <h4 style={{  marginTop: '10px', marginBottom: '20px' }}> {subTitle} </h4>
+      </div>
       {isLoading && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "80vh",
+        <Backdrop
+          sx={{
+            position: 'absolute',
+            backdropFilter: 'blur(50px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignContent: 'center',
+            justifyContent: 'center',
           }}
+          open={true}
         >
           <CircularProgress size={100} />
-        </div>
+          <Typography variant='h2' fontWeight={500} ml={'32px'} mr={'32px'}> The Website is loading and processing multiple transactions. This operation usually takes around 3 minutes. Please be patient...</Typography>
+        </Backdrop>
       )}
        <Grid container spacing={2}>
         <Grid item md={12} lg={6}>
@@ -240,16 +253,6 @@ function Alpha() {
               <ColumnChart
                 chartInfo={chartUPaymentsPerWeek.chartInfo}
                 series={chartUPaymentsPerWeek.series}
-              />
-            </Box>
-          )}
-        </Grid>
-        <Grid item md={12} lg={6}>
-          {!isLoading && chartFailedPaymentsModelsPerWeek && (
-            <Box display={'flex'} justifyContent={'center'}>
-              <ColumnChart
-                chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
-                series={chartFailedPaymentsModelsPerWeek.series}
               />
             </Box>
           )}
@@ -320,6 +323,16 @@ function Alpha() {
               <LineChart
                 chartInfo={chartKpiActiveOperatorsData.chartInfo}
                 series={chartKpiActiveOperatorsData.series}
+              />
+            </Box>
+          )}
+        </Grid>
+        <Grid item md={12} lg={6}>
+          {configState.isExtraEnabled && chartFailedPaymentsModelsPerWeek && (
+            <Box display={'flex'} justifyContent={'center'}>
+              <ColumnChart
+                chartInfo={chartFailedPaymentsModelsPerWeek.chartInfo}
+                series={chartFailedPaymentsModelsPerWeek.series}
               />
             </Box>
           )}

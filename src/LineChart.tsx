@@ -53,6 +53,10 @@ function LineChart ({chartInfo,series}: Props) {
       text: chartInfo.chartTitle,
       align: 'center'
     },
+    subtitle: {
+      text: chartInfo.subTitle,
+      align: 'center'
+    },
     grid: {
       borderColor: '#e7e7e7',
       row: {
