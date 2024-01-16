@@ -2,11 +2,11 @@
 "manifest": "arweave/paths",
 "version": "0.1.0",
 "paths": {
-"fair-protocol-face.svg":{"id":"APayBElzHb6MNFLmBk3h1eHAreV_DCOI5GycMmTHVis"},
-"assets/index-e97018fe.css":{"id":"SRkxclfP8c_UoL2IVI3yRAKpore0rfeUZQPA1EZ74Fo"},
-"index.html":{"id":"t8k8tu4vUlofw0LsQVS_viS6W3PfLVsOBf9TWbvuNLk"},
-"fair-protocol-outline.svg":{"id":"J7vvbOWHw-wl1JICwimtQDS2kpiTHzdwhIEpsDvF_mI"},
-"assets/index-c6f5dcbe.js":{"id":"9uza44svuQN4pSAhx4TieC8Uj_VsyOGbwS_FgeEtSgU"}
+"fair-protocol-face.svg":{"id":"qH8tGQ-Hl7SVOGYUpJf62RpsEnoFCdSGbebEs3OKcQQ"},
+"index.html":{"id":"vA9xfEgkWnzvmAVxb4xrzx2XlMQ8BJCDIwaJw7gJk-U"},
+"assets/index-e97018fe.css":{"id":"YF7dwHSJXDUNaO97109cliZyS92uCkMqkqMjq0cFjx0"},
+"fair-protocol-outline.svg":{"id":"Q8XTyEXE7NJcD0SxtZkjI-7sLqH54juJMpt4BVPUHUM"},
+"assets/index-895aacb4.js":{"id":"bSNN3-xwnXxKIC38vvpn_JDWX0jyywa1A9hGxIm7a1Q"}
 },
 "index":{"path":"index.html"}
 }
