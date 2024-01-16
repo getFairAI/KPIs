@@ -637,7 +637,7 @@ export const AmountUTokenPaymentsPrepareData = (
       categories: dateInfo.map((week) => week.date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })),
       chartTitle: chartTitle,
       subTitle: subTitle,
-      formatter: (val: string) => `~ ${(Number(val) * uPrice).toFixed(2)}$`,
+      formatter: (val: string) => `~ $${(Number(val) * uPrice).toFixed(2)} USD`,
   }
 
   const fairWalletsSingleText = targetUWallets.join(' ');

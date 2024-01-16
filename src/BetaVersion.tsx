@@ -148,7 +148,7 @@ function Beta() {
       // U per week
       const allPayments = [...inferencePaymentTransactionsFiltered, ...modelCreationTransactionsFiltered, ...scriptPaymentTransactionsFiltered, ...activeOperatorsTransactionsFiltered];
       const uPrice = await getUPriceInUSD();
-      const revenueSubtitle = `Current $U Price: ${uPrice.toFixed(2)} USD (Source: https://app.redstone.finance/#/app/token/U`;
+      const revenueSubtitle = `Current $U Price: $${uPrice.toFixed(2)} USD (Source: https://app.redstone.finance/#/app/token/U`;
       setChartUPaymentsPerWeek(AmountUTokenPaymentsPrepareData(allPayments,mondays,`$U per ${labelTime}`, revenueSubtitle, configState.view, configState.walletsContent, uPrice));
 
       if(configState.isExtraEnabled) {
