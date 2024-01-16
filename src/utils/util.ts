@@ -20,6 +20,7 @@
 import { Transaction, Tag} from "../interfaces";
 import { ViewOptions } from "@/Enum";
 import { SECONDS_PER_DAY, SECONDS_PER_WEEK, SECONDS_PER_MONTH } from "@/constants";
+import redstone from 'redstone-api';
 
 export const filterTransactionsByTag = (transactions: Transaction[], tag: string): Transaction[] => {
     return transactions.filter((transaction) => {
@@ -91,3 +92,9 @@ export const getLabelByViewOption = (view: string): string => {
       throw new Error('Please check your view option it seems we dont support that'); 
   }
 }
+
+export const getUPriceInUSD = async () => {
+  const priceData = await redstone.getPrice('U');
+
+  return priceData.value;
+};

@@ -30,6 +30,7 @@ export interface ChartInfo {
     categories: string[];
     chartTitle: string;
     subTitle: string;
+    formatter?: (val?: string, opts?: any) => string;
   }  
 
 export interface DonutInfo {
