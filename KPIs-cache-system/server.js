@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const app = express();
 const runMiddleware = require('run-middleware');
 runMiddleware(app);
 
+mongoose.set('debug', false); // uncomment for debug/testing messages on console from mongoose
+
 // set the console logs to output better info
 const path = require('path');
+const apiConfig = require('./app/config/api.config');
 ['debug', 'log', 'warn', 'error'].forEach(methodName => {
   const originalLoggingMethod = console[methodName];
   console[methodName] = (firstArgument, ...otherArguments) => {
