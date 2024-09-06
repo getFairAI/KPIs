@@ -11,12 +11,10 @@ function handleError(error) {
 
 var dbConnectionFunction = function () {
   console.log('');
-  console.log('\x1b[33m', 'Attempting a new connection to MongoDB server at ' + dbConfig.dbUrl + '.\n Please wait for the successful connection message...');
+  console.log('\x1b[33m', 'Attempting a new connection to MongoDB server at ' + dbConfig.dbUrl + ' ...');
   mongoose
     .connect(dbConfig.dbUrl, {
       dbName: dbConfig.dbName, // name of the database
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
     })
     .then(connected => {
@@ -32,6 +30,7 @@ mongoose.connection.on('connected', function () {
   console.log('\x1b[32m', `| Successfuly connected to database "${dbConfig.dbName}" at "${dbConfig.dbUrl}".`);
   console.log('\x1b[0m');
   console.log('\x1b[33m', 'Server is up and running. CTRL+C to stop.\n');
+  console.log('\x1b[0m');
 });
 
 mongoose.connection.on('reconnected', function () {
@@ -64,7 +63,7 @@ mongoose.connection.on('disconnected', function () {
 process.on('SIGINT', function () {
   console.log('\x1b[33m', '> Shutdown signal received, closing connection to MongoDB...');
   console.log('\x1b[0m');
-  mongoose.connection.close(function () {
+  mongoose.connection.close().then(() => {
     console.log('\x1b[31m', 'Connection to MongoDB terminated. \n Server stopped.');
     console.log('\x1b[0m');
     process.exit(0);

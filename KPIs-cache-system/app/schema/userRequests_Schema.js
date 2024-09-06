@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
-const dbConnection = require('../../models/dbConnectionModel').dbConnection;
+const dbConnection = require('../models/dbConnectionModel').dbConnection;
 
 const schema = new mongoose.Schema(
   {
-    _id: true,
+    // _id: ObjectId
+    relatedSolution: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'SOLUTIONS', index: true },
+    blockchainRequest: { type: String, required: true, unique: true, index: true },
     contentType: { type: String, required: true },
-    solutionId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'SOLUTIONS' },
-    timestamp: { type: Date, required: true },
+    requestTimestamp: { type: Date, required: true },
+    responseTimestamp: { type: Date, required: false }, // required false: request may never get a response (and we want to know it)
   },
   {
     toObject: { virtuals: true },

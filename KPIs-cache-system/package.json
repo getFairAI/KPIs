@@ -4,9 +4,8 @@
   "description": "Cache System for KPIs from FairAI",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "start": "nodemon server.js --ignore ./app/data",
+    "dev": "nodemon server.js --ignore ./app/data"
   },
   "author": "FairAI - getfair.ai",
   "license": "ISC",

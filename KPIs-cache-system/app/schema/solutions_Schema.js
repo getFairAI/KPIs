@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const dbConnection = require('../../models/dbConnectionModel').dbConnection;
+const dbConnection = require('../models/dbConnectionModel').dbConnection;
 
 const schema = new mongoose.Schema(
   {
-    _id: true,
+    // _id: ObjectId
     name: { type: String, required: true },
     owner: { type: String, required: true },
-    solutionRequestId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SOLUTION_REQUESTS' },
+    relatedSolutionRequest: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SOLUTION_REQUESTS', index: true },
   },
   {
     toObject: { virtuals: true },

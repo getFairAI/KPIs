@@ -1,4 +1,5 @@
 const express = require('express');
+const cron = require('node-cron');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
@@ -9,7 +10,7 @@ mongoose.set('debug', false); // uncomment for debug/testing messages on console
 
 // set the console logs to output better info
 const path = require('path');
-const apiConfig = require('./app/config/api.config');
+
 ['debug', 'log', 'warn', 'error'].forEach(methodName => {
   const originalLoggingMethod = console[methodName];
   console[methodName] = (firstArgument, ...otherArguments) => {
@@ -59,7 +60,8 @@ router.get('/status', (req, res) => {
   });
 });
 
-const kpiCacheBaseURL = require('./app/config/api.config').apiBaseURL;
+const apiConfig = require('./app/config/api.config');
+const kpiCacheBaseURL = apiConfig.apiBaseURL;
 app.use(kpiCacheBaseURL, router); // base route (path) to answer requests
 
 // start listening for requests at the given port
@@ -82,6 +84,11 @@ app.get('/', (req, res) => {
     message: 'The connection was successful, but you cannot make requests to this route! Wrong route.',
   });
 });
+
+// INITALIZE CRON JOBS AND SCHEDULING ==========================================================
+const fetchArbitrumRequests = require('./app/cron-jobs/fetch-arbitrum-requests').fetchArbitrumRequests;
+// run once every day at 00:00
+cron.schedule('0 0 * * *', fetchArbitrumRequests, { runOnInit: true }); // run once on init
 
 // general error handler =======================================================================
 app.use(function (err, req, res, next) {

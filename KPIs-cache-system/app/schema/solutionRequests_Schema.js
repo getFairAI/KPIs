@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const dbConnection = require('../../models/dbConnectionModel').dbConnection;
+const dbConnection = require('../models/dbConnectionModel').dbConnection;
 
 const schema = new mongoose.Schema(
   {
-    _id: true,
+    // _id: ObjectId
     name: { type: String, required: true },
     description: { type: String, required: true },
     owner: { type: String, required: true },

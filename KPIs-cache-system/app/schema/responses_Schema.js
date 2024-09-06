@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const dbConnection = require('../../models/dbConnectionModel').dbConnection;
+const dbConnection = require('../models/dbConnectionModel').dbConnection;
 
 const schema = new mongoose.Schema(
   {
-    _id: true,
-    requestId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'USER_REQUESTS' },
+    // _id: ObjectId
+    relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'USER_REQUESTS' },
     timestamp: { type: Date, required: true },
   },
   {
