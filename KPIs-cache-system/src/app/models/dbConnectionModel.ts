@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
-const AutoIncrementFactory = require('mongoose-sequence');
+import AutoIncrementFactory from 'mongoose-sequence';
 
-const dbConfig = require('../config/db.config'); // config file for the database
+import dbConfig from '../config/db.config'; // config file for the database
 
 var wasConnectedBefore = false;
 
@@ -70,7 +70,5 @@ process.on('SIGINT', function () {
   });
 });
 
-const dbConnection = mongoose;
-const AutoIncrement = AutoIncrementFactory(dbConnection);
-
-module.exports = { dbConnection, AutoIncrement };
+export const dbConnection = mongoose;
+export const AutoIncrement = AutoIncrementFactory(dbConnection);

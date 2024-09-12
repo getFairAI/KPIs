@@ -1,18 +1,13 @@
-const { createPublicClient, erc20Abi, http, hexToString, formatUnits } = require('viem');
-const arbitrum = require('viem/chains');
-const savedLastCronFile = require('../data/last-cron-data.json');
-const startBlock = require('../config/api.config').startBlock;
-const fs = require('fs');
-const apiConfig = require('../config/api.config');
-const { Query } = require('@irys/query');
+import { createPublicClient, erc20Abi, http, hexToString, formatUnits } from 'viem';
+const apiConfigStartBlock = require('../config/api.config').startBlock;
+import { Query } from '@irys/query';
+import { ObjectId } from 'bson';
+import { arbitrum } from 'viem/chains';
 
 const PAYMENTS_MODEL = require('../schema/payments_Schema').PAYMENTS_MODEL;
 
 const NATIVE_USDC_ARB = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
 const CHAIN = arbitrum;
-
-// initalize file with the default value
-fs.writeFileSync('./app/data/last-cron-data.json', JSON.stringify({ lastBlockNumber: apiConfig.startBlock }));
 
 const publicClient = createPublicClient({
   chain: CHAIN,
@@ -49,15 +44,11 @@ const filterLogs = async transferLog => {
     arweaveTx = hexToString(`0x${tfHexMemo}`);
   }
 
-  console.log('yes');
-
-  if (!arweaveTx || arweaveTx.length !== arweaveTxLength) {
+  if (!arweaveTx || arweaveTx?.length !== arweaveTxLength) {
     // not an arweave transaction, ignore
 
-    console.log('yes 2');
     return;
   } else {
-    console.log('yes query');
     const irysQuery = new Query();
     const [txData] = await irysQuery.search('irys:transactions').ids([arweaveTx]).limit(1);
 
@@ -65,8 +56,6 @@ const filterLogs = async transferLog => {
       // invalid arweave request, ignore it too
       return;
     }
-
-    console.log('yes 3');
 
     return {
       log: transferLog,
@@ -77,13 +66,13 @@ const filterLogs = async transferLog => {
   }
 };
 
-const fetchArbitrumRequests = async () => {
+export const fetchArbitrumRequests = async () => {
   console.log('=> Updating PAYMENTS collection on DB, this might take several minutes ...');
 
-  const blocksToAdvanceOnEachIteration = 200;
+  const blocksToAdvanceOnEachIteration = 100;
   const dateNowTime = new Date().getTime() / 1000;
 
-  let lastBlockNumber = savedLastCronFile.lastBlockNumber;
+  let lastBlockNumber = apiConfigStartBlock; // defaults to this one
 
   // get most recent block saved on our DB
   PAYMENTS_MODEL.find()
@@ -91,10 +80,10 @@ const fetchArbitrumRequests = async () => {
     .limit(1)
     .then(data => {
       if (data[0]?.blockchainBlockNumber) {
-        console.log('Found the latest block number in our DB for payments -> ' + Number(data[0].blockchainBlockNumber));
-        lastBlockNumber = Number(data[0].blockchainBlockNumber) ?? savedLastCronFile.lastBlockNumber;
+        console.log('=> OK! Found the latest block number in our DB for payments, will start checking new blocks after this one => ' + Number(data[0].blockchainBlockNumber));
+        lastBlockNumber = Number(data[0].blockchainBlockNumber) ?? apiConfigStartBlock;
       } else {
-        console.log('Couldnt find the latest block in our DB, assuming default start block -> ' + Number(lastBlockNumber));
+        console.log(' => Could NOT find the latest block info in our DB, assuming default start block => ' + Number(lastBlockNumber));
       }
     })
     .catch(error => {
@@ -108,10 +97,10 @@ const fetchArbitrumRequests = async () => {
   let blockNumber = BigInt(lastBlockNumber);
   let toBlock = BigInt(lastBlockNumber + blocksToAdvanceOnEachIteration); // change this to limit this function
 
-  let results = [];
+  let results = new Array();
 
   while (toBlock <= nearestBlockNumber) {
-    console.log('Fetching all transaction blocks from ' + Number(blockNumber) + ' to ' + Number(toBlock));
+    console.log('=> Fetching all transaction blocks from ' + Number(blockNumber) + ' to ' + Number(toBlock));
     const logs = await publicClient.getContractEvents({
       address: NATIVE_USDC_ARB,
       abi: erc20Abi,
@@ -123,30 +112,32 @@ const fetchArbitrumRequests = async () => {
       // },
     });
 
-    console.log('Found ' + results.length + ' more transactions.');
-
     results = results.concat(logs);
     toBlock = toBlock + BigInt(blocksToAdvanceOnEachIteration);
+
+    console.log('Found ' + logs.length + ' more transactions.');
   }
 
   console.log('=> Fetching done. Found a total of ' + results.length + ' transactions.');
   console.log('=> Filtering only FairAI transactions, this might take SEVERAL minutes ...');
 
-  let resultsFiltered = [];
-  let allBlocksFiltered = []; // array of block numbers from resultsFiltered
+  let resultsFiltered = new Array();
+  let allBlocksFiltered = new Array(); // array of block numbers from resultsFiltered
 
-  for (const log of results) {
-    console.log('new for');
-    const filtered = await filterLogs(log);
+  for (let index = 0; index < results.length; index++) {
+    const element = results[index];
+    const filtered = await filterLogs(element);
 
-    if (filtered?.log) {
+    if (filtered?.log?.args?.value) {
+      // format this data according to DB Schema
       resultsFiltered.push({
+        relatedUserRequest: new ObjectId(), // TO DO
+        blockchainBlockNumber: Number(filtered.blockNumber),
+        blockchainRequestId: filtered.requestId,
         from: filtered.log.args.from,
         to: filtered.log.args.to,
-        blockchainBlockNumber: Number(blockchainBlockNumber),
         amount: Number(formatUnits(filtered.log.args.value, 6)), // format value
-        requestId: filtered.requestId,
-        type: '',
+        type: 'request', // TO DO
         timestamp: filtered.timestamp,
       });
     }
@@ -155,10 +146,10 @@ const fetchArbitrumRequests = async () => {
       allBlocksFiltered.push(Number(filtered.blockNumber));
     }
 
-    console.log('Still filtering transactions, ' + resultsFiltered.length + ' FairAI transactions found until now ...');
+    console.log('Checking transaction ' + (index + 1) + ' of ' + results.length + ', ' + resultsFiltered.length + ' FairAI transactions found until now ...');
   }
 
-  console.log('=> Filtering done. Found a total of ' + results.length + ' FairAI transactions.');
+  console.log('=> Filtering done. Found a total of ' + resultsFiltered.length + ' FairAI transactions.');
 
   function sortNumbers(a, b) {
     return a - b;
@@ -166,13 +157,12 @@ const fetchArbitrumRequests = async () => {
 
   allBlocksFiltered.sort(sortNumbers); // last element will be the biggest
 
-  // save the last block
-  fs.writeFileSync('./app/data/last-cron-data.json', JSON.stringify({ ...savedLastCronFile, lastBlockNumber: allBlocksFiltered[allBlocksFiltered.length - 1] }));
-
   console.log('=> Saving data on DB ...');
   // save to database
   // we use insertMany to add all items at once
-  PAYMENTS_MODEL.insertMany(resultsFiltered)
+  PAYMENTS_MODEL.insertMany(resultsFiltered, {
+    ordered: false, // this 'false' will make mongodb ignore duplicate 'unique keys', and proceed operation without fail
+  })
     .then(data => {
       console.log('=> Successfully updated PAYMENTS collection on DB. Update finished.');
     })
@@ -180,5 +170,3 @@ const fetchArbitrumRequests = async () => {
       console.log(error);
     });
 };
-
-module.exports = { fetchArbitrumRequests };

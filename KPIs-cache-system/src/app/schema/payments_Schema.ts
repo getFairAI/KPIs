@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const dbConnection = require('../models/dbConnectionModel').dbConnection;
+import mongoose from 'mongoose';
+import { dbConnection } from '../models/dbConnectionModel';
 
 const schema = new mongoose.Schema(
   {
@@ -10,7 +10,7 @@ const schema = new mongoose.Schema(
     from: { type: String, required: true },
     to: { type: String, required: true },
     amount: { type: Number, required: true },
-    type: { type: String, enum: ['request', 'distribution'] }, // required: true
+    type: { type: String, enum: ['request', 'distribution'], required: true },
     timestamp: { type: Number, required: true },
   },
   {
@@ -20,5 +20,4 @@ const schema = new mongoose.Schema(
   }
 );
 
-const PAYMENTS_MODEL = dbConnection.model('PAYMENTS', schema);
-module.exports = { PAYMENTS_MODEL };
+export const PAYMENTS_MODEL = dbConnection.model('PAYMENTS', schema);

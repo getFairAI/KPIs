@@ -1,14 +1,15 @@
 ﻿# See http://help.github.com/ignore-files/ for more about ignoring files.
 
-# uploaded files
-/storage
-
 # compiled output
 /dist
 /tmp
 /out-tsc
+/out
 # Only exists if Bazel was run
 /bazel-out
+
+# TS -incremental file
+tsconfig.tsbuildinfo
 
 # user uploaded testing files
 /backend/assets/uploaded_documents

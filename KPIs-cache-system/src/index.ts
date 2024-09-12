@@ -1,25 +1,25 @@
-const express = require('express');
-const cron = require('node-cron');
-const cors = require('cors');
-const mongoose = require('mongoose');
+import express, { json, urlencoded } from 'express';
+import { schedule } from 'node-cron';
+import cors from 'cors';
+import { set } from 'mongoose';
 const app = express();
-const runMiddleware = require('run-middleware');
+import runMiddleware from 'run-middleware';
 runMiddleware(app);
 
-mongoose.set('debug', false); // uncomment for debug/testing messages on console from mongoose
+set('debug', false); // uncomment for debug/testing messages on console from mongoose
 
 // set the console logs to output better info
-const path = require('path');
+import { relative } from 'path';
 
 ['debug', 'log', 'warn', 'error'].forEach(methodName => {
   const originalLoggingMethod = console[methodName];
   console[methodName] = (firstArgument, ...otherArguments) => {
     const originalPrepareStackTrace = Error.prepareStackTrace;
     Error.prepareStackTrace = (_, stack) => stack;
-    const callee = new Error().stack[1];
+    const callee = new Error().stack![1];
     Error.prepareStackTrace = originalPrepareStackTrace;
-    const relativeFileName = path.relative(process.cwd(), callee.getFileName());
-    const prefix = `${relativeFileName}:${callee.getLineNumber()}:`;
+    const relativeFileName = relative(process.cwd(), callee);
+    const prefix = `${relativeFileName}:${callee}:`;
     if (typeof firstArgument === 'string') {
       originalLoggingMethod(prefix + ' ' + firstArgument, ...otherArguments);
     } else {
@@ -38,10 +38,10 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
-app.use(express.json({ limit: '5mb' }));
+app.use(json({ limit: '5mb' }));
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+app.use(urlencoded({ extended: true, limit: '5mb' }));
 
 // init express router and define the base path to listen and answer requests
 var router = require('express').Router();
@@ -60,8 +60,8 @@ router.get('/status', (req, res) => {
   });
 });
 
-const apiConfig = require('./app/config/api.config');
-const kpiCacheBaseURL = apiConfig.apiBaseURL;
+import { apiBaseURL } from './app/config/api.config';
+const kpiCacheBaseURL = apiBaseURL;
 app.use(kpiCacheBaseURL, router); // base route (path) to answer requests
 
 // start listening for requests at the given port
@@ -86,9 +86,13 @@ app.get('/', (req, res) => {
 });
 
 // INITALIZE CRON JOBS AND SCHEDULING ==========================================================
-const fetchArbitrumRequests = require('./app/cron-jobs/fetch-arbitrum-requests').fetchArbitrumRequests;
+import { fetchArbitrumRequests } from './app/cron-jobs/fetch-arbitrum-requests';
 // run once every day at 00:00
-cron.schedule('0 0 * * *', fetchArbitrumRequests, { runOnInit: true }); // run once on init
+// cron.schedule('0 0 * * *', fetchArbitrumRequests, { runOnInit: true }); // run once on init
+
+import { fetchSolutions } from './app/cron-jobs/fetch-solutions';
+// run once every day at 00:00
+schedule('0 0 * * *', fetchSolutions, { runOnInit: true }); // run once on init
 
 // general error handler =======================================================================
 app.use(function (err, req, res, next) {

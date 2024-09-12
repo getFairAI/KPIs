@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const dbConnection = require('../models/dbConnectionModel').dbConnection;
+import mongoose from 'mongoose';
+import { dbConnection } from '../models/dbConnectionModel';
 
 const schema = new mongoose.Schema(
   {
@@ -17,5 +17,4 @@ const schema = new mongoose.Schema(
   }
 );
 
-const USER_REQUESTS_MODEL = dbConnection.model('USER_REQUESTS', schema);
-module.exports = { USER_REQUESTS_MODEL };
+export const USER_REQUESTS_MODEL = dbConnection.model('USER_REQUESTS', schema);
