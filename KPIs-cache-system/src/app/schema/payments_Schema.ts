@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
-import { dbConnection } from '../models/dbConnectionModel';
+import { dbConnection } from '../models/dbConnectionModel.js';
 
 const schema = new mongoose.Schema(
   {
     // _id: ObjectId
-    relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, ref: 'USER_REQUESTS', required: true, index: true },
+    // relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, ref: 'USER_REQUESTS', required: true, index: true },
     blockchainRequestId: { type: String, required: true },
     blockchainBlockNumber: { type: Number, required: true },
     from: { type: String, required: true },

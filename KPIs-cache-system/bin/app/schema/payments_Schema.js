@@ -1,14 +1,8 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PAYMENTS_MODEL = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const dbConnectionModel_1 = require("../models/dbConnectionModel");
-const schema = new mongoose_1.default.Schema({
+import mongoose from 'mongoose';
+import { dbConnection } from '../models/dbConnectionModel.js';
+const schema = new mongoose.Schema({
     // _id: ObjectId
-    relatedUserRequest: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'USER_REQUESTS', required: true, index: true },
+    // relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, ref: 'USER_REQUESTS', required: true, index: true },
     blockchainRequestId: { type: String, required: true },
     blockchainBlockNumber: { type: Number, required: true },
     from: { type: String, required: true },
@@ -21,4 +15,4 @@ const schema = new mongoose_1.default.Schema({
     toJSON: { virtuals: true },
     collection: 'PAYMENTS',
 });
-exports.PAYMENTS_MODEL = dbConnectionModel_1.dbConnection.model('PAYMENTS', schema);
+export const PAYMENTS_MODEL = dbConnection.model('PAYMENTS', schema);

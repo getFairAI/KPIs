@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { dbConnection } from '../models/dbConnectionModel';
+import { dbConnection } from '../models/dbConnectionModel.js';
 
 const schema = new mongoose.Schema(
   {

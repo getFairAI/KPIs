@@ -1,19 +1,24 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SOLUTIONS_MODEL = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const dbConnectionModel_1 = require("../models/dbConnectionModel");
-const schema = new mongoose_1.default.Schema({
+import mongoose from 'mongoose';
+import { dbConnection } from '../models/dbConnectionModel.js';
+const schema = new mongoose.Schema({
     // _id: ObjectId
-    name: { type: String, required: true },
-    owner: { type: String, required: true },
-    relatedSolutionRequest: { type: mongoose_1.default.Schema.Types.ObjectId, required: false, ref: 'SOLUTION_REQUESTS', index: true },
+    solutionId: { type: String, required: true, unique: true, index: true },
+    solutionName: { type: String, required: true },
+    solutionDescription: { type: String, required: true },
+    solutionOwner: { type: String, required: true },
+    rawData: { type: String, required: true }, // JSON stringified
+    relatedNewSolutionRequest: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SOLUTION_REQUESTS' }, // optional
+    originalSolutionRequest: { type: String, required: false },
+    output: { type: String, required: true },
+    outputConfiguration: { type: String, required: false },
+    rewardsAddress: { type: String, required: false },
+    timestamp: { type: Number, required: true },
+    allowFiles: { type: Boolean, default: false, required: false },
+    allowText: { type: Boolean, default: true, required: false },
+    contractAddress: { type: String, required: false },
 }, {
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     collection: 'SOLUTIONS',
 });
-exports.SOLUTIONS_MODEL = dbConnectionModel_1.dbConnection.model('SOLUTIONS', schema);
+export const SOLUTIONS_MODEL = dbConnection.model('SOLUTIONS', schema);

@@ -1,6 +1,5 @@
-"use strict";
-const mongoose = require('mongoose');
-const dbConnection = require('../models/dbConnectionModel').dbConnection;
+import mongoose from 'mongoose';
+import { dbConnection } from '../models/dbConnectionModel.js';
 const schema = new mongoose.Schema({
     // _id: ObjectId
     relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'USER_REQUESTS' },
@@ -10,5 +9,4 @@ const schema = new mongoose.Schema({
     toJSON: { virtuals: true },
     collection: 'USER_RESPONSES',
 });
-const USER_RESPONSES_MODEL = dbConnection.model('USER_RESPONSES', schema);
-module.exports = { USER_RESPONSES_MODEL };
+export const USER_RESPONSES_MODEL = dbConnection.model('USER_RESPONSES', schema);

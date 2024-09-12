@@ -1,22 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoIncrement = exports.dbConnection = void 0;
-var mongoose = require('mongoose');
-const mongoose_sequence_1 = __importDefault(require("mongoose-sequence"));
-const db_config_1 = __importDefault(require("../config/db.config")); // config file for the database
+import mongoose from 'mongoose';
+import { dbConfig } from '../config/db.config.js'; // config file for the database
 var wasConnectedBefore = false;
 function handleError(error) {
     console.log('\x1b[31m', `Error: ${error}`);
 }
 var dbConnectionFunction = function () {
     console.log('');
-    console.log('\x1b[33m', 'Attempting a new connection to MongoDB server at ' + db_config_1.default.dbUrl + ' ...');
+    console.log('\x1b[33m', 'Attempting a new connection to MongoDB server at ' + dbConfig.dbUrl + ' ...');
     mongoose
-        .connect(db_config_1.default.dbUrl, {
-        dbName: db_config_1.default.dbName, // name of the database
+        .connect(dbConfig.dbUrl, {
+        dbName: dbConfig.dbName, // name of the database
         serverSelectionTimeoutMS: 5000,
     })
         .then(connected => {
@@ -27,18 +20,18 @@ var dbConnectionFunction = function () {
 dbConnectionFunction();
 mongoose.connection.on('connected', function () {
     wasConnectedBefore = true;
-    console.log('\x1b[32m', `| Successfuly connected to database "${db_config_1.default.dbName}" at "${db_config_1.default.dbUrl}".`);
+    console.log('\x1b[32m', `| Successfuly connected to database "${dbConfig.dbName}" at "${dbConfig.dbUrl}".`);
     console.log('\x1b[0m');
     console.log('\x1b[33m', 'Server is up and running. CTRL+C to stop.\n');
     console.log('\x1b[0m');
 });
 mongoose.connection.on('reconnected', function () {
     console.log('');
-    console.log('\x1b[32m', `Connection restored to MongoDB at "${db_config_1.default.dbUrl}"`);
+    console.log('\x1b[32m', `Connection restored to MongoDB at "${dbConfig.dbUrl}"`);
 });
 mongoose.connection.on('error', function () {
     console.log('');
-    console.log('\x1b[31m', `Error trying to connect to MongoDB at "${db_config_1.default.dbUrl}"`);
+    console.log('\x1b[31m', `Error trying to connect to MongoDB at "${dbConfig.dbUrl}"`);
     if (!wasConnectedBefore) {
         // needed because mongoose calls error AND disconnect everytime an error OR disconnect happens
         console.log('\x1b[33m', '- Trying to reconnect in 5 seconds...');
@@ -49,7 +42,7 @@ mongoose.connection.on('error', function () {
 mongoose.connection.on('disconnected', function () {
     if (wasConnectedBefore) {
         console.log('');
-        console.log('\x1b[31m', `Connection lost to MongoDB at "${db_config_1.default.dbUrl}"`);
+        console.log('\x1b[31m', `Connection lost to MongoDB at "${dbConfig.dbUrl}"`);
         console.log('\x1b[33m', '- Trying to reconnect in 5 seconds...');
         console.log('\x1b[0m');
         setTimeout(dbConnectionFunction, 5000);
@@ -65,5 +58,4 @@ process.on('SIGINT', function () {
         process.exit(0);
     });
 });
-exports.dbConnection = mongoose;
-exports.AutoIncrement = (0, mongoose_sequence_1.default)(exports.dbConnection);
+export const dbConnection = mongoose;

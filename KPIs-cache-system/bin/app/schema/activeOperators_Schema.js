@@ -1,6 +1,5 @@
-"use strict";
-const mongoose = require('mongoose');
-const dbConnection = require('../models/dbConnectionModel').dbConnection;
+import mongoose from 'mongoose';
+import { dbConnection } from '../models/dbConnectionModel.js';
 const schema = new mongoose.Schema({
     // _id: ObjectId
     relatedSolution: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'SOLUTIONS' },
@@ -11,5 +10,4 @@ const schema = new mongoose.Schema({
     toJSON: { virtuals: true },
     collection: 'ACTIVE_OPERATORS',
 });
-const ACTIVE_OPERATORS_MODEL = dbConnection.model('ACTIVE_OPERATORS', schema);
-module.exports = { ACTIVE_OPERATORS_MODEL };
+export const ACTIVE_OPERATORS_MODEL = dbConnection.model('ACTIVE_OPERATORS', schema);

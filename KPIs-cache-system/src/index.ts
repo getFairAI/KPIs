@@ -4,29 +4,30 @@ import cors from 'cors';
 import { set } from 'mongoose';
 const app = express();
 import runMiddleware from 'run-middleware';
+import { apiBaseURL, apiVersion } from './app/config/api.config.js';
 runMiddleware(app);
 
 set('debug', false); // uncomment for debug/testing messages on console from mongoose
 
 // set the console logs to output better info
-import { relative } from 'path';
+// import { relative } from 'path';
 
-['debug', 'log', 'warn', 'error'].forEach(methodName => {
-  const originalLoggingMethod = console[methodName];
-  console[methodName] = (firstArgument, ...otherArguments) => {
-    const originalPrepareStackTrace = Error.prepareStackTrace;
-    Error.prepareStackTrace = (_, stack) => stack;
-    const callee = new Error().stack![1];
-    Error.prepareStackTrace = originalPrepareStackTrace;
-    const relativeFileName = relative(process.cwd(), callee);
-    const prefix = `${relativeFileName}:${callee}:`;
-    if (typeof firstArgument === 'string') {
-      originalLoggingMethod(prefix + ' ' + firstArgument, ...otherArguments);
-    } else {
-      originalLoggingMethod(prefix, firstArgument, ...otherArguments);
-    }
-  };
-});
+// ['debug', 'log', 'warn', 'error'].forEach(methodName => {
+//   const originalLoggingMethod = console[methodName];
+//   console[methodName] = (firstArgument, ...otherArguments) => {
+//     const originalPrepareStackTrace = Error.prepareStackTrace;
+//     Error.prepareStackTrace = (_, stack) => stack;
+//     const callee = new Error().stack![1];
+//     Error.prepareStackTrace = originalPrepareStackTrace;
+//     const relativeFileName = relative(process.cwd(), callee);
+//     const prefix = `${relativeFileName}:${callee}:`;
+//     if (typeof firstArgument === 'string') {
+//       originalLoggingMethod(prefix + ' ' + firstArgument, ...otherArguments);
+//     } else {
+//       originalLoggingMethod(prefix, firstArgument, ...otherArguments);
+//     }
+//   };
+// });
 
 var corsOptions = {
   origin: true,
@@ -44,7 +45,7 @@ app.use(json({ limit: '5mb' }));
 app.use(urlencoded({ extended: true, limit: '5mb' }));
 
 // init express router and define the base path to listen and answer requests
-var router = require('express').Router();
+var router = express.Router();
 
 // validate auth token before executing anything else =================================
 app.use(function (req, res, next) {
@@ -56,11 +57,10 @@ app.use(function (req, res, next) {
 router.get('/status', (req, res) => {
   res.status(200).json({
     message: 'API is online and listening to requests.',
-    apiVersion: require('./app/config/api.config').apiVersion,
+    apiVersion: apiVersion,
   });
 });
 
-import { apiBaseURL } from './app/config/api.config';
 const kpiCacheBaseURL = apiBaseURL;
 app.use(kpiCacheBaseURL, router); // base route (path) to answer requests
 
@@ -86,13 +86,13 @@ app.get('/', (req, res) => {
 });
 
 // INITALIZE CRON JOBS AND SCHEDULING ==========================================================
-import { fetchArbitrumRequests } from './app/cron-jobs/fetch-arbitrum-requests';
+import { fetchArbitrumTransfers } from './app/cron-jobs/fetch-arbitrum-requests.js';
 // run once every day at 00:00
-// cron.schedule('0 0 * * *', fetchArbitrumRequests, { runOnInit: true }); // run once on init
+schedule('0 0 * * *', fetchArbitrumTransfers, { runOnInit: true }); // run once on init
 
-import { fetchSolutions } from './app/cron-jobs/fetch-solutions';
+// import { fetchSolutions } from './app/cron-jobs/fetch-solutions.js';
 // run once every day at 00:00
-schedule('0 0 * * *', fetchSolutions, { runOnInit: true }); // run once on init
+// schedule('0 0 * * *', fetchSolutions, { runOnInit: true }); // run once on init
 
 // general error handler =======================================================================
 app.use(function (err, req, res, next) {
