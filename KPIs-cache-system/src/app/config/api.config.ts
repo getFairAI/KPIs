@@ -1,12 +1,12 @@
 export const apiVersion = '0.1';
 export const apiBaseURL = '/kpi-caching/request';
-export const graphQLRequestsUrl = 'https://subgraph.satsuma-prod.com/2f3d33952889/fairai--inc--359110/FairAI-payments/version/v1.1/api';
+export const graphQLArbitrumRequestsUrl = 'https://subgraph.satsuma-prod.com/2f3d33952889/fairai--inc--359110/FairAI-payments/version/v1.1/api';
 export const graphQLarweave = 'https://arweave.net/graphql';
 export const PROTOCOL_NAME = 'FairAI';
 export const PROTOCOL_VERSION = '2.0';
 export const SOLUTION_CREATION = 'Solution Creation';
-export const QUERY_LIMIT_ARWEAVE = 100;
-export const QUERY_LIMIT_ARBITRUM = 100;
+export const QUERY_LIMIT_ARWEAVE = 1000;
+export const QUERY_LIMIT_ARBITRUM = 1000;
 export const startBlock = 242498175;
 export const TAG_NAMES = {
   protocolName: 'Protocol-Name',

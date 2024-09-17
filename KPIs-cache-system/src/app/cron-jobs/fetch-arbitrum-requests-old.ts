@@ -4,7 +4,7 @@ import { Query } from '@irys/query';
 import { ObjectId } from 'bson';
 import { arbitrum } from 'viem/chains';
 
-import { PAYMENTS_MODEL } from '../schema/payments_Schema.js';
+import { ARBITRUM_TRANSFERS_MODEL } from '../schema/payments_Schema.js';
 
 const NATIVE_USDC_ARB = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
 const CHAIN = arbitrum;
@@ -75,7 +75,7 @@ export const fetchArbitrumRequests = async () => {
   let lastBlockNumber = apiConfigStartBlock; // defaults to this one
 
   // get most recent block saved on our DB
-  PAYMENTS_MODEL.find()
+  ARBITRUM_TRANSFERS_MODEL.find()
     .sort({ blockchainBlockNumber: -1 })
     .limit(1)
     .then(data => {
@@ -160,7 +160,7 @@ export const fetchArbitrumRequests = async () => {
   console.log('=> Saving data on DB ...');
   // save to database
   // we use insertMany to add all items at once
-  PAYMENTS_MODEL.insertMany(resultsFiltered, {
+  ARBITRUM_TRANSFERS_MODEL.insertMany(resultsFiltered, {
     ordered: false, // this 'false' will make mongodb ignore duplicate 'unique keys', and proceed operation without fail
   })
     .then(data => {

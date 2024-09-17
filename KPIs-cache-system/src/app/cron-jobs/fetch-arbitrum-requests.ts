@@ -1,8 +1,8 @@
 import { request } from 'graphql-request';
 import { graphql } from '../../gql/arbitrum-requests/gql.js';
 import { QueryArbitrumTransfersQuery } from '../../gql/arbitrum-requests/graphql.js';
-import { graphQLarweave, QUERY_LIMIT_ARBITRUM } from '../config/api.config.js';
-import { PAYMENTS_MODEL } from '../schema/payments_Schema.js';
+import { graphQLArbitrumRequestsUrl, QUERY_LIMIT_ARBITRUM } from '../config/api.config.js';
+import { ARBITRUM_TRANSFERS_MODEL } from '../schema/payments_Schema.js';
 
 const query = graphql(`
   query queryArbitrumTransfers($first: Int, $skip: Int) {
@@ -25,32 +25,49 @@ export const fetchArbitrumTransfers = async () => {
   let skipTransfers = 0;
 
   // get most recent cursor saved on our DB
-  const savedOnDBAmount = await PAYMENTS_MODEL.countDocuments().exec();
+  const savedOnDBAmount = await ARBITRUM_TRANSFERS_MODEL.countDocuments().exec();
 
   if (savedOnDBAmount) {
-    console.log('=> OK! Found data on our DB. ARBITRUM TRANSFERS request will skip this amount of transers => ' + savedOnDBAmount);
+    console.log('=> OK! Found data on our DB. ARBITRUM TRANSFERS request will skip the first [ ' + savedOnDBAmount + ' ] transfers.');
     skipTransfers = savedOnDBAmount;
   } else {
-    console.log(' => Could NOT anything on our DB for PAYMENTS.');
+    console.log(' => Could NOT find anything on our DB for ARBITRUM TRANSFERS. Getting all transfers...');
   }
 
   try {
-    const results: QueryArbitrumTransfersQuery = await request({
-      url: graphQLarweave,
-      document: query,
-      variables: {
-        first: QUERY_LIMIT_ARBITRUM,
-        skip: skipTransfers,
-      },
-    });
+    let finalResults = new Array();
 
-    console.log('=> Fetching complete. Found a total of ' + (results.transfers?.length ?? 0) + ' FairAI transfers.');
+    let newWhileLoopResults = new Array();
+    let firstExecution = true;
 
-    if (results?.transfers?.length) {
+    // loop to get all entries while results keep coming
+    while (firstExecution || newWhileLoopResults?.length > 0) {
+      const results: QueryArbitrumTransfersQuery = await request({
+        url: graphQLArbitrumRequestsUrl,
+        document: query,
+        variables: {
+          first: QUERY_LIMIT_ARBITRUM ?? 1000,
+          skip: firstExecution ? skipTransfers : skipTransfers + finalResults.length, // skip what we already have
+        },
+      });
+      finalResults = finalResults.concat(results?.transfers ?? []);
+      newWhileLoopResults = results?.transfers ?? []; // while will check length of this array
+      if (firstExecution) {
+        firstExecution = false;
+      }
+
+      if (newWhileLoopResults.length > 0) {
+        console.log('|__ Found [ ' + newWhileLoopResults.length + ' ] more FairAI transfers, with [ ' + finalResults.length + ' ] in total until now. Fetching more while results keep coming...');
+      }
+    }
+
+    console.log('=> Fetching complete. Found a total of [ ' + (finalResults.length ?? 0) + ' ] new FairAI transfers.');
+
+    if (finalResults.length > 0) {
       // filter only relevant data
-      let dataPreparation = results.transfers.map(item => {
+      let dataPreparation = finalResults.map(item => {
         return {
-          // relatedUserRequest: null,
+          relatedUserRequest: null,
           blockchainRequestId: item.arweaveTx,
           blockchainBlockNumber: item.blockNumber,
           from: item.from,
@@ -64,7 +81,7 @@ export const fetchArbitrumTransfers = async () => {
       console.log('=> Saving data on DB ...');
       // save to database
       // we use insertMany to add all items at once
-      PAYMENTS_MODEL.insertMany(dataPreparation, {
+      ARBITRUM_TRANSFERS_MODEL.insertMany(dataPreparation, {
         ordered: false, // this 'false' will make mongodb ignore duplicate 'unique keys', and proceed operation without fail
       })
         .then(data => {
@@ -76,6 +93,6 @@ export const fetchArbitrumTransfers = async () => {
     }
   } catch (error) {
     console.log('=> ERROR fetching ARBITRUM TRANSFERS:');
-    console.log(error?.response?.errors);
+    console.log(error?.response?.errors ?? error);
   }
 };

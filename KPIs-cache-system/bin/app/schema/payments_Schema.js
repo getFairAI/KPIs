@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel.js';
 const schema = new mongoose.Schema({
     // _id: ObjectId
-    // relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, ref: 'USER_REQUESTS', required: true, index: true },
+    relatedUserRequest: { type: mongoose.Schema.Types.ObjectId || null, ref: 'USER_REQUESTS', required: false }, // false to add later
     blockchainRequestId: { type: String, required: true },
     blockchainBlockNumber: { type: Number, required: true },
     from: { type: String, required: true },
@@ -13,6 +13,6 @@ const schema = new mongoose.Schema({
 }, {
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
-    collection: 'PAYMENTS',
+    collection: 'ARBITRUM_TRANSFERS',
 });
-export const PAYMENTS_MODEL = dbConnection.model('PAYMENTS', schema);
+export const ARBITRUM_TRANSFERS_MODEL = dbConnection.model('ARBITRUM_TRANSFERS', schema);
