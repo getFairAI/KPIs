@@ -17,82 +17,93 @@
  */
 
 export interface ChartInfo {
-    categories: string[];
-    categoriesTitle: string;
-    yTitle: string;
-    subTitle: string;
-    chartTitle: string;
-    yMin: number;
-    yMax: number;
-  }
+  categories: string[];
+  categoriesTitle: string;
+  yTitle: string;
+  subTitle: string;
+  chartTitle: string;
+  yMin: number;
+  yMax: number;
+}
 
-  export interface ColumnChartInfo {
-    categories: string[];
-    chartTitle: string;
-    subTitle: string;
-    formatter?: (val?: string, opts?: any) => string;
-  }  
+export interface ColumnChartInfo {
+  categories: string[];
+  chartTitle: string;
+  subTitle: string;
+  formatter?: (val?: string, opts?: any) => string;
+}
 
 export interface DonutInfo {
-    labels: string[];
-    donutTitle: string;
-    subTitle: string;
-  }
-  
- export interface DateInfo {
-    date: Date;
-    unixTime: number;
- } 
-
- export interface OperatorTX {
-    address: string;
-    scriptTransaction: string;
-    unixTime: number;
- }
-
- export interface Owner {
-    address: string;
-  }
- 
-export interface Block {
-    timestamp: number;
+  labels: string[];
+  donutTitle: string;
+  subTitle: string;
 }
-  
-  export interface Tag {
-    name: string;
-    value: string;
-  }
-  
-  export interface Transaction {
-    cursor: string;
-    node: {
-      fee: {
-        ar: string;
-      };
-      id: string;
-      owner: Owner;
-      quantity: {
-        ar: string;
-        winston: string;
-      };
-      block: Block;
-      tags: Tag[];
-    };
-  }
-  
-  export interface ChartData {
-    name: string;
-    data: number[];
-  }
-  
-  export interface ChartInfoSimple {
-    categories: string[];
-    chartTitle: string;
-    subTitle: string;
-  }
 
-  export interface CustomLinkProperties {
-    to: string,
-    children: React.ReactNode,
-  }
-  
+export interface DateInfo {
+  date: Date;
+  unixTime: number;
+}
+
+export interface OperatorTX {
+  address: string;
+  scriptTransaction: string;
+  unixTime: number;
+}
+
+export interface Owner {
+  address: string;
+}
+
+export interface Block {
+  timestamp: number;
+}
+
+export interface Tag {
+  name: string;
+  value: string;
+}
+
+export interface Transaction {
+  cursor: string;
+  node: {
+    fee: {
+      ar: string;
+    };
+    id: string;
+    owner: Owner;
+    quantity: {
+      ar: string;
+      winston: string;
+    };
+    block: Block;
+    tags: Tag[];
+  };
+}
+
+export interface ChartData {
+  name: string;
+  data: number[];
+}
+
+export interface ChartInfoSimple {
+  categories: string[];
+  chartTitle: string;
+  subTitle: string;
+}
+
+export interface CustomLinkProperties {
+  to: string;
+  children: React.ReactNode;
+}
+
+export interface TransactionsFromKPICache {
+  id: string;
+  relatedUserRequest: string;
+  blockchainRequestId: string;
+  blockchainBlockNumber: number;
+  from: string;
+  to: string;
+  amount: number;
+  type: string;
+  timestamp: number;
+}

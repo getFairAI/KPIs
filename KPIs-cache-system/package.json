@@ -9,7 +9,7 @@
     "build": "npm run clean && graphql-codegen && ./node_modules/.bin/tsc -b -v",
     "nodemon": "nodemon --watch src/**/*.ts --watch src/**/*.js --exec node --inspect --loader ts-node/esm ./src/index.ts",
     "tsc-watch": "./node_modules/.bin/tsc-watch -b -v -i -w --noclear --compiler \"./node_modules/.bin/tsc\" --onSuccess \"node --inspect --es-module-specifier-resolution=node ./bin/index.js\"",
-    "codegen": "graphql-codegen --config graphql.config.js --project prj1 prj2"
+    "codegen": "graphql-codegen --config graphql.config.js --project prj3"
   },
   "author": "FairAI - getfair.ai",
   "license": "ISC",

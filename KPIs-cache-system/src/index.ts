@@ -4,7 +4,7 @@ import cors from 'cors';
 import { set } from 'mongoose';
 const app = express();
 import runMiddleware from 'run-middleware';
-import { apiBaseURL, apiVersion } from './app/config/api.config.js';
+import { apiBaseURL, apiVersion, apiPORT } from './app/config/api.config.js';
 runMiddleware(app);
 
 set('debug', false); // uncomment for debug/testing messages on console from mongoose
@@ -61,11 +61,16 @@ router.get('/status', (req, res) => {
   });
 });
 
-const kpiCacheBaseURL = apiBaseURL;
-app.use(kpiCacheBaseURL, router); // base route (path) to answer requests
+app.use(apiBaseURL, router); // base route (path) to answer requests
+
+import solutionsController from './app/controllers/solutions.controller.js';
+app.use(apiBaseURL + '/solutions', solutionsController); // base route (path) to answer requests
+
+import arbitrumTransfersController from './app/controllers/arbitrum-transfers.controlller.js';
+app.use(apiBaseURL + '/arbitrum-transfers', arbitrumTransfersController); // base route (path) to answer requests
 
 // start listening for requests at the given port
-const PORT = 3003;
+const PORT = apiPORT ?? 3005;
 app.listen(+PORT, () => {
   console.log('');
   console.log('\x1b[36m', 'KPIs Caching System and Data Management for FairAI KPIs - getfair.ai');
@@ -74,7 +79,7 @@ app.listen(+PORT, () => {
   console.log('\x1b[0m');
   console.log('\x1b[0m', 'Active ExpressJS server options:');
   console.log('\x1b[36m', '- Port: ' + PORT);
-  console.log('\x1b[36m', '- Base href/URL for requests: ' + kpiCacheBaseURL);
+  console.log('\x1b[36m', '- Base href/URL for requests: ' + apiBaseURL);
   console.log('\x1b[0m');
 });
 
@@ -88,11 +93,15 @@ app.get('/', (req, res) => {
 // INITALIZE CRON JOBS AND SCHEDULING ==========================================================
 import { fetchArbitrumTransfers } from './app/cron-jobs/fetch-arbitrum-requests.js';
 // run once every day at 00:00
-schedule('0 0 * * *', fetchArbitrumTransfers, { runOnInit: true }); // run once on init
+// schedule('0 0 * * *', fetchArbitrumTransfers, { runOnInit: true }); // run once on init
 
-// import { fetchSolutions } from './app/cron-jobs/fetch-solutions.js';
+import { fetchSolutions } from './app/cron-jobs/fetch-solutions.js';
 // run once every day at 00:00
-// schedule('0 0 * * *', fetchSolutions, { runOnInit: true }); // run once on init
+schedule('0 0 * * *', fetchSolutions, { runOnInit: true }); // run once on init
+
+// import { fetchSolutionsRequests } from './app/cron-jobs/fetch-solutions-requests.js';
+// run once every day at 00:00
+// schedule('0 0 * * *', fetchSolutionsRequests, { runOnInit: true }); // run once on init
 
 // general error handler =======================================================================
 app.use(function (err, req, res, next) {

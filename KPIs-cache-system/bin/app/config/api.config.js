@@ -1,5 +1,6 @@
 export const apiVersion = '0.1';
-export const apiBaseURL = '/kpi-caching/request';
+export const apiBaseURL = '/kpis-cache/request';
+export const apiPORT = 3005;
 export const graphQLArbitrumRequestsUrl = 'https://subgraph.satsuma-prod.com/2f3d33952889/fairai--inc--359110/FairAI-payments/version/v1.1/api';
 export const graphQLarweave = 'https://arweave.net/graphql';
 export const PROTOCOL_NAME = 'FairAI';

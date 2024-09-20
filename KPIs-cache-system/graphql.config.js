@@ -33,5 +33,23 @@ module.exports = {
         },
       },
     },
+    prj3: {
+      schema: ['https://arweave.net/graphql'],
+      documents: ['./bin/app/cron-jobs/fetch-solutions-requests.js'],
+      extensions: {
+        codegen: {
+          ignoreNoDocuments: true,
+          config: {
+            namingConvention: 'change-case-all#camelCase',
+          },
+          generates: {
+            './src/gql/solutions-requests/': {
+              preset: 'client',
+              plugins: [],
+            },
+          },
+        },
+      },
+    },
   },
 };

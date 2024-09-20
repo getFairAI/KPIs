@@ -3,7 +3,7 @@ const apiConfigStartBlock = require('../config/api.config.js');
 import { Query } from '@irys/query';
 import { ObjectId } from 'bson';
 import { arbitrum } from 'viem/chains';
-import { ARBITRUM_TRANSFERS_MODEL } from '../schema/payments_Schema.js';
+import { ARBITRUM_TRANSFERS_MODEL } from '../schema/arbitrum-transfers_Schema.js';
 const NATIVE_USDC_ARB = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
 const CHAIN = arbitrum;
 const publicClient = createPublicClient({

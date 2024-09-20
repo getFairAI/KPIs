@@ -27,7 +27,7 @@ const query = graphql(`
     }
   }
 `);
-export const fetchSolutions = async () => {
+export const fetchResponses = async () => {
     console.log('');
     console.log('SOLUTIONS => Updating SOLUTIONS collection on DB, this might some time ...');
     let lastBlockHeight = null;
