@@ -110,6 +110,6 @@ export const fetchAllTransactionsToKPICacheAPI = async () => {
     return response;
   } catch (error) {
     console.log(error);
-    return [];
+    return null;
   }
 };
