@@ -106,8 +106,8 @@ export const fetchAllTransactionsToKPICacheAPI = async () => {
       apiKPICacheSystemURL + "/arbitrum-transfers/get-all",
       { method: "GET" }
     );
-    console.log(response);
-    return response;
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.log(error);
     return null;

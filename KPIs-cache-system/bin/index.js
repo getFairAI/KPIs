@@ -55,7 +55,7 @@ import solutionsController from './app/controllers/solutions.controller.js';
 app.use(apiBaseURL + '/solutions', solutionsController); // base route (path) to answer requests
 import arbitrumTransfersController from './app/controllers/arbitrum-transfers.controlller.js';
 app.use(apiBaseURL + '/arbitrum-transfers', arbitrumTransfersController); // base route (path) to answer requests
-// start listening for requests at the given port
+// start listening for requ ests at the given port
 const PORT = apiPORT ?? 3005;
 app.listen(+PORT, () => {
     console.log('');
@@ -74,14 +74,34 @@ app.get('/', (req, res) => {
         message: 'The connection was successful, but you cannot make requests to this route! Wrong route.',
     });
 });
+// INITALIZE CRON JOBS AND SCHEDULING ==========================================================
+import { fetchArbitrumTransfers } from './app/cron-jobs/fetch-arbitrum-transfers.js';
 // run once every day at 00:00
-// schedule('0 0 * * *', fetchArbitrumTransfers, { runOnInit: true }); // run once on init
+schedule('0 0 * * *', fetchArbitrumTransfers, { runOnInit: true }); // run once on init
 import { fetchSolutions } from './app/cron-jobs/fetch-solutions.js';
-// run once every day at 00:00
-schedule('0 0 * * *', fetchSolutions, { runOnInit: true }); // run once on init
-// import { fetchSolutionsRequests } from './app/cron-jobs/fetch-solutions-requests.js';
-// run once every day at 00:00
-// schedule('0 0 * * *', fetchSolutionsRequests, { runOnInit: true }); // run once on init
+// run once every day at 00:05
+schedule('5 0 * * *', fetchSolutions, { runOnInit: true });
+import { fetchSolutionsRequests } from './app/cron-jobs/fetch-solutions-requests.js';
+// run once every day at 00:10
+schedule('10 0 * * *', fetchSolutionsRequests, { runOnInit: true });
+import { fetchUserRequests } from './app/cron-jobs/fetch-user-requests.js';
+// run once every day at 00:15
+schedule('15 0 * * *', fetchUserRequests, { runOnInit: true });
+import { fetchResponses } from './app/cron-jobs/fetch-responses.js';
+// run once every day at 00:20
+schedule('20 0 * * *', fetchResponses, { runOnInit: true });
+import { fetchOperatorProofs } from './app/cron-jobs/fetch-operator-proofs.js';
+// run once every day at 00:25
+schedule('25 0 * * *', fetchOperatorProofs, { runOnInit: true });
+import { fetchOperatorCancellations } from './app/cron-jobs/fetch-operator-cancellations.js';
+// run once every day at 00:30
+schedule('30 0 * * *', fetchOperatorCancellations, { runOnInit: true });
+import { fetchActiveOperators } from './app/cron-jobs/fetch-active-operators.js';
+// run once every day at 00:35
+schedule('35 0 * * *', fetchActiveOperators, { runOnInit: true });
+import { fetchWalletLinks } from './app/cron-jobs/fetch-wallet-links.js';
+// run once every day at 00:40
+schedule('40 0 * * *', fetchWalletLinks, { runOnInit: true });
 // general error handler =======================================================================
 app.use(function (err, req, res, next) {
     console.log('\x1b[31m', new Date().toLocaleString() + ' - ' + err);

@@ -24,13 +24,7 @@ import {
   DECIMAL_PLACES,
 } from "./constants";
 import { targetUWallets } from "./commonVars";
-import {
-  DateInfo,
-  Transaction,
-  OperatorTX,
-  transactionsFromKPICache,
-  TransactionsFromKPICache,
-} from "./interfaces";
+import { DateInfo, Transaction, OperatorTX } from "./interfaces";
 import { findTag, sumArraySlice, getSecondsByViewOption } from "./utils/util";
 import { ViewOptions } from "./Enum";
 
@@ -111,21 +105,21 @@ export const createOwnerUnixTimeMapOld = (
 };
 
 export const createOwnerUnixTimeMap = (
-  transactions: TransactionsFromKPICache[],
+  transactions: Transaction[],
   addressesFromDifferentVersions: string[] = []
 ): Map<string, number> => {
   const ownerUnixTimeMap: Map<string, number> = new Map();
 
   transactions.forEach((transaction) => {
-    const { timestamp, from } = transaction;
+    const { block, owner } = transaction.node;
 
-    if (timestamp && from) {
-      // avoid errors when there is no timestamp available
-      const timestamp2 = timestamp;
-      const address = from;
+    if (block && block.timestamp && owner) {
+      // avoid erros when there is no timestamp available
+      const timestamp = block.timestamp;
+      const address = owner.address;
 
       if (
-        !isNaN(timestamp2) &&
+        !isNaN(timestamp) &&
         !ownerUnixTimeMap.has(address) &&
         !addressesFromDifferentVersions.includes(address)
       ) {
@@ -533,11 +527,13 @@ export const generateChartInfoCountsXPerWeek = (
   const chartInfo = {
     categories: Array.from(weekUnixTransactionsMap.keys()).map(
       (unixTime) =>
-        unixToDateMap.get(unixTime)?.toLocaleString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }) ?? ""
+        unixToDateMap
+          .get(unixTime)
+          ?.toLocaleString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          }) ?? ""
     ),
     categoriesTitle: categoriesTitle,
     yTitle: yTitle,
@@ -572,11 +568,13 @@ export const generateChartInfoTxsPerWeek = (
   const chartInfo = {
     categories: Array.from(mapNumberTxsPerWeek.keys()).map(
       (unixTime) =>
-        unixToDateMap.get(unixTime)?.toLocaleString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }) ?? ""
+        unixToDateMap
+          .get(unixTime)
+          ?.toLocaleString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          }) ?? ""
     ),
     categoriesTitle: categoriesTitle,
     yTitle: yTitle,

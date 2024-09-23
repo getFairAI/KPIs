@@ -1,8 +1,8 @@
 import { request } from 'graphql-request';
-import { graphql } from '../../gql/solutions/gql.js';
-import { findByTagsQuery, transactionEdge } from '../../gql/solutions/graphql.js';
-import { graphQLarweave, TAG_NAMES, PROTOCOL_NAME, SOLUTION_CREATION, PROTOCOL_VERSION, QUERY_LIMIT_ARWEAVE } from '../config/api.config.js';
-import { SOLUTIONS_MODEL } from '../schema/solutions_Schema.js';
+import { graphql } from '../../gql/responses/gql.js';
+import { findByTagsQuery, transactionEdge } from '../../gql/responses/graphql.js';
+import { graphQLarweave, TAG_NAMES, QUERY_LIMIT_ARWEAVE, constants, startBlockArweave } from '../config/api.config.js';
+import { USER_RESPONSES_MODEL } from '../schema/responses_Schema.js';
 
 const query = graphql(`
   query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $block: BlockFilter) {
@@ -32,32 +32,32 @@ const query = graphql(`
 
 export const fetchResponses = async () => {
   console.log('');
-  console.log('SOLUTIONS => Updating SOLUTIONS collection on DB, this might some time ...');
+  console.log('RESPONSES => Updating RESPONSES collection on DB, this might some time ...');
 
-  let lastBlockHeight: number | null = null;
+  let lastBlockHeight: number = startBlockArweave;
 
   // get most recent cursor saved on our DB
-  const latestSavedOnDB = await SOLUTIONS_MODEL.find().sort({ _id: -1 }).limit(1).exec();
+  const latestSavedOnDB = await USER_RESPONSES_MODEL.find().lean().sort({ blockHeight: -1 }).limit(1).exec();
 
   if (latestSavedOnDB?.length && latestSavedOnDB[0]?.blockHeight) {
-    console.log('SOLUTIONS => OK! Found the latest block height in our DB for SOLUTIONS, will start checking new blocks after block height [ ' + latestSavedOnDB[0]?.blockHeight + ' ] ...');
+    console.log('RESPONSES => OK! Found the latest block height in our DB for RESPONSES, will start checking new blocks after block height [ ' + latestSavedOnDB[0]?.blockHeight + ' ] ...');
     lastBlockHeight = latestSavedOnDB[0]?.blockHeight;
   } else {
-    console.log('SOLUTIONS => Could NOT find the latest block info in our DB for SOLUTIONS, assuming the default start block height - will fetch everything, this might take several minutes...');
+    console.log('RESPONSES => Could NOT find the latest block info in our DB for RESPONSES, assuming the default start block height - will fetch everything, this might take several minutes...');
   }
 
   const queryTags = [
-    { name: TAG_NAMES.protocolName, values: [PROTOCOL_NAME] },
-    { name: TAG_NAMES.protocolVersion, values: [PROTOCOL_VERSION] },
-    { name: TAG_NAMES.operationName, values: [SOLUTION_CREATION] },
+    { name: TAG_NAMES.protocolName, values: [constants.PROTOCOL_NAME] },
+    { name: TAG_NAMES.protocolVersion, values: [constants.PROTOCOL_VERSION] },
+    { name: TAG_NAMES.operationName, values: [constants.INFERENCE_RESPONSE] },
   ];
 
   const queryStartBlock = { min: lastBlockHeight ? lastBlockHeight + 1 : null }; // + 1 or else it will fetch the same block again
   const queryFirst = QUERY_LIMIT_ARWEAVE;
 
-  try {
-    let finalResults = new Array();
+  let finalResults = new Array();
 
+  try {
     let lastLoopHasNextPage = true;
     let mostRecentLoopCursor = '';
     let firstExecution = true;
@@ -69,7 +69,7 @@ export const fetchResponses = async () => {
         document: query,
         variables: {
           tags: queryTags,
-          first: Number(queryFirst),
+          first: queryFirst,
           after: mostRecentLoopCursor,
           block: queryStartBlock,
         },
@@ -84,56 +84,47 @@ export const fetchResponses = async () => {
       }
 
       if (newWhileLoopResults.length > 0) {
-        console.log('SOLUTIONS => ... Found [ ' + newWhileLoopResults.length + ' ] more FairAI SOLUTIONS, with [ ' + finalResults.length + ' ] in total until now. Fetching more while results keep coming ...');
+        console.log('RESPONSES => ... Found [ ' + newWhileLoopResults.length + ' ] more FairAI RESPONSES, with [ ' + finalResults.length + ' ] in total until now. Fetching more while results keep coming ...');
       }
     }
-
-    console.log('SOLUTIONS => Fetching complete. Found a total of [ ' + (finalResults?.length ?? 0) + ' ] new FairAI SOLUTIONS.');
-
-    if (finalResults.length > 0) {
-      type tagName = keyof typeof TAG_NAMES;
-      const findTag = (tx: transactionEdge, tagName: tagName) => tx.node.tags.find(tag => tag.name === TAG_NAMES[tagName])?.value ?? '';
-
-      // filter only relevant data
-      let dataPreparation = finalResults.map((itemFiltered: transactionEdge) => {
-        return {
-          solutionId: itemFiltered.node.id,
-          solutionName: findTag(itemFiltered, 'solutionName'),
-          solutionDescription: findTag(itemFiltered, 'description'),
-          solutionOwner: itemFiltered.node.owner.address,
-          rawData: JSON.stringify(itemFiltered.node),
-          blockHeight: itemFiltered.node.block?.height,
-          relatedNewSolutionRequest: null,
-          originalSolutionRequest: findTag(itemFiltered, 'solutionRequestId'),
-          output: findTag(itemFiltered, 'output'),
-          outputConfiguration: findTag(itemFiltered, 'outputConfiguration'),
-          rewardsAddress: findTag(itemFiltered, 'rewardsEvmAddress'),
-          timestamp: findTag(itemFiltered, 'unixTime'),
-          allowFiles: findTag(itemFiltered, 'allowFiles'),
-          allowText: findTag(itemFiltered, 'allowText'),
-          contractAddress: findTag(itemFiltered, 'contractSrc'),
-        };
-      });
-
-      dataPreparation.reverse(); // arweave returns more recent first so we need to reverse it
-
-      console.log('SOLUTIONS => Saving data on DB ...');
-      // save to database
-      // we use insertMany to add all items at once
-      SOLUTIONS_MODEL.insertMany(dataPreparation, {
-        ordered: false, // this 'false' will make mongodb ignore duplicate 'unique keys', and proceed operation without fail
-      })
-        .then(data => {
-          console.log('SOLUTIONS => Successfully updated SOLUTIONS collection on DB. Update finished.');
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    } else {
-      console.log('SOLUTIONS => Nothing new to save on DB. Update finished.');
-    }
   } catch (error) {
-    console.log('SOLUTIONS => ERROR fetching SOLUTIONS:');
+    console.log('RESPONSES => ERROR fetching RESPONSES:');
     console.log(error?.response?.errors ?? error);
+  }
+
+  console.log('RESPONSES => Fetching complete. Found a total of [ ' + (finalResults?.length ?? 0) + ' ] new FairAI RESPONSES.');
+  if (finalResults.length > 0) {
+    type tagName = keyof typeof TAG_NAMES;
+    const findTag = (tx: transactionEdge, tagName: tagName) => tx.node.tags.find(tag => tag.name === TAG_NAMES[tagName])?.value ?? '';
+    // filter only relevant data
+    let dataPreparation = finalResults.map((itemFiltered: transactionEdge) => {
+      return {
+        owner: itemFiltered.node.owner.address,
+        requestOwner: findTag(itemFiltered, 'solutionUser'),
+        blockchainResponseId: itemFiltered.node.id,
+        blockchainSolutionId: findTag(itemFiltered, 'solutionTransaction'),
+        blockchainRequestId: findTag(itemFiltered, 'requestTransaction'),
+        rawData: JSON.stringify(itemFiltered.node),
+        blockHeight: itemFiltered.node.block?.height,
+        timestamp: findTag(itemFiltered, 'unixTime'),
+      };
+    });
+
+    dataPreparation.reverse(); // arweave returns more recent first so we need to reverse it
+
+    console.log('RESPONSES => Saving data on DB ...');
+    // save to database
+    // we use insertMany to add all items at once
+    USER_RESPONSES_MODEL.insertMany(dataPreparation, {
+      ordered: false, // this 'false' will make mongodb ignore duplicate 'unique keys', and proceed operation without fail
+    })
+      .then(data => {
+        console.log('RESPONSES => Successfully updated RESPONSES collection on DB. Update finished.');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  } else {
+    console.log('RESPONSES => Nothing new to save on DB. Update finished.');
   }
 };

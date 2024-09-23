@@ -19,12 +19,16 @@
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-type viewOption = 'daily' | 'weekly' | 'monthly';
+type viewOption = "daily" | "weekly" | "monthly";
 
-const changeVersionsDate = '2023-09-01';
+const changeVersionsDate = "2024-04-15";
 
 interface ConfigurationValues {
-  startDate: Date, endDate: Date, isExtraEnabled: boolean, walletsContent: string, view: viewOption
+  startDate: Date;
+  endDate: Date;
+  isExtraEnabled: boolean;
+  walletsContent: string;
+  view: viewOption;
 }
 
 interface ConfigurationContext {
@@ -36,33 +40,37 @@ const initialState: ConfigurationValues = {
   startDate: new Date(changeVersionsDate),
   endDate: new Date(),
   isExtraEnabled: false,
-  walletsContent: '',
-  view: 'monthly'
+  walletsContent: "",
+  view: "monthly",
 };
 
 export const ConfigurationContext = createContext<ConfigurationContext>({
   state: initialState,
-  setState: () => null
+  setState: () => null,
 });
 
-export const ConfigurationProvider = ({ children }: { children: ReactNode }) => {
+export const ConfigurationProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const { pathname } = useLocation();
-  const [ currentConfig, setCurrentConfig ] = useState<ConfigurationValues>(initialState);
-  
-  const value = useMemo(() => ({ state: currentConfig, setState: setCurrentConfig }), [
-    currentConfig,
-    setCurrentConfig
-  ]);
+  const [currentConfig, setCurrentConfig] =
+    useState<ConfigurationValues>(initialState);
+
+  const value = useMemo(
+    () => ({ state: currentConfig, setState: setCurrentConfig }),
+    [currentConfig, setCurrentConfig]
+  );
 
   useEffect(() => {
-    if (pathname.includes('alpha')) {
+    if (pathname.includes("alpha")) {
       setCurrentConfig((prevState) => ({
         ...prevState,
         isExtraEnabled: false,
-        startDate: new Date('2023-04-25'),
+        startDate: new Date("2023-04-25"),
         endDate: new Date(changeVersionsDate),
       }));
- 
     } else {
       setCurrentConfig((prevState) => ({
         ...prevState,
@@ -71,10 +79,9 @@ export const ConfigurationProvider = ({ children }: { children: ReactNode }) => 
         endDate: new Date(),
       }));
     }
-  }, [ pathname ]);
+  }, [pathname]);
 
-
-  useEffect(() => console.log(currentConfig), [ currentConfig ]);
+  useEffect(() => console.log(currentConfig), [currentConfig]);
 
   return (
     <ConfigurationContext.Provider value={value}>

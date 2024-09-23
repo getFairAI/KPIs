@@ -1,5 +1,5 @@
 import { createPublicClient, erc20Abi, http, hexToString, formatUnits } from 'viem';
-const apiConfigStartBlock = require('../config/api.config.js');
+import { startBlockArbitrumTransfers } from '../config/api.config.js';
 import { Query } from '@irys/query';
 import { ObjectId } from 'bson';
 import { arbitrum } from 'viem/chains';
@@ -72,7 +72,7 @@ export const fetchArbitrumRequests = async () => {
   const blocksToAdvanceOnEachIteration = 100;
   const dateNowTime = new Date().getTime() / 1000;
 
-  let lastBlockNumber = apiConfigStartBlock; // defaults to this one
+  let lastBlockNumber = startBlockArbitrumTransfers; // defaults to this one
 
   // get most recent block saved on our DB
   ARBITRUM_TRANSFERS_MODEL.find()
@@ -81,7 +81,7 @@ export const fetchArbitrumRequests = async () => {
     .then(data => {
       if (data[0]?.blockchainBlockNumber) {
         console.log('=> OK! Found the latest block number in our DB for payments, will start checking new blocks after this one => ' + Number(data[0].blockchainBlockNumber));
-        lastBlockNumber = Number(data[0].blockchainBlockNumber) ?? apiConfigStartBlock;
+        lastBlockNumber = Number(data[0].blockchainBlockNumber) ?? startBlockArbitrumTransfers;
       } else {
         console.log(' => Could NOT find the latest block info in our DB, assuming default start block => ' + Number(lastBlockNumber));
       }

@@ -8,7 +8,7 @@ const schema = new mongoose.Schema({
     solutionOwner: { type: String, required: true },
     rawData: { type: String, required: true }, // JSON stringified
     blockHeight: { type: Number, required: true },
-    relatedNewSolutionRequest: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SOLUTION_REQUESTS' }, // optional
+    relatedNewSolutionRequest: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SOLUTION_REQUESTS', index: true }, // optional
     originalSolutionRequest: { type: String, required: false },
     output: { type: String, required: true },
     outputConfiguration: { type: String, required: false },

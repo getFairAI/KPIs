@@ -18,7 +18,7 @@ router.get('/get-all', async (request, response) => {
           },
         };
       });
-      response.status(200).send(dataPreparation ?? []);
+      response.status(200).json(dataPreparation ?? []);
     })
     .catch(error => {
       console.log(error);
@@ -34,7 +34,7 @@ router.get('/get-all-raw', async (request, response) => {
       let dataPreparation = results.map(item => {
         return JSON.parse(item?.rawData ?? '');
       });
-      response.status(200).send(dataPreparation ?? []);
+      response.status(200).json(dataPreparation ?? []);
     })
     .catch(error => {
       console.log(error);

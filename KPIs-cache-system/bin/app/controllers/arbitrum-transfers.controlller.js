@@ -7,7 +7,7 @@ router.get('/get-all', async (request, response) => {
     ARBITRUM_TRANSFERS_MODEL.find()
         .lean()
         .then(results => {
-        response.status(200).send(results ?? []);
+        response.status(200).json(results ?? []);
     })
         .catch(error => {
         console.log(error);

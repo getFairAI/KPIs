@@ -56,7 +56,7 @@ export const fetchArbitrumTransfers = async () => {
             // filter only relevant data
             let dataPreparation = finalResults.map(item => {
                 return {
-                    relatedUserRequest: null,
+                    relatedUserRequest: null, // TO DO
                     blockchainRequestId: item.arweaveTx,
                     blockchainBlockNumber: item.blockNumber,
                     from: item.from,

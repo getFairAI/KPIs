@@ -9,11 +9,12 @@
     "build": "npm run clean && graphql-codegen && ./node_modules/.bin/tsc -b -v",
     "nodemon": "nodemon --watch src/**/*.ts --watch src/**/*.js --exec node --inspect --loader ts-node/esm ./src/index.ts",
     "tsc-watch": "./node_modules/.bin/tsc-watch -b -v -i -w --noclear --compiler \"./node_modules/.bin/tsc\" --onSuccess \"node --inspect --es-module-specifier-resolution=node ./bin/index.js\"",
-    "codegen": "graphql-codegen --config graphql.config.js --project prj3"
+    "codegen": "graphql-codegen --config graphql.config.js --project responses"
   },
   "author": "FairAI - getfair.ai",
   "license": "ISC",
   "dependencies": {
+    "@types/elliptic": "^6.4.18",
     "body-parser": "^1.20.3",
     "bson": "^6.8.0",
     "cors": "^2.8.5",

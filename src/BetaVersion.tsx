@@ -148,13 +148,13 @@ function Beta() {
         // requests
         const requestsInferenceTransactionsRaw =
           await fetchAllTransactionsToKPICacheAPI();
-        // const requestsInferenceTransactionsFiltered =
-        //   filterTransactionsIncludeTagNamesAndExcludeTags(
-        //     requestsInferenceTransactionsRaw,
-        //     [TAG_NAMES.appVersion],
-        //     fairWallets,
-        //     tagsToExclude
-        //   );
+        const requestsInferenceTransactionsFiltered =
+          filterTransactionsIncludeTagNamesAndExcludeTags(
+            requestsInferenceTransactionsRaw,
+            [TAG_NAMES.appVersion],
+            fairWallets,
+            tagsToExclude
+          );
         const uniqueOwnersScriptPayment = createOwnerUnixTimeMap(
           requestsInferenceTransactionsRaw,
           uniqueWalletsAlpha

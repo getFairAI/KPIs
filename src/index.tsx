@@ -16,36 +16,38 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
-import Root from '@/root';
-import '@/styles/index.css';
-import Beta from './BetaVersion';
-import Alpha from './AlphaVersion';
-import '@/styles/ui.css';
-import '@/styles/main.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createHashRouter, RouterProvider } from "react-router-dom";
+import Root from "@/root";
+import "@/styles/index.css";
+import "@/styles/ui.css";
+import "@/styles/main.css";
+import Test from "./testVersion";
 
 const router = createHashRouter([
   {
-    path: '/',
+    path: "/",
     element: <Root />,
     children: [
+      // {
+      //   path: '',
+      //   element: <Beta />,
+      // },
+      // {
+      //   path: 'alpha',
+      //   element:<Alpha />
+      // },
       {
-        path: '',
-        element: <Beta />,
-      },
-      {
-        path: 'alpha',
-        element:<Alpha />
+        path: "test",
+        element: <Test />,
       },
     ],
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>,
+  </React.StrictMode>
 );
-

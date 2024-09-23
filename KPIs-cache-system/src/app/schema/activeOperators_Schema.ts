@@ -4,9 +4,12 @@ import { dbConnection } from '../models/dbConnectionModel.js';
 const schema = new mongoose.Schema(
   {
     // _id: ObjectId
-    relatedSolution: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'SOLUTIONS' },
+    owner: { type: String, required: true },
+    relatedSolution: { type: mongoose.Schema.Types.ObjectId || null, required: false, ref: 'SOLUTIONS' },
+    blockchainSolutionId: { type: String, required: true },
+    blockHeight: { type: Number, required: true },
     fee: { type: Number, required: true },
-    name: { type: String, required: true },
+    timestamp: { type: Number, required: true },
   },
   {
     toObject: { virtuals: true },

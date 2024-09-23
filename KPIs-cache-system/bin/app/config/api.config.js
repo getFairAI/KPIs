@@ -3,12 +3,23 @@ export const apiBaseURL = '/kpis-cache/request';
 export const apiPORT = 3005;
 export const graphQLArbitrumRequestsUrl = 'https://subgraph.satsuma-prod.com/2f3d33952889/fairai--inc--359110/FairAI-payments/version/v1.1/api';
 export const graphQLarweave = 'https://arweave.net/graphql';
-export const PROTOCOL_NAME = 'FairAI';
-export const PROTOCOL_VERSION = '2.0';
-export const SOLUTION_CREATION = 'Solution Creation';
-export const QUERY_LIMIT_ARWEAVE = 1000;
+export const graphQLirysArweave = 'https://arweave.mainnet.irys.xyz/graphql';
+export const QUERY_LIMIT_ARWEAVE = 500;
 export const QUERY_LIMIT_ARBITRUM = 1000;
-export const startBlock = 242498175;
+export const startBlockArbitrumTransfers = 242498175;
+export const startBlockArweave = 1404305;
+export const constants = {
+    PROTOCOL_NAME: 'FairAI',
+    PROTOCOL_VERSION: '2.0',
+    SOLUTION_CREATION: 'Solution Creation',
+    INFERENCE_REQUEST: 'Inference Request',
+    REQUEST_SOLUTION: 'Request-Solution',
+    INFERENCE_RESPONSE: 'Inference Response',
+    OPERATOR_PROOF: 'Operator Active Proof',
+    OPERATOR_CANCELLATIONS: 'Operator Cancellation',
+    ACTIVE_OPERATORS: 'Operator Registration',
+    WALLET_LINKS: 'EVM Wallet Link',
+};
 export const TAG_NAMES = {
     protocolName: 'Protocol-Name',
     protocolVersion: 'Protocol-Version',
@@ -85,4 +96,5 @@ export const TAG_NAMES = {
     privateMode: 'Private-Mode',
     encDataForOperator: 'Encrypted-Data-For-Operator',
     solutionRequestId: 'Solution-Request-Id',
+    evmPublicKey: 'EVM-Public-Key',
 };

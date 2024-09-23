@@ -96,8 +96,8 @@ export interface CustomLinkProperties {
   children: React.ReactNode;
 }
 
-export interface TransactionsFromKPICache {
-  id: string;
+export interface TransfersFromKPICache {
+  _id: string;
   relatedUserRequest: string;
   blockchainRequestId: string;
   blockchainBlockNumber: number;

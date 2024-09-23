@@ -1,7 +1,7 @@
 /** @type {import('graphql-config').IGraphQLConfig } */
 module.exports = {
   projects: {
-    prj1: {
+    arbitrumRequests: {
       schema: ['https://subgraph.satsuma-prod.com/2f3d33952889/fairai--inc--359110/FairAI-payments/version/v1.1/api'],
       documents: ['./src/app/cron-jobs/fetch-arbitrum-requests.ts'],
       extensions: {
@@ -15,7 +15,7 @@ module.exports = {
         },
       },
     },
-    prj2: {
+    solutions: {
       schema: ['https://arweave.net/graphql'],
       documents: ['./src/app/cron-jobs/fetch-solutions.ts'],
       extensions: {
@@ -33,9 +33,27 @@ module.exports = {
         },
       },
     },
-    prj3: {
-      schema: ['https://arweave.net/graphql'],
-      documents: ['./bin/app/cron-jobs/fetch-solutions-requests.js'],
+    userRequests: {
+      schema: ['https://arweave.mainnet.irys.xyz/graphql'],
+      documents: ['./src/app/cron-jobs/fetch-user-requests.ts'],
+      extensions: {
+        codegen: {
+          ignoreNoDocuments: true,
+          config: {
+            namingConvention: 'change-case-all#camelCase',
+          },
+          generates: {
+            './src/gql/users-requests/': {
+              preset: 'client',
+              plugins: [],
+            },
+          },
+        },
+      },
+    },
+    solutionRequests: {
+      schema: ['https://arweave.mainnet.irys.xyz/graphql'],
+      documents: ['./src/app/cron-jobs/fetch-solutions-requests.ts'],
       extensions: {
         codegen: {
           ignoreNoDocuments: true,
@@ -44,6 +62,24 @@ module.exports = {
           },
           generates: {
             './src/gql/solutions-requests/': {
+              preset: 'client',
+              plugins: [],
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      schema: ['https://arweave.net/graphql'],
+      documents: ['./src/app/cron-jobs/fetch-responses.ts'],
+      extensions: {
+        codegen: {
+          ignoreNoDocuments: true,
+          config: {
+            namingConvention: 'change-case-all#camelCase',
+          },
+          generates: {
+            './src/gql/responses/': {
               preset: 'client',
               plugins: [],
             },

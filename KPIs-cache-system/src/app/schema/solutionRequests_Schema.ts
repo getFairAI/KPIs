@@ -4,11 +4,9 @@ import { dbConnection } from '../models/dbConnectionModel.js';
 const schema = new mongoose.Schema(
   {
     // _id: ObjectId
-    name: { type: String, required: true },
-    description: { type: String, required: true },
     owner: { type: String, required: true },
-    blockHeight: { type: Number, required: true },
-    timestamp: { type: Date, required: true },
+    timestamp: { type: Number, required: true },
+    rawData: { type: String, required: true },
   },
   {
     toObject: { virtuals: true },

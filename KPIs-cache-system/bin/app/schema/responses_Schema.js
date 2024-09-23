@@ -2,8 +2,14 @@ import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel.js';
 const schema = new mongoose.Schema({
     // _id: ObjectId
-    relatedUserRequest: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'USER_REQUESTS' },
-    timestamp: { type: Date, required: true },
+    owner: { type: String, required: true },
+    requestOwner: { type: String, required: true },
+    blockchainRequestId: { type: String, required: true },
+    blockchainResponseId: { type: String, required: true },
+    blockchainSolutionId: { type: String, required: true },
+    blockHeight: { type: Number, required: true },
+    rawData: { type: String, required: true }, // JSON stringified
+    timestamp: { type: Number, required: true },
 }, {
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
