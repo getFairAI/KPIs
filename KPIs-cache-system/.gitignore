@@ -29,3 +29,5 @@ yarn-error.log*
 .dist-manifest.json
 # Wallets
 /wallet.json
+
+.env

@@ -10,10 +10,9 @@ function handleError(error: Error) {
 
 var dbConnectionFunction = function () {
   console.log('');
-  console.log('\x1b[33m', 'Attempting a new connection to MongoDB server at ' + dbConfig.dbUrl + ' ...');
+  console.log('\x1b[33m', 'Attempting a new connection to MongoDB server at ' + dbConfig.url + ' ...');
   mongoose
-    .connect(dbConfig.dbUrl, {
-      dbName: dbConfig.dbName, // name of the database
+    .connect(dbConfig.url, {
       serverSelectionTimeoutMS: 5000,
     })
     .then(connected => {
@@ -26,7 +25,7 @@ dbConnectionFunction();
 
 mongoose.connection.on('connected', function () {
   wasConnectedBefore = true;
-  console.log('\x1b[32m', `| Successfuly connected to database "${dbConfig.dbName}" at "${dbConfig.dbUrl}".`);
+  console.log('\x1b[32m', `| Successfuly connected to url: "${dbConfig.url}".`);
   console.log('\x1b[0m');
   console.log('\x1b[33m', 'Server is up and running. CTRL+C to stop.\n');
   console.log('\x1b[0m');
@@ -34,12 +33,12 @@ mongoose.connection.on('connected', function () {
 
 mongoose.connection.on('reconnected', function () {
   console.log('');
-  console.log('\x1b[32m', `Connection restored to MongoDB at "${dbConfig.dbUrl}"`);
+  console.log('\x1b[32m', `Connection restored to MongoDB at "${dbConfig.url}"`);
 });
 
 mongoose.connection.on('error', function () {
   console.log('');
-  console.log('\x1b[31m', `Error trying to connect to MongoDB at "${dbConfig.dbUrl}"`);
+  console.log('\x1b[31m', `Error trying to connect to MongoDB at "${dbConfig.url}"`);
   if (!wasConnectedBefore) {
     // needed because mongoose calls error AND disconnect everytime an error OR disconnect happens
     console.log('\x1b[33m', '- Trying to reconnect in 5 seconds...');
@@ -51,7 +50,7 @@ mongoose.connection.on('error', function () {
 mongoose.connection.on('disconnected', function () {
   if (wasConnectedBefore) {
     console.log('');
-    console.log('\x1b[31m', `Connection lost to MongoDB at "${dbConfig.dbUrl}"`);
+    console.log('\x1b[31m', `Connection lost to MongoDB at "${dbConfig.url}"`);
     console.log('\x1b[33m', '- Trying to reconnect in 5 seconds...');
     console.log('\x1b[0m');
     setTimeout(dbConnectionFunction, 5000);
