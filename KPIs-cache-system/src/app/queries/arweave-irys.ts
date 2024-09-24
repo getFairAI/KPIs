@@ -5,9 +5,9 @@ const irysTransactionsQuery = graphql(`
     transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {
       pageInfo {
         hasNextPage
-        endCursor
       }
       edges {
+        cursor
         node {
           id
           tags {

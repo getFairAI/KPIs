@@ -53,7 +53,7 @@ export const fetchUserRequests = async () => {
       newWhileLoopResults = results?.transactions?.edges ?? [];
       lastLoopHasNextPage = results?.transactions?.pageInfo?.hasNextPage ?? false;
       // on each loop we assign a new cursor for the next request
-      mostRecentLoopCursor = results?.transactions?.pageInfo?.endCursor ?? '';
+      mostRecentLoopCursor = newWhileLoopResults[newWhileLoopResults.length - 1]?.cursor;
       if (firstExecution) {
         firstExecution = false;
       }

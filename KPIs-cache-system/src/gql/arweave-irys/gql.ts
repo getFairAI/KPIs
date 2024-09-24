@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $from: BigInt, $to: BigInt) {\n    transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n      edges {\n        node {\n          id\n          tags {\n            name\n            value\n          }\n          address\n          timestamp\n        }\n      }\n    }\n  }\n": types.findByTagsDocument,
+    "\n  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $from: BigInt, $to: BigInt) {\n    transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {\n      pageInfo {\n        hasNextPage\n      }\n      edges {\n        cursor\n        node {\n          id\n          tags {\n            name\n            value\n          }\n          address\n          timestamp\n        }\n      }\n    }\n  }\n": types.findByTagsDocument,
 };
 
 /**
@@ -33,7 +33,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $from: BigInt, $to: BigInt) {\n    transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n      edges {\n        node {\n          id\n          tags {\n            name\n            value\n          }\n          address\n          timestamp\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $from: BigInt, $to: BigInt) {\n    transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n      edges {\n        node {\n          id\n          tags {\n            name\n            value\n          }\n          address\n          timestamp\n        }\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $from: BigInt, $to: BigInt) {\n    transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {\n      pageInfo {\n        hasNextPage\n      }\n      edges {\n        cursor\n        node {\n          id\n          tags {\n            name\n            value\n          }\n          address\n          timestamp\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $from: BigInt, $to: BigInt) {\n    transactions(tags: $tags, first: $first, after: $after, timestamp: { from: $from, to: $to }) {\n      pageInfo {\n        hasNextPage\n      }\n      edges {\n        cursor\n        node {\n          id\n          tags {\n            name\n            value\n          }\n          address\n          timestamp\n        }\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
