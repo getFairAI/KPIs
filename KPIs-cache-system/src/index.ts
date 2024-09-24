@@ -2,11 +2,10 @@ import express, { json, urlencoded } from 'express';
 import { schedule } from 'node-cron';
 import cors from 'cors';
 import { set } from 'mongoose';
-const app = express();
-import runMiddleware from 'run-middleware';
-import { apiBaseURL, apiVersion, apiPORT } from './app/config/api.config.js';
-runMiddleware(app);
+import { apiBaseURL, apiVersion, apiPORT } from './app/config/api.config';
+import errorHandler from 'errorhandler';
 
+const app = express();
 set('debug', false); // uncomment for debug/testing messages on console from mongoose
 
 // set the console logs to output better info
@@ -48,7 +47,7 @@ app.use(urlencoded({ extended: true, limit: '5mb' }));
 var router = express.Router();
 
 // validate auth token before executing anything else =================================
-app.use(function (req, res, next) {
+app.use((_req, _res, next) => {
   // executed in every request
   next(); // disabled for now
 });
@@ -63,10 +62,10 @@ router.get('/status', (req, res) => {
 
 app.use(apiBaseURL, router); // base route (path) to answer requests
 
-import solutionsController from './app/controllers/solutions.controller.js';
+import solutionsController from './app/controllers/solutions.controller';
 app.use(apiBaseURL + '/solutions', solutionsController); // base route (path) to answer requests
 
-import arbitrumTransfersController from './app/controllers/arbitrum-transfers.controlller.js';
+import arbitrumTransfersController from './app/controllers/arbitrum-transfers.controlller';
 app.use(apiBaseURL + '/arbitrum-transfers', arbitrumTransfersController); // base route (path) to answer requests
 
 // start listening for requ ests at the given port
@@ -91,67 +90,70 @@ app.get('/', (req, res) => {
 });
 
 // INITALIZE CRON JOBS AND SCHEDULING ==========================================================
-import { fetchArbitrumTransfers } from './app/cron-jobs/fetch-arbitrum-transfers.js';
+import { fetchArbitrumTransfers } from './app/cron-jobs/fetch-arbitrum-transfers';
 // run once every day at 00:00
 schedule('0 0 * * *', fetchArbitrumTransfers, { runOnInit: true }); // run once on init
 
-import { fetchSolutions } from './app/cron-jobs/fetch-solutions.js';
+import { fetchSolutions } from './app/cron-jobs/fetch-solutions';
 // run once every day at 00:05
 schedule('5 0 * * *', fetchSolutions, { runOnInit: true });
 
-import { fetchSolutionsRequests } from './app/cron-jobs/fetch-solutions-requests.js';
+import { fetchSolutionsRequests } from './app/cron-jobs/fetch-solutions-requests';
 // run once every day at 00:10
 schedule('10 0 * * *', fetchSolutionsRequests, { runOnInit: true });
 
-import { fetchUserRequests } from './app/cron-jobs/fetch-user-requests.js';
+import { fetchUserRequests } from './app/cron-jobs/fetch-user-requests';
 // run once every day at 00:15
 schedule('15 0 * * *', fetchUserRequests, { runOnInit: true });
 
-import { fetchResponses } from './app/cron-jobs/fetch-responses.js';
+import { fetchResponses } from './app/cron-jobs/fetch-responses';
 // run once every day at 00:20
 schedule('20 0 * * *', fetchResponses, { runOnInit: true });
 
-import { fetchOperatorProofs } from './app/cron-jobs/fetch-operator-proofs.js';
+import { fetchOperatorProofs } from './app/cron-jobs/fetch-operator-proofs';
 // run once every day at 00:25
 schedule('25 0 * * *', fetchOperatorProofs, { runOnInit: true });
 
-import { fetchOperatorCancellations } from './app/cron-jobs/fetch-operator-cancellations.js';
+import { fetchOperatorCancellations } from './app/cron-jobs/fetch-operator-cancellations';
 // run once every day at 00:30
 schedule('30 0 * * *', fetchOperatorCancellations, { runOnInit: true });
 
-import { fetchActiveOperators } from './app/cron-jobs/fetch-active-operators.js';
+import { fetchActiveOperators } from './app/cron-jobs/fetch-active-operators';
 // run once every day at 00:35
 schedule('35 0 * * *', fetchActiveOperators, { runOnInit: true });
 
-import { fetchWalletLinks } from './app/cron-jobs/fetch-wallet-links.js';
+import { fetchWalletLinks } from './app/cron-jobs/fetch-wallet-links';
 // run once every day at 00:40
 schedule('40 0 * * *', fetchWalletLinks, { runOnInit: true });
 
-// general error handler =======================================================================
-app.use(function (err, req, res, next) {
+const logErrors: errorHandler.LoggingCallback = (err, _req, _res, next) => {
   console.log('\x1b[31m', new Date().toLocaleString() + ' - ' + err);
   console.log('\x1b[0m');
-  if (err.stack) console.error(err.stack);
-  res.status(404).send(); // answer with 404 even if the route exist to avoid web crawlers from finding routes
-});
+  if (err.stack) {
+    console.error(err.stack);
+  }
+};
+
+// general error handler =======================================================================
+app.use(errorHandler({ log: logErrors }));
 
 // interrupt events handler
-function handleInterruptEvents() {
+const handleInterruptEvents = () => {
   console.log('\x1b[33m', '> Caught shutdown signal, closing server...');
   // here we can add any function to execute before closing the server.
 }
 
-process.on('SIGINT', function () {
+process.on('SIGINT', () => {
   handleInterruptEvents();
   process.exit();
 });
 
-process.on('SIGQUIT', function () {
+process.on('SIGQUIT', () => {
   handleInterruptEvents();
   process.exit();
 });
 
-process.on('SIGTERM', function () {
+process.on('SIGTERM', () => {
   handleInterruptEvents();
   process.exit();
 });

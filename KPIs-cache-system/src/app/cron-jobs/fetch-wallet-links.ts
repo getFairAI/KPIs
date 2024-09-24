@@ -1,34 +1,9 @@
 import { request } from 'graphql-request';
-import { graphql } from '../../gql/responses/gql.js';
-import { findByTagsQuery, transactionEdge } from '../../gql/responses/graphql.js';
-import { graphQLarweave, TAG_NAMES, QUERY_LIMIT_ARWEAVE, constants, startBlockArweave } from '../config/api.config.js';
-import { WALLET_LINKS_MODEL } from '../schema/walletLinks_Schema.js';
-
-const query = graphql(`
-  query findByTags($tags: [TagFilter!], $first: Int!, $after: String, $block: BlockFilter) {
-    transactions(tags: $tags, first: $first, after: $after, block: $block) {
-      pageInfo {
-        hasNextPage
-      }
-      edges {
-        cursor
-        node {
-          id
-          tags {
-            name
-            value
-          }
-          owner {
-            address
-          }
-          block {
-            height
-          }
-        }
-      }
-    }
-  }
-`);
+import { graphQLarweave, TAG_NAMES, QUERY_LIMIT_ARWEAVE, constants, startBlockArweave } from '../config/api.config';
+import { WALLET_LINKS_MODEL } from '../schema/walletLinks_Schema';
+import { GraphQLError } from 'graphql';
+import { findByTagsQuery, transactionEdge } from '../../gql/arweave-native/graphql';
+import arweaveTransactionsQuery from '../queries/arweave-native';
 
 export const fetchWalletLinks = async () => {
   console.log('');
@@ -66,7 +41,7 @@ export const fetchWalletLinks = async () => {
     while (lastLoopHasNextPage) {
       const results: findByTagsQuery = await request({
         url: graphQLarweave,
-        document: query,
+        document: arweaveTransactionsQuery,
         variables: {
           tags: queryTags,
           first: queryFirst,
@@ -89,7 +64,7 @@ export const fetchWalletLinks = async () => {
     }
   } catch (error) {
     console.log('WALLET LINKS => ERROR fetching WALLET LINKS:');
-    console.log(error?.response?.errors ?? error);
+    console.log((error as GraphQLError).cause ?? error as string);
   }
 
   console.log('WALLET LINKS => Fetching complete. Found a total of [ ' + (finalResults?.length ?? 0) + ' ] new FairAI WALLET LINKS.');

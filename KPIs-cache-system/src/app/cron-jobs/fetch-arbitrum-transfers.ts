@@ -1,22 +1,9 @@
 import { request } from 'graphql-request';
-import { graphql } from '../../gql/arbitrum-requests/gql.js';
-import { QueryArbitrumTransfersQuery } from '../../gql/arbitrum-requests/graphql.js';
-import { graphQLArbitrumRequestsUrl, QUERY_LIMIT_ARBITRUM } from '../config/api.config.js';
-import { ARBITRUM_TRANSFERS_MODEL } from '../schema/arbitrum-transfers_Schema.js';
-
-const query = graphql(`
-  query queryArbitrumTransfers($first: Int, $skip: Int) {
-    transfers(first: $first, skip: $skip) {
-      from
-      to
-      value
-      blockTimestamp
-      arweaveTx
-      transactionHash
-      blockNumber
-    }
-  }
-`);
+import { graphQLArbitrumRequestsUrl, QUERY_LIMIT_ARBITRUM } from '../config/api.config';
+import { ARBITRUM_TRANSFERS_MODEL } from '../schema/arbitrum-transfers_Schema';
+import { GraphQLError } from 'graphql';
+import { QueryArbitrumTransfersQuery } from '../../gql/arbitrum/graphql';
+import arbitrumTransfersQuery from '../queries/arbitrum';
 
 export const fetchArbitrumTransfers = async () => {
   console.log('');
@@ -44,7 +31,7 @@ export const fetchArbitrumTransfers = async () => {
     while (firstExecution || newWhileLoopResults?.length > 0) {
       const results: QueryArbitrumTransfersQuery = await request({
         url: graphQLArbitrumRequestsUrl,
-        document: query,
+        document: arbitrumTransfersQuery,
         variables: {
           first: QUERY_LIMIT_ARBITRUM ?? 1000,
           skip: firstExecution ? skipTransfers : skipTransfers + finalResults.length, // skip what we already have
@@ -62,7 +49,7 @@ export const fetchArbitrumTransfers = async () => {
     }
   } catch (error) {
     console.log('ARBITRUM TRANSFERS => ERROR fetching ARBITRUM TRANSFERS:');
-    console.log(error?.response?.errors ?? error);
+    console.log((error as GraphQLError).cause ?? error as string);
   }
 
   console.log('ARBITRUM TRANSFERS => Fetching complete. Found a total of [ ' + (finalResults.length ?? 0) + ' ] new FairAI transfers.');

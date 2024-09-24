@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { Error } from 'mongoose';
 
-import { dbConfig } from '../config/db.config.js'; // config file for the database
+import { dbConfig } from '../config/db.config'; // config file for the database
 
 var wasConnectedBefore = false;
 
-function handleError(error) {
+function handleError(error: Error) {
   console.log('\x1b[31m', `Error: ${error}`);
 }
 

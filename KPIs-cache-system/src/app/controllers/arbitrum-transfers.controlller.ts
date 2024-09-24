@@ -3,7 +3,7 @@ var router = express.Router();
 
 // base path - /arbitrum-transfers
 
-import { ARBITRUM_TRANSFERS_MODEL } from '../schema/arbitrum-transfers_Schema.js';
+import { ARBITRUM_TRANSFERS_MODEL } from '../schema/arbitrum-transfers_Schema';
 
 // retrieves all solutions currently stored on DB
 router.get('/get-all', async (request, response) => {

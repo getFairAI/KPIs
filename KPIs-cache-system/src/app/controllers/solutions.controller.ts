@@ -3,7 +3,7 @@ var router = express.Router();
 
 // base path - /solutions
 
-import { SOLUTIONS_MODEL } from '../schema/solutions_Schema.js';
+import { SOLUTIONS_MODEL } from '../schema/solutions_Schema';
 
 // retrieves all solutions currently stored on DB
 router.get('/get-all', async (request, response) => {

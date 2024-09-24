@@ -2,23 +2,26 @@
   "name": "fairai-kpi-cache-system",
   "version": "1.0.0",
   "description": "Cache System for KPIs from FairAI",
-  "main": "src/index.ts",
+  "type": "module",
   "scripts": {
     "start": "npm run tsc-watch",
-    "clean": "rimraf ./src/**/bin ./bin ./src/**/tsconfig.tsbuildinfo tsconfig.tsbuildinfo",
-    "build": "npm run clean && graphql-codegen && ./node_modules/.bin/tsc -b -v",
+    "clean": "rimraf ./src/**/bin ./bin ./dist ./src/**/tsconfig.tsbuildinfo tsconfig.tsbuildinfo",
+    "build": "npm run clean && && npm run codegen-arb && npm run codegen-ar-native && npm run codegen-ar-irys && ts-node build.ts",
     "nodemon": "nodemon --watch src/**/*.ts --watch src/**/*.js --exec node --inspect --loader ts-node/esm ./src/index.ts",
-    "tsc-watch": "./node_modules/.bin/tsc-watch -b -v -i -w --noclear --compiler \"./node_modules/.bin/tsc\" --onSuccess \"node --inspect --es-module-specifier-resolution=node ./bin/index.js\"",
-    "codegen": "graphql-codegen --config graphql.config.js --project responses"
+    "tsc-watch": "./node_modules/.bin/tsc-watch -b -v -i -w --noclear --compiler \"./node_modules/.bin/tsc\" --onSuccess \"node --inspect ./dist/index.js\"",
+    "codegen-arb": "graphql-codegen --config graphql.config.ts --project arbitrumTransactions",
+    "codegen-ar-native": "graphql-codegen --config graphql.config.ts --project arweaveNative",
+    "codegen-ar-irys": "graphql-codegen --config graphql.config.ts --project arweaveIrys"
   },
   "author": "FairAI - getfair.ai",
   "license": "ISC",
   "dependencies": {
-    "@types/elliptic": "^6.4.18",
+    "@types/errorhandler": "^1.5.3",
     "body-parser": "^1.20.3",
     "bson": "^6.8.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
+    "errorhandler": "^1.5.1",
     "express": "^4.20.0",
     "express-session": "^1.18.0",
     "graphql": "^16.9.0",
@@ -44,11 +47,12 @@
     "@types/node": "^22.5.4",
     "@types/node-cron": "~3.0.11",
     "@typescript-eslint/parser": "^8.5.0",
+    "esbuild": "^0.23.1",
+    "esbuild-node-externals": "^1.14.0",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.6.2"
-  },
-  "type": "module"
+  }
 }
