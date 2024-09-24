@@ -8,7 +8,8 @@
     "clean": "rimraf ./src/**/bin ./bin ./dist ./src/**/tsconfig.tsbuildinfo tsconfig.tsbuildinfo",
     "build": "npm run clean && npm run codegen-arb && npm run codegen-ar-native && npm run codegen-ar-irys && node --loader ts-node/esm build.ts",
     "nodemon": "nodemon --watch src/**/*.ts --watch src/**/*.js --exec node --inspect --loader ts-node/esm ./src/index.ts",
-    "tsc-watch": "./node_modules/.bin/tsc-watch -b -v -i -w --noclear --compiler \"./node_modules/.bin/tsc\" --onSuccess \"node --loader ts-node/esm ./src/index.ts\"",
+    "tsc-watch": "./node_modules/.bin/tsc-watch --onSuccess \"node --loader ts-node/esm ./src/index.ts\"",
+    "tsc-watch-with-compiler": "./node_modules/.bin/tsc-watch -b -v -i -w --noclear --compiler \"./node_modules/.bin/tsc\" --onSuccess \"node --loader ts-node/esm ./src/index.ts\"",
     "codegen-arb": "graphql-codegen --config graphql.config.ts --project arbitrumTransactions",
     "codegen-ar-native": "graphql-codegen --config graphql.config.ts --project arweaveNative",
     "codegen-ar-irys": "graphql-codegen --config graphql.config.ts --project arweaveIrys"
