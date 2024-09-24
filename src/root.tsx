@@ -20,22 +20,36 @@ import { ApolloProvider } from "@apollo/client";
 import { CssBaseline } from "@mui/material";
 import { AppThemeProvider } from "./context/theme";
 import Layout from "./layout";
-import { client } from './queryAll';
+import { client } from "./queryAll";
 import { Outlet } from "react-router";
 import { ConfigurationProvider } from "./context/configuration";
+import { SnackbarProvider } from "notistack";
 
 export const Root = () => {
   return (
-    <ApolloProvider client={client}>
-      <AppThemeProvider>
-        <ConfigurationProvider>
-          <CssBaseline />
-          <Layout>
-            <Outlet />
-          </Layout>
-        </ConfigurationProvider>
-      </AppThemeProvider>
-    </ApolloProvider>
+    <>
+      <SnackbarProvider
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        maxSnack={4}
+        style={{
+          fontWeight: 700,
+        }}
+      />
+
+      <ApolloProvider client={client}>
+        <AppThemeProvider>
+          <ConfigurationProvider>
+            <CssBaseline />
+            <Layout>
+              <Outlet />
+            </Layout>
+          </ConfigurationProvider>
+        </AppThemeProvider>
+      </ApolloProvider>
+    </>
   );
 };
 

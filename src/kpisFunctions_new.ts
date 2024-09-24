@@ -802,7 +802,7 @@ export const AmountUTokenPaymentsPrepareData = (
     ),
     chartTitle: chartTitle,
     subTitle: subTitle,
-    formatter: (val: string) => `~ $${Number(val).toFixed(2)} USD`,
+    formatter: (val: string) => `~ $${Number(val).toFixed(2)}`,
   };
 
   const data: number[] = [];
@@ -814,7 +814,6 @@ export const AmountUTokenPaymentsPrepareData = (
 
     for (const transaction of paymentsTx) {
       const timestamp = transaction.timestamp;
-      const amount = 0;
 
       if (
         timestamp &&
@@ -822,7 +821,7 @@ export const AmountUTokenPaymentsPrepareData = (
         timestamp < weekEndTimestamp
       ) {
         // amountU = Number(amount / 1e6);
-        amountU = Number(BigInt(transaction.amount)) / 10 ** 6;
+        amountU += Number(BigInt(transaction.amount)) / 10 ** 6;
       }
     }
 

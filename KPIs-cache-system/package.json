@@ -4,7 +4,7 @@
   "description": "Cache System for KPIs from FairAI",
   "type": "module",
   "scripts": {
-    "start": "npm run tsc-watch",
+    "start": "export KPI_CACHE_PROD_MODE='false' && npm run tsc-watch",
     "clean": "rimraf ./src/**/bin ./bin ./dist ./src/**/tsconfig.tsbuildinfo tsconfig.tsbuildinfo",
     "build": "npm run clean && npm run codegen-arb && npm run codegen-ar-native && npm run codegen-ar-irys && node --loader ts-node/esm build.ts",
     "nodemon": "nodemon --watch src/**/*.ts --watch src/**/*.js --exec node --inspect --loader ts-node/esm ./src/index.ts",

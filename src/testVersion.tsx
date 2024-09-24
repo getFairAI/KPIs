@@ -63,8 +63,8 @@ function Test() {
       const transfersPerWeek = await AmountUTokenPaymentsPrepareData(
         transfers,
         mondays,
-        "whatever title",
-        "asdasd",
+        "Amount Spent",
+        "In USD",
         configState.view,
         ""
       );
