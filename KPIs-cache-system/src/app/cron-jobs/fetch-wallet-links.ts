@@ -73,7 +73,6 @@ export const fetchWalletLinks = async () => {
     const findTag = (tx: transactionEdge, tagName: tagName) => tx.node.tags.find(tag => tag.name === TAG_NAMES[tagName])?.value ?? '';
     // filter only relevant data
     let dataPreparation = finalResults.map((itemFiltered: transactionEdge) => {
-      console.log(itemFiltered.node.tags);
       return {
         arweaveAddress: itemFiltered.node.owner.address,
         blockchainTransactionId: itemFiltered.node.id,

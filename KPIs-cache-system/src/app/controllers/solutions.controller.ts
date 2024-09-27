@@ -6,20 +6,10 @@ var router = express.Router();
 import { SOLUTIONS_MODEL } from '../schema/solutions_Schema';
 
 // retrieves all solutions currently stored on DB
-router.get('/get-all', async (request, response) => {
-  SOLUTIONS_MODEL.find()
+router.get('/get-all', async (_, response) => {
+  SOLUTIONS_MODEL.find().select('-rawData')
     .lean()
-    .then(results => {
-      let dataPreparation = results.map(item => {
-        return {
-          ...item,
-          ...{
-            rawData: '', // clear this, we dont need it and its big
-          },
-        };
-      });
-      response.status(200).json(dataPreparation ?? []);
-    })
+    .then(results => response.status(200).json(results ?? []))
     .catch(error => {
       console.log(error);
       response.status(500).send(error);
@@ -27,7 +17,7 @@ router.get('/get-all', async (request, response) => {
 });
 
 // retrieves all solutions currently stored on DB - sends only raw data
-router.get('/get-all-raw', async (request, response) => {
+router.get('/get-all-raw', async (_, response) => {
   SOLUTIONS_MODEL.find()
     .lean()
     .then(results => {
