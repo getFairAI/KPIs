@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface SolutionRequests {
+  owner: string;
+  timestamp: number;
+  rawData: string;
+}
+
+const schema = new mongoose.Schema<SolutionRequests>(
   {
     // _id: ObjectId
     owner: { type: String, required: true },

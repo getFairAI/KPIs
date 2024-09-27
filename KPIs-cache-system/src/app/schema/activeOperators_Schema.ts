@@ -1,7 +1,17 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface ActiveOperators {
+  registrationId: string;
+  owner: string;
+  relatedSolution?: mongoose.Schema.Types.ObjectId;
+  blockchainSolutionId: string;
+  blockHeight: number;
+  fee: number;
+  timestamp: number;
+}
+
+const schema = new mongoose.Schema<ActiveOperators>(
   {
     // _id: ObjectId
     registrationId: { type: String, required: true },

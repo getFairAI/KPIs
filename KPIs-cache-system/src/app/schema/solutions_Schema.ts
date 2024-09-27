@@ -1,7 +1,26 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface Solution {
+  solutionId: string;
+  solutionName: string;
+  solutionDescription: string;
+  solutionOwner: string;
+  relatedNewSolutionRequest?: mongoose.Schema.Types.ObjectId;
+  originalSolutionRequest?: string;
+  output: string;
+  outputConfiguration?: string;
+  rewardsAddress?: string;
+  requestOwner: string;
+  contractAddress?: string;
+  allowFiles?: boolean;
+  allowText?: boolean;
+  rawData: string;
+  blockHeight: number;
+  timestamp: number;
+}
+
+const schema = new mongoose.Schema<Solution>(
   {
     // _id: ObjectId
     solutionId: { type: String, required: true, unique: true, index: true },

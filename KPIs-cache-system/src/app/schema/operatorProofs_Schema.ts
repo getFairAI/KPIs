@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface OperatorProof {
+  operatorAddress: string;
+  blockHeight: number;
+  timestamp: number;
+}
+
+const schema = new mongoose.Schema<OperatorProof>(
   {
     // _id: ObjectId
     operatorAddress: { type: String, required: true },

@@ -1,7 +1,16 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface UserRequest {
+  relatedSolution?: mongoose.Schema.Types.ObjectId;
+  blockchainRequest: string;
+  owner: string;
+  rawData: string;
+  responseTimestamp?: Date;
+  timestamp: number;
+}
+
+const schema = new mongoose.Schema<UserRequest>(
   {
     // _id: ObjectId
     relatedSolution: { type: mongoose.Schema.Types.ObjectId || null, required: false, ref: 'SOLUTIONS', index: true },

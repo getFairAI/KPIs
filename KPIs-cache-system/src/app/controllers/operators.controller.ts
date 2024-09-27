@@ -8,7 +8,15 @@ var router = express.Router();
 // base path - /solutions
 
 
-// retrieves all solutions currently stored on DB
+/**
+ * @openapi
+ * /:
+ *   get-all:
+ *     description: Get all
+ *     responses:
+ *       200:
+ *         description: Returns an array of all operatprs { _id, registrationId, owner, relatedSolution, blockchainSolutionId, blockHeight, fee, timestamp }
+ */
 router.get('/get-all', async (_, response) => {
   ACTIVE_OPERATORS_MODEL.find().select('-rawData')
     .lean()
@@ -19,22 +27,15 @@ router.get('/get-all', async (_, response) => {
     });
 });
 
-// retrieves all solutions currently stored on DB - sends only raw data
-router.get('/get-all-raw', async (_, response) => {
-  SOLUTIONS_MODEL.find()
-    .lean()
-    .then(results => {
-      let dataPreparation = results.map(item => {
-        return JSON.parse(item?.rawData ?? '');
-      });
-      response.status(200).json(dataPreparation ?? []);
-    })
-    .catch(error => {
-      console.log(error);
-      response.status(500).send(error);
-    });
-});
-
+/**
+ * @openapi
+ * /:
+ *   get-valid-operators:
+ *     description: Get all valid operators
+ *     responses:
+ *       200:
+ *         description: Returns an array of all valid operators { _id, registrationId, owner, relatedSolution, blockchainSolutionId, blockHeight, fee, timestamp }
+ */
 router.get('/valid-operators', async (_, response) => {
   try {
     // 1 day in seconds = 24 * 60 * 60 = 86400
@@ -61,6 +62,15 @@ router.get('/valid-operators', async (_, response) => {
   }
 });
 
+/**
+ * @openapi
+ * /:
+ *   revenue?{operatorAddress}:
+ *     description: Get revenue by operator address
+ *     responses:
+ *       200:
+ *         description: Returns an object with the total revenue, total sent, total received, max sent, max received and the currency { currentRevenue, totalReceived, totalSent, maxReceived, maxSent, currency }
+ */
 router.get('/revenue?:operatorAddress', async (request, response) => {
   try {
     const operatorAddress = request.query.operatorAddress;

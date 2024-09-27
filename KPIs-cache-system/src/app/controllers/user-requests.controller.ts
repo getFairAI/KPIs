@@ -2,9 +2,17 @@ import express from 'express';
 import { ARBITRUM_TRANSFERS_MODEL, USER_REQUESTS_MODEL } from '../schema';
 var router = express.Router();
 
-// base path - /arbitrum-transfers
+// base path - /user-requests
 
-// retrieves all solutions currently stored on DB
+/**
+ * @openapi
+ * /:
+ *   get-all:
+ *     description: Get all
+ *     responses:
+ *       200:
+ *         description: Returns an array of all user requests { _id, owner, timestamp }
+ */
 router.get('/get-all', async (request, response) => {
   ARBITRUM_TRANSFERS_MODEL.find()
     .lean()
@@ -17,6 +25,15 @@ router.get('/get-all', async (request, response) => {
     });
 });
 
+/**
+ * @openapi
+ * /:
+ *   get-unique:
+ *     description: Get all unique users
+ *     responses:
+ *       200:
+ *         description: Returns an array of all unique users { owner }
+ */
 router.get('/get-unique', async (_, response) => {
   try {
     const results = await USER_REQUESTS_MODEL.find().distinct('owner').select('-rawData').lean().exec();
@@ -28,6 +45,15 @@ router.get('/get-unique', async (_, response) => {
   }
 });
 
+/**
+ * @openapi
+ * /:
+ *   get-unpaid:
+ *     description: Get all unpaid requests
+ *     responses:
+ *       200:
+ *         description: Returns an array of all unpaid requests { _id, owner, timestamp }
+ */
 router.get('/get-unpaid', async (_, response) => {
   try {
     const results = await USER_REQUESTS_MODEL.aggregate([
@@ -42,6 +68,15 @@ router.get('/get-unpaid', async (_, response) => {
   }
 });
 
+/**
+ * @openapi
+ * /:
+ *   get-unanswered:
+ *     description: Get all unanswered requests
+ *     responses:
+ *       200:
+ *         description: Returns an array of all unanswered requests { _id, owner, timestamp }
+ */
 router.get('/get-unanswered', async (_, response) => {
   try {
     const results = await USER_REQUESTS_MODEL.aggregate([

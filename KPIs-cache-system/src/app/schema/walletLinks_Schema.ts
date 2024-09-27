@@ -1,7 +1,16 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface WalletLink {
+  arweaveAddress: string;
+  evmPublicKey: string;
+  blockchainTransactionId: string;
+  evmAddress: string;
+  blockHeight: number;
+  timestamp: number;
+}
+
+const schema = new mongoose.Schema<WalletLink>(
   {
     // _id: ObjectId
     arweaveAddress: { type: String, required: true },

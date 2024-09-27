@@ -7,7 +7,15 @@ var router = express.Router();
 
 // base path - /arbitrum-transfers
 
-// retrieves all solutions currently stored on DB
+/**
+ * @openapi
+ * /:
+ *   get-all:
+ *     description: Get all transfers
+ *     responses:
+ *       200:
+ *         description: Returns an array of all transfers { _id, relatedUserRequest, blockchainRequestId, blockchainBlockNumber, from, to, amount, fee, timestamp, type }
+ */
 router.get('/get-all', async (request, response) => {
   ARBITRUM_TRANSFERS_MODEL.find()
     .lean()
@@ -20,6 +28,15 @@ router.get('/get-all', async (request, response) => {
     });
 });
 
+/**
+ * @openapi
+ * /:
+ *   get-payments:
+ *     description: Get all payments
+ *     responses:
+ *       200:
+ *         description: Returns an array of all transfers that reference a request { _id, relatedUserRequest, blockchainRequestId, blockchainBlockNumber, from, to, amount, fee, timestamp, type }
+ */
 router.get('/get-payments', async (_, response) => {
   try {
     // get payments that reference a request
@@ -35,6 +52,16 @@ router.get('/get-payments', async (_, response) => {
   }
 });
 
+/**
+ * @openapi
+ * /:
+ *   marketplace-revenue:
+ *     description: Get the total revenue from the marketplace
+ *     responses:
+ *       200:
+ *         description: Returns an object with the total revenue and the currency { total: number, currency: string }
+ *
+ */
 router.get('/marketplace-revenue', async (_, response) => {
   try {
     const [ result ] = await ARBITRUM_TRANSFERS_MODEL.aggregate([

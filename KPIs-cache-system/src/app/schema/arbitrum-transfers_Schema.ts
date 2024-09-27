@@ -1,7 +1,19 @@
 import mongoose from 'mongoose';
 import { dbConnection } from '../models/dbConnectionModel';
 
-const schema = new mongoose.Schema(
+export interface ArbitrumTransfers {
+  relatedUserRequest: mongoose.Schema.Types.ObjectId;
+  blockchainRequestId: string;
+  blockchainBlockNumber: number;
+  from: string;
+  to: string;
+  amount: number;
+  fee: number;
+  timestamp: number;
+  type: 'request' | 'distribution';
+}
+
+const schema = new mongoose.Schema<ArbitrumTransfers>(
   {
     // _id: ObjectId
     relatedUserRequest: { type: mongoose.Schema.Types.ObjectId || null, ref: 'USER_REQUESTS', required: false }, // false to add later
