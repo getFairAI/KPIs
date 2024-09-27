@@ -3,11 +3,11 @@ var router = express.Router();
 
 // base path - /solutions
 
-import { SOLUTIONS_MODEL } from '../schema';
+import { SOLUTION_REQUESTS_MODEL } from '../schema';
 
 // retrieves all solutions currently stored on DB
 router.get('/get-all', async (_, response) => {
-  SOLUTIONS_MODEL.find().select('-rawData')
+  SOLUTION_REQUESTS_MODEL.find().select('-rawData')
     .lean()
     .then(results => response.status(200).json(results ?? []))
     .catch(error => {
@@ -18,7 +18,7 @@ router.get('/get-all', async (_, response) => {
 
 // retrieves all solutions currently stored on DB - sends only raw data
 router.get('/get-all-raw', async (_, response) => {
-  SOLUTIONS_MODEL.find()
+  SOLUTION_REQUESTS_MODEL.find()
     .select('-rawData')
     .lean()
     .then(results => {

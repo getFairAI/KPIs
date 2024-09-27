@@ -20,30 +20,15 @@ router.get('/get-all', async (request, response) => {
     });
 });
 
-router.get('/request-payments', async (_, response) => {
+router.get('/get-payments', async (_, response) => {
   try {
-    // query payments that have a matching request id from the user requests collection and join with the user requests collection
-    /* const result = await ARBITRUM_TRANSFERS_MODEL.aggregate([
-      {
-        $lookup: {
-          from: 'user_requests',
-          localField: 'blockchainRequestId',
-          foreignField: 'blockchainRequest',
-          as: 'user_requestId',
-        },
-      },
-    ]).exec(); */
+    // get payments that reference a request
     const results = await ARBITRUM_TRANSFERS_MODEL.aggregate([
-      { $lookup: { from: 'USER_REQUESTS', localField: 'blockchainRequestId', foreignField: 'blockchainRequest', as: 'xxx' } },
-      { $lookup: { from: 'USER_RESPONSES', localField: 'blockchainRequestId', foreignField: 'blockchainResponseId', as: 'yyy' } },
+      { $lookup: { from: 'USER_REQUESTS', localField: 'blockchainRequestId', foreignField: 'blockchainRequest', as: 'user_request' } },
+      { $match: { 'user_request': { $ne: [] } } },
     ]).exec();
 
-    const responses = results.filter(el => el.yyy.length > 0);
-    console.log('responses', responses.length);
-    const requests = results.filter(el => el.xxx.length > 0);
-    console.log('requests', requests.length);
-
-    response.status(200).json(results.filter(el => el.xxx.length > 0 || el.yyy.length > 0) ?? []);
+    response.status(200).json(results ?? []);
   } catch (error) {
     console.log(error);
     response.status(500).send(error);

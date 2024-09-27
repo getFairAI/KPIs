@@ -6,6 +6,9 @@ import { apiBaseURL, apiVersion, apiPORT } from './app/config/api.config';
 import errorHandler from 'errorhandler';
 import solutionsController from './app/controllers/solutions.controller';
 import arbitrumTransfersController from './app/controllers/arbitrum-transfers.controlller';
+import operatorsController from './app/controllers/operators.controller';
+import userRequestsController from './app/controllers/user-requests.controller';
+import solutionRequestsController from './app/controllers/solution-requests.controller';
 import { fetchArbitrumTransfers } from './app/cron-jobs/fetch-arbitrum-transfers';
 import { fetchSolutions } from './app/cron-jobs/fetch-solutions';
 import { fetchSolutionsRequests } from './app/cron-jobs/fetch-solutions-requests';
@@ -76,6 +79,12 @@ app.use(apiBaseURL, router); // base route (path) to answer requests
 app.use(apiBaseURL + '/solutions', solutionsController); // base route (path) to answer requests
 
 app.use(apiBaseURL + '/arbitrum-transfers', arbitrumTransfersController); // base route (path) to answer requests
+
+app.use(apiBaseURL + '/operators', operatorsController);
+
+app.use(apiBaseURL + '/user-requests', userRequestsController);
+
+app.use(apiBaseURL + '/solutions-requests', solutionRequestsController);
 
 // start listening for requ ests at the given port
 const PORT = apiPORT ?? 3005;
