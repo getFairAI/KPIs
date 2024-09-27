@@ -75,6 +75,7 @@ export const fetchActiveOperators = async () => {
     // filter only relevant data
     let dataPreparation = finalResults.map((itemFiltered: transactionEdge) => {
       return {
+        registrationId: itemFiltered.node.id,
         owner: itemFiltered.node.owner.address,
         blockHeight: itemFiltered.node.block?.height,
         relatedSolution: null,

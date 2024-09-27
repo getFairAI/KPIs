@@ -4,6 +4,7 @@ import { dbConnection } from '../models/dbConnectionModel';
 const schema = new mongoose.Schema(
   {
     // _id: ObjectId
+    registrationId: { type: String, required: true },
     owner: { type: String, required: true },
     relatedSolution: { type: mongoose.Schema.Types.ObjectId || null, required: false, ref: 'SOLUTIONS' },
     blockchainSolutionId: { type: String, required: true },

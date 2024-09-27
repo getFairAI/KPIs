@@ -69,19 +69,50 @@ export const fetchWalletLinks = async () => {
 
   console.log('WALLET LINKS => Fetching complete. Found a total of [ ' + (finalResults?.length ?? 0) + ' ] new FairAI WALLET LINKS.');
   if (finalResults.length > 0) {
+    // map linking address with a timestamp of the link tx
+    const addressLinkTimestampMap = new Map<string, number>();
     type tagName = keyof typeof TAG_NAMES;
     const findTag = (tx: transactionEdge, tagName: tagName) => tx.node.tags.find(tag => tag.name === TAG_NAMES[tagName])?.value ?? '';
     // filter only relevant data
-    let dataPreparation = finalResults.map((itemFiltered: transactionEdge) => {
-      return {
-        arweaveAddress: itemFiltered.node.owner.address,
-        blockchainTransactionId: itemFiltered.node.id,
-        evmPublicKey: findTag(itemFiltered, 'evmPublicKey'),
-        evmAddress: null,
-        blockHeight: itemFiltered.node.block?.height,
-        timestamp: findTag(itemFiltered, 'unixTime'),
-      };
-    });
+    const dataPreparation: {
+      evmAddress: string;
+      arweaveAddress: string;
+      blockchainTransactionId: string;
+      evmPublicKey: string;
+      blockHeight: number;
+      timestamp: string;
+    }[] = [];
+
+    for (const itemFiltered of finalResults) {
+      let evmAddress = '';
+      try {
+        const res = await fetch('https://arweave.net/'+itemFiltered.node.id);
+        evmAddress = await res.text();
+      } catch (_) {
+        // ignore
+      }
+
+      // check if there are previous links for this address and if the new one is more recent
+      const existingTimestampLink = addressLinkTimestampMap.get(itemFiltered.node.owner.address);
+      if (existingTimestampLink && existingTimestampLink > Number(findTag(itemFiltered, 'unixTime') ?? '0')) {
+        // ignore current link if "existingTimestampLink" is more recent
+      } else {
+        // if the new link is more recent, remove the old one
+        const previous = dataPreparation.findIndex(el => el.arweaveAddress === itemFiltered.node.owner.address);
+        dataPreparation.splice(previous, 1);
+        // set new link timestamp
+        addressLinkTimestampMap.set(itemFiltered.node.owner.address, Number(findTag(itemFiltered, 'unixTime') ?? '0'));
+
+        dataPreparation.push({
+          evmAddress,
+          arweaveAddress: itemFiltered.node.owner.address,
+          blockchainTransactionId: itemFiltered.node.id,
+          evmPublicKey: findTag(itemFiltered, 'evmPublicKey'),
+          blockHeight: itemFiltered.node.block?.height,
+          timestamp: findTag(itemFiltered, 'unixTime'),
+        });
+      }
+    };
 
     dataPreparation.reverse(); // arweave returns more recent first so we need to reverse it
 
