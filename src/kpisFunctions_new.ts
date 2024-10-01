@@ -110,18 +110,17 @@ export const createOwnerUnixTimeMapOld = (
 };
 
 export const createOwnerUnixTimeMap = (
-  transactions: Transaction[],
+  transactions: TransfersFromKPICache[],
   addressesFromDifferentVersions: string[] = []
 ): Map<string, number> => {
   const ownerUnixTimeMap: Map<string, number> = new Map();
 
   transactions.forEach((transaction) => {
-    const { block, owner } = transaction.node;
+    const { blockchainBlockNumber, timestamp, from } = transaction;
 
-    if (block && block.timestamp && owner) {
-      // avoid erros when there is no timestamp available
-      const timestamp = block.timestamp;
-      const address = owner.address;
+    if (blockchainBlockNumber && timestamp && from) {
+      // avoid errors when there is no timestamp available
+      const address = from;
 
       if (
         !isNaN(timestamp) &&
@@ -131,7 +130,7 @@ export const createOwnerUnixTimeMap = (
         ownerUnixTimeMap.set(address, timestamp);
       }
     } else {
-      console.log(transaction);
+      // console.log(transaction);
     }
   });
 
@@ -188,23 +187,22 @@ export const generateChartInfo = (
 };
 
 export const createWeekTransactionsMap = (
-  transactions: Transaction[],
+  transactions: TransfersFromKPICache[],
   dateInfo: DateInfo[],
   view: string
-): Map<number, Transaction[]> => {
-  const weekUnixTransactionsMap: Map<number, Transaction[]> = new Map();
+): Map<number, TransfersFromKPICache[]> => {
+  const weekUnixTransactionsMap: Map<number, TransfersFromKPICache[]> =
+    new Map();
 
   dateInfo.forEach((week) => {
     weekUnixTransactionsMap.set(week.unixTime, []);
   });
 
-  transactions.forEach((transaction) => {
-    const { block, owner } = transaction.node;
+  transactions.forEach((transaction: TransfersFromKPICache) => {
+    const { blockchainBlockNumber, from, timestamp } = transaction;
 
-    if (block && block.timestamp && owner) {
-      const timestamp = block.timestamp;
+    if (blockchainBlockNumber && timestamp && from) {
       const week = findWeekByTimestamp(timestamp, dateInfo, view);
-
       if (week) {
         if (!weekUnixTransactionsMap.has(week.unixTime)) {
           weekUnixTransactionsMap.set(week.unixTime, []);
@@ -307,7 +305,7 @@ const findWeekByTimestamp = (
 };
 
 export const mapNumberTxsPerWeek = (
-  weekUnixTransactionsMap: Map<number, Transaction[]>,
+  weekUnixTransactionsMap: Map<number, TransfersFromKPICache[]>,
   threshold: number
 ): Map<number, number> => {
   const distinctAddressCountMap: Map<number, number> = new Map();
@@ -315,13 +313,13 @@ export const mapNumberTxsPerWeek = (
     const addressSet: Set<string> = new Set();
 
     transactions.forEach((transaction) => {
-      const address = transaction.node.owner.address;
+      const address = transaction.from;
       addressSet.add(address);
     });
 
     const distinctAddressCount = Array.from(addressSet).filter((address) => {
       const addressTransactionCount = transactions.filter(
-        (transaction) => transaction.node.owner.address === address
+        (transaction) => transaction.from === address
       ).length;
       return addressTransactionCount >= threshold;
     }).length;
@@ -516,7 +514,7 @@ export const generateChartInfoCountsXPerWeek = (
   chartTitle: string,
   subTitle: string,
   seriesTitle: string,
-  weekUnixTransactionsMap: Map<number, Transaction[]>,
+  weekUnixTransactionsMap: Map<number, TransfersFromKPICache[]>,
   mapNumberTxsPerWeek: Map<number, number>,
   unixToDateMap: Map<number, Date>
 ): any => {

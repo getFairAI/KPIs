@@ -18,79 +18,114 @@
 
 import { ApexOptions } from "apexcharts";
 import Chart from "react-apexcharts";
-import {ColumnChartInfo} from "./interfaces";
+import { ColumnChartInfo } from "./interfaces";
 
 interface Props {
   chartInfo: ColumnChartInfo;
-  series: ApexOptions ["series"];
+  series: ApexOptions["series"];
+  yAxisLabel: string;
 }
 
-function ColumnChart ({chartInfo,series}: Props) {
+function ColumnChart({ chartInfo, series, yAxisLabel }: Props) {
   const options: ApexOptions = {
     chart: {
-      type: 'bar',
+      type: "bar",
       height: 350,
       stacked: true,
       toolbar: {
-        show: true
+        show: true,
       },
       zoom: {
-        enabled: true
-      }
+        enabled: true,
+      },
     },
-    responsive: [{
-      breakpoint: 480,
-      options: {
-        legend: {
-          position: 'bottom',
-          offsetX: -10,
-          offsetY: 0
-        }
-      }
-    }],
     plotOptions: {
       bar: {
         horizontal: false,
         borderRadius: 10,
         dataLabels: {
+          position: "hidden",
+          hideOverflowingLabels: true,
           total: {
             enabled: true,
             ...(!!chartInfo.formatter && { formatter: chartInfo.formatter }),
             style: {
-              fontSize: '13px',
-              fontWeight: 900
-            }
-          }
-        }
+              fontSize: "13px",
+              fontWeight: 700,
+            },
+          },
+        },
+      },
+    },
+    yaxis: {
+      show: true,
+      decimalsInFloat: 2,
+      title: {
+        text: yAxisLabel,
       },
     },
     xaxis: {
-      type: 'datetime',
+      type: "datetime",
       categories: chartInfo.categories,
     },
     title: {
-        text: chartInfo.chartTitle,
-        align: 'center'
-      },
+      text: chartInfo.chartTitle,
+      align: "center",
+    },
     subtitle: {
-        text: chartInfo.subTitle,
-        align: 'center'
+      text: chartInfo.subTitle,
+      align: "center",
     },
     legend: {
-      position: 'right',
-      offsetY: 40
+      position: "right",
+      offsetY: 40,
     },
     fill: {
-      opacity: 1
-    }
+      opacity: 1,
+    },
+
+    // options to switch to, when bellow a certain breakpoint in px
+    responsive: [
+      {
+        breakpoint: 500,
+        options: {
+          legend: {
+            position: "bottom",
+            offsetX: -10,
+            offsetY: 0,
+          },
+          plotOptions: {
+            bar: {
+              dataLabels: {
+                total: {
+                  enabled: true,
+                  ...(!!chartInfo.formatter && {
+                    formatter: chartInfo.formatter,
+                  }),
+                  style: {
+                    fontSize: "11px",
+                    fontWeight: 900,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
   };
 
   return (
     <div>
-      <Chart options={options} series={series} type="bar" height={350} width={600} />
+      <Chart
+        options={options}
+        series={series}
+        type="bar"
+        height={350}
+        width={"100%"}
+      />
     </div>
   );
-};
-
+}
 
 export default ColumnChart;

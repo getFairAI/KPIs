@@ -3,6 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "ts-node --esm ./scripts/deploy.ts"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@apollo/client": "^3.7.16",
     "@emotion/react": "^11.11.1",
@@ -33,35 +58,13 @@
     "vite-plugin-svgr": "^3.2.0",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "deploy": "ts-node --esm ./scripts/deploy.ts"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
     "@bundlr-network/client": "^0.11.9",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitejs/plugin-react-swc": "^3.3.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
     "ts-node": "^10.9.1",
     "vite": "^4.4.4",
     "vite-tsconfig-paths": "^4.2.0"

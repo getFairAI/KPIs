@@ -24,6 +24,7 @@ import "@/styles/index.css";
 import "@/styles/ui.css";
 import "@/styles/main.css";
 import Test from "./testVersion";
+import "./styles.css";
 
 const router = createHashRouter([
   {
