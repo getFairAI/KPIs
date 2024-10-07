@@ -48,6 +48,20 @@ router.get('/valid-operators', async (_, response) => {
       // find all operators that have proof in the last day
       { $lookup: { from: 'OPERATOR_PROOFS', localField: 'owner', foreignField: 'operatorAddress', as: 'proofTx' } },
       { $match: { 'proofTx.timestamp': { $gte: pastDayInSec } } },
+      // add wallet link to the operator
+      { $lookup: { from: 'WALLET_LINKS', localField: 'owner', foreignField: 'arweaveAddress', as: 'link' } },
+      { $unwind: { path: '$link' } },
+      { 
+        $project: {
+          operatorEvmAddress: { $toLower: '$link.evmAddress' },
+          registrationId: '$registrationId',
+          owner: '$owner',
+          blockchainSolutionId: '$blockchainSolutionId',
+          blockHeight: '$blockHeight',
+          fee: '$fee',
+          timestamp: '$timestamp',
+        }
+      },
     ]).exec();
 
     if (!results) {
