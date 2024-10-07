@@ -29,9 +29,11 @@ import {
   Transaction,
   OperatorTX,
   TransfersFromKPICache,
+  operatorsFromKPICache,
 } from "./interfaces";
 import { findTag, sumArraySlice, getSecondsByViewOption } from "./utils/util";
 import { ViewOptions } from "./Enum";
+import { act } from "react-dom/test-utils";
 
 export const getMondayDateAndUnixTimeList = (
   startDate: Date,
@@ -437,69 +439,37 @@ export const paymentsPrepareDataOld = (
   return { series, chartInfo };
 };
 
+// active operators - only show operators that have at least one use per week
 export const operatorsPrepareData = (
-  requestsTx: Transaction[],
-  responsesTx: Transaction[],
-  opRegistrationsTx: Transaction[],
-  opCancelTx: Transaction[],
+  transfersTx: TransfersFromKPICache[],
+  operatorsList: operatorsFromKPICache[],
   dateInfo: DateInfo[],
   view: string
 ): Map<number, number> => {
   const activeOperatorsMap: Map<number, number> = new Map();
-  const registrationsOperatorTx =
-    extractOperatorRegistrationTx(opRegistrationsTx);
-  const cancelOperatorTx = extractOperatorCancelTx(opCancelTx);
 
   dateInfo.forEach((week) => {
     const weekTimeStamp = week.unixTime + getSecondsByViewOption(view); // Add one week duration
-    const activeOperators = registrationsOperatorTx.filter((tx) => {
-      const txTimeStamp = tx.unixTime;
-      const cancelTx = cancelOperatorTx.find(
-        (cancel) =>
-          cancel.unixTime > txTimeStamp &&
-          cancel.unixTime <= weekTimeStamp &&
-          cancel.address === tx.address &&
-          cancel.scriptTransaction === tx.scriptTransaction
-      );
+    const activeOperators = operatorsList.filter((operatorTx) => {
+      const txTimeStamp = operatorTx.timestamp;
 
       // Check if there are requests made to the operator in the week
-      const requestsToOperator = requestsTx.filter((request) => {
-        const requestTimeStamp = request.node.block?.timestamp;
+      // we use find because only 1 is enough to consider it active
+      const requestToOperator = transfersTx.find((request) => {
+        const requestTimeStamp = request.timestamp;
 
         // Check if the request has the operator address and script-transaction tags
-        const hasOperatorAddress = request.node.tags.some(
-          (tag) => tag.name === "Script-Operator" && tag.value === tx.address
-        );
-        const hasScriptTransaction = request.node.tags.some(
-          (tag) =>
-            tag.name === "Script-Transaction" &&
-            tag.value === tx.scriptTransaction
-        );
-
+        const sameOperatorAddress = request.to === operatorTx.owner;
+        console.log(sameOperatorAddress);
         return (
           requestTimeStamp >= week.unixTime &&
           requestTimeStamp <= weekTimeStamp &&
-          hasOperatorAddress &&
-          hasScriptTransaction
-        );
-      });
-      // check answers
-      const hasResponse = requestsToOperator.some((request) => {
-        const requestId = request.node.id;
-        return responsesTx.some((response) =>
-          response.node.tags.some(
-            (tag) =>
-              tag.name === "Request-Transaction" && tag.value === requestId
-          )
+          sameOperatorAddress
         );
       });
 
       // Check if the operator registration is valid for the week
-      return (
-        txTimeStamp <= weekTimeStamp &&
-        !cancelTx &&
-        (!requestsToOperator.length || hasResponse)
-      );
+      return txTimeStamp <= weekTimeStamp && requestToOperator;
     });
 
     activeOperatorsMap.set(week.unixTime, activeOperators.length);

@@ -17,7 +17,10 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { fetchAllTransactionsToKPICacheAPI } from "./queryAll";
+import {
+  fetchAllTransactionsToKPICacheAPI,
+  fetchAllValidActiveOperators,
+} from "./queryAll";
 import { ConfigurationContext } from "./context/configuration";
 import {
   ChartData,
@@ -25,6 +28,7 @@ import {
   ChartInfoSimple,
   DateInfo,
   TransfersFromKPICache,
+  operatorsFromKPICache,
 } from "./interfaces";
 import {
   AmountUTokenPaymentsPrepareData,
@@ -35,11 +39,17 @@ import {
   getMondayDateAndUnixTimeMap,
   generateChartInfo,
   createOwnerUnixTimeMap,
+  operatorsPrepareData,
+  generateChartInfoTxsPerWeek,
 } from "./kpisFunctions_new";
 import { Box } from "@mui/material";
 import ColumnChart from "./ColumnChart";
 import { getLabelByViewOption } from "./utils/util";
-import { activeUsersDescription, usersPerXDescription } from "./commonVars";
+import {
+  activeOperatorsDescription,
+  activeUsersDescription,
+  usersPerXDescription,
+} from "./commonVars";
 import { ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from "./constants";
 import { uniqueWalletsAlpha } from "./betaCommonVars";
 
@@ -60,16 +70,29 @@ function Test() {
     series: ChartData[];
     chartInfo: ChartInfo;
   } | null>(null);
-  const { state: configState } = useContext(ConfigurationContext);
+  const [chartKpiActiveOperatorsData, setChartKpiActiveOperatorsData] =
+    useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
   const [transfers, setTransfers] = useState<TransfersFromKPICache[]>([]);
+  const [operators, setOperators] = useState<operatorsFromKPICache[]>([]);
+  const { state: configState } = useContext(ConfigurationContext);
   const [mondays, setMondays] = useState<DateInfo[]>([]);
   const [mondaysMap, setMondaysMap] = useState<Map<number, Date>>();
 
+  // get all transfers from api
   useEffect(() => {
     (async () => {
       const result: TransfersFromKPICache[] =
         await fetchAllTransactionsToKPICacheAPI();
       setTransfers(result);
+    })();
+  }, []);
+
+  // get all valid operators from api
+  useEffect(() => {
+    (async () => {
+      const result: operatorsFromKPICache[] =
+        await fetchAllValidActiveOperators();
+      setOperators(result);
     })();
   }, []);
 
@@ -168,6 +191,25 @@ function Test() {
         mondaysMap!
       );
       setChartKpiAllUsers(kpiUsersPerWeek);
+
+      // active operators
+      const mapTxActiveOperatorsByWeek = operatorsPrepareData(
+        transfers,
+        operators,
+        mondays,
+        configState.view
+      );
+      setChartKpiActiveOperatorsData(
+        generateChartInfoTxsPerWeek(
+          labelTime,
+          `active operators per ${labelTime}`,
+          `Active Operators Per ${labelTime}`,
+          activeOperatorsDescription,
+          `active operators this ${labelTime}`,
+          mapTxActiveOperatorsByWeek,
+          mondaysMap!
+        )
+      );
     })();
   }, [transfers, mondays, configState]);
 
@@ -179,7 +221,8 @@ function Test() {
             <ColumnChart
               chartInfo={chartUPaymentsPerWeek.chartInfo}
               series={chartUPaymentsPerWeek.series}
-              yAxisLabel="asd"
+              xAxisLabel="Time"
+              yAxisLabel="Amount Spent ($)"
             />
           </div>
         )}
@@ -189,7 +232,8 @@ function Test() {
             <ColumnChart
               chartInfo={chartKpiAllUsers.chartInfo}
               series={chartKpiAllUsers.series}
-              yAxisLabel="asd"
+              xAxisLabel="Time"
+              yAxisLabel="Total Users"
             />
           </div>
         )}
@@ -199,7 +243,8 @@ function Test() {
             <ColumnChart
               chartInfo={chartKpiNewUsersData.chartInfo}
               series={chartKpiNewUsersData.series}
-              yAxisLabel="asd"
+              xAxisLabel="Time"
+              yAxisLabel="New Users"
             />
           </div>
         )}
@@ -209,7 +254,19 @@ function Test() {
             <ColumnChart
               chartInfo={chartKpiActiveUsersData.chartInfo}
               series={chartKpiActiveUsersData.series}
-              yAxisLabel="asd"
+              xAxisLabel="Time"
+              yAxisLabel="Active Users"
+            />
+          </div>
+        )}
+
+        {chartKpiActiveOperatorsData && (
+          <div className="w-full max-w-[600px] p-3">
+            <ColumnChart
+              chartInfo={chartKpiActiveOperatorsData.chartInfo}
+              series={chartKpiActiveOperatorsData.series}
+              xAxisLabel="Time"
+              yAxisLabel="Active Operators"
             />
           </div>
         )}

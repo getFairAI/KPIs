@@ -23,10 +23,11 @@ import { ColumnChartInfo } from "./interfaces";
 interface Props {
   chartInfo: ColumnChartInfo;
   series: ApexOptions["series"];
+  xAxisLabel: string;
   yAxisLabel: string;
 }
 
-function ColumnChart({ chartInfo, series, yAxisLabel }: Props) {
+function ColumnChart({ chartInfo, series, xAxisLabel, yAxisLabel }: Props) {
   const options: ApexOptions = {
     chart: {
       type: "bar",
@@ -67,6 +68,9 @@ function ColumnChart({ chartInfo, series, yAxisLabel }: Props) {
     xaxis: {
       type: "datetime",
       categories: chartInfo.categories,
+      title: {
+        text: xAxisLabel,
+      },
     },
     title: {
       text: chartInfo.chartTitle,

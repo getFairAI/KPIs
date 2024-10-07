@@ -98,12 +98,22 @@ export interface CustomLinkProperties {
 
 export interface TransfersFromKPICache {
   _id: string;
-  relatedUserRequest: string;
+  relatedUserRequest: string | null;
   blockchainRequestId: string;
   blockchainBlockNumber: number;
   from: string;
   to: string;
   amount: number;
   type: string;
+  timestamp: number;
+}
+
+export interface operatorsFromKPICache {
+  _id: string;
+  owner: string;
+  relatedSolution: string | null;
+  blockchainSolutionId: string;
+  blockHeight: number;
+  fee: number;
   timestamp: number;
 }

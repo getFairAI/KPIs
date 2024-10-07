@@ -113,3 +113,17 @@ export const fetchAllTransactionsToKPICacheAPI = async () => {
     return null;
   }
 };
+
+export const fetchAllValidActiveOperators = async () => {
+  try {
+    const response = await fetch(
+      apiKPICacheSystemURL + "/operators/valid-operators",
+      { method: "GET" }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
