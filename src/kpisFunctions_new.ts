@@ -29,7 +29,9 @@ import {
   Transaction,
   OperatorTX,
   TransfersFromKPICache,
-  operatorsFromKPICache,
+  validOperatorsFromKPICache,
+  solutionsFromKPICache,
+  solutionRequestsFromKPICache,
 } from "./interfaces";
 import { findTag, sumArraySlice, getSecondsByViewOption } from "./utils/util";
 import { ViewOptions } from "./Enum";
@@ -442,7 +444,7 @@ export const paymentsPrepareDataOld = (
 // active operators - only show operators that have at least one use per week
 export const operatorsPrepareData = (
   transfersTx: TransfersFromKPICache[],
-  operatorsList: operatorsFromKPICache[],
+  operatorsList: validOperatorsFromKPICache[],
   dateInfo: DateInfo[],
   view: string
 ): Map<number, number> => {
@@ -459,8 +461,8 @@ export const operatorsPrepareData = (
         const requestTimeStamp = request.timestamp;
 
         // Check if the request has the operator address and script-transaction tags
-        const sameOperatorAddress = request.to === operatorTx.owner;
-        console.log(sameOperatorAddress);
+        const sameOperatorAddress =
+          request.to === operatorTx.operatorEvmAddress;
         return (
           requestTimeStamp >= week.unixTime &&
           requestTimeStamp <= weekTimeStamp &&
@@ -555,6 +557,30 @@ export const generateChartInfoTxsPerWeek = (
 
   return {
     series,
+    chartInfo,
+  };
+};
+
+export const generatePieChart = (
+  chartTitle: string,
+  subTitle: string,
+  seriesTitle: string,
+  series: any[]
+): any => {
+  const series2 = series.map((series1) => {
+    return {
+      name: seriesTitle,
+      data: series1,
+    };
+  });
+
+  const chartInfo = {
+    chartTitle: chartTitle,
+    subTitle: subTitle,
+  };
+
+  return {
+    series2,
     chartInfo,
   };
 };
@@ -864,4 +890,63 @@ export const calculateRetentionRateWithChartFormat = (
     series,
     chartInfo,
   };
+};
+
+// new solutions per week
+export const newSolutionsPerWeek = (
+  solutions: solutionsFromKPICache[],
+  dateInfo: DateInfo[],
+  view: string
+): Map<number, number> => {
+  let solutionsFinal: Map<number, number> = new Map();
+
+  for (const week of dateInfo) {
+    const weekStartTimestamp = week.unixTime;
+    const weekEndTimestamp = week.unixTime + getSecondsByViewOption(view);
+    let totalSolutions = 0;
+
+    solutions.forEach((solution) => {
+      if (solution.timestamp) {
+        if (solution.timestamp >= weekStartTimestamp) {
+          totalSolutions++;
+        }
+      }
+    });
+
+    solutionsFinal.set(week.unixTime, totalSolutions);
+  }
+
+  return solutionsFinal;
+};
+
+// solutions requests per week
+export const solutionRequestsPerWeek = (
+  solutionRequests: solutionRequestsFromKPICache[],
+  dateInfo: DateInfo[],
+  view: string
+): Map<number, number> => {
+  let solutionsFinal: Map<number, number> = new Map();
+
+  for (const week of dateInfo) {
+    const weekStartTimestamp = week.unixTime;
+    const weekEndTimestamp = week.unixTime + getSecondsByViewOption(view);
+    let solutionRequestsThisWeek = 0;
+
+    if (solutionRequests?.length) {
+      solutionRequests.forEach((request) => {
+        if (request.timestamp) {
+          if (
+            request.timestamp / 1000 >= weekStartTimestamp &&
+            request.timestamp / 1000 <= weekEndTimestamp
+          ) {
+            solutionRequestsThisWeek++;
+          }
+        }
+      });
+    }
+
+    solutionsFinal.set(week.unixTime, solutionRequestsThisWeek);
+  }
+
+  return solutionsFinal;
 };

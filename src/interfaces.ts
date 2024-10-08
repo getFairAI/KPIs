@@ -108,12 +108,45 @@ export interface TransfersFromKPICache {
   timestamp: number;
 }
 
-export interface operatorsFromKPICache {
+export interface validOperatorsFromKPICache {
   _id: string;
   owner: string;
   relatedSolution: string | null;
   blockchainSolutionId: string;
   blockHeight: number;
   fee: number;
+  timestamp: number;
+  registrationId: string;
+  operatorEvmAddress: string;
+}
+
+export interface solutionsFromKPICache {
+  _id: string;
+  solutionId: string;
+  solutionName: string;
+  solutionDescription: string;
+  solutionOwner: string;
+  relatedNewSolutionRequest?: string;
+  originalSolutionRequest?: string;
+  output: string;
+  outputConfiguration?: string;
+  rewardsAddress?: string;
+  requestOwner: string;
+  contractAddress?: string;
+  allowFiles?: boolean;
+  allowText?: boolean;
+  rawData: string;
+  blockHeight: number;
+  timestamp: number;
+}
+
+export interface marketplaceRevenuePieChartDataEntry {
+  title: string;
+  total: number;
+}
+
+export interface solutionRequestsFromKPICache {
+  _id: string;
+  owner: string;
   timestamp: number;
 }

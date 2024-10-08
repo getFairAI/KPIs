@@ -18,8 +18,11 @@
 
 import { useContext, useEffect, useState } from "react";
 import {
-  fetchAllTransactionsToKPICacheAPI,
+  fetchAllTransactionsBetweenDates,
   fetchAllValidActiveOperators,
+  fetchAllValidActiveSolutions,
+  fetchTotalRevenueByDateInterval,
+  fetchSolutionRequestsByDateInterval,
 } from "./queryAll";
 import { ConfigurationContext } from "./context/configuration";
 import {
@@ -27,8 +30,11 @@ import {
   ChartInfo,
   ChartInfoSimple,
   DateInfo,
+  marketplaceRevenuePieChartDataEntry,
+  solutionRequestsFromKPICache,
+  solutionsFromKPICache,
   TransfersFromKPICache,
-  operatorsFromKPICache,
+  validOperatorsFromKPICache,
 } from "./interfaces";
 import {
   AmountUTokenPaymentsPrepareData,
@@ -41,6 +47,9 @@ import {
   createOwnerUnixTimeMap,
   operatorsPrepareData,
   generateChartInfoTxsPerWeek,
+  newSolutionsPerWeek,
+  generatePieChart,
+  solutionRequestsPerWeek,
 } from "./kpisFunctions_new";
 import { Box } from "@mui/material";
 import ColumnChart from "./ColumnChart";
@@ -72,25 +81,75 @@ function Test() {
   } | null>(null);
   const [chartKpiActiveOperatorsData, setChartKpiActiveOperatorsData] =
     useState<{ series: ChartData[]; chartInfo: ChartInfo } | null>(null);
+  const [chartSolutionsData, setChartSolutionsData] = useState<{
+    series: ChartData[];
+    chartInfo: ChartInfo;
+  } | null>(null);
+  const [chartSolutionRequestsData, setChartSolutionRequestsData] = useState<{
+    series: ChartData[];
+    chartInfo: ChartInfo;
+  } | null>(null);
+
+  // pie charts
+  const [pieChartRevenue, setPieChartRevenue] = useState<{
+    series: ChartData[];
+    chartInfo: ChartInfo;
+  } | null>(null);
+
   const [transfers, setTransfers] = useState<TransfersFromKPICache[]>([]);
-  const [operators, setOperators] = useState<operatorsFromKPICache[]>([]);
+  const [operators, setOperators] = useState<validOperatorsFromKPICache[]>([]);
+  const [solutions, setSolutions] = useState<solutionsFromKPICache[]>([]);
+  const [solutionRequests, setSolutionRequests] = useState<
+    solutionRequestsFromKPICache[]
+  >([]);
+  const [revenuesArray, setRevenue] = useState<
+    marketplaceRevenuePieChartDataEntry[]
+  >([]);
+
   const { state: configState } = useContext(ConfigurationContext);
   const [mondays, setMondays] = useState<DateInfo[]>([]);
   const [mondaysMap, setMondaysMap] = useState<Map<number, Date>>();
 
-  // get all transfers from api
+  // get all async data from api
   useEffect(() => {
     (async () => {
       const result: TransfersFromKPICache[] =
-        await fetchAllTransactionsToKPICacheAPI();
+        await fetchAllTransactionsBetweenDates(
+          configState.startDate.getTime(),
+          configState.endDate.getTime()
+        );
       setTransfers(result);
     })();
-  }, []);
 
-  // get all valid operators from api
+    (async () => {
+      const result: solutionRequestsFromKPICache[] =
+        await fetchSolutionRequestsByDateInterval(
+          configState.startDate.getTime(),
+          configState.endDate.getTime()
+        );
+      setSolutionRequests(result);
+    })();
+
+    (async () => {
+      const result: marketplaceRevenuePieChartDataEntry[] =
+        await fetchTotalRevenueByDateInterval(
+          configState.startDate.getTime(),
+          configState.endDate.getTime()
+        );
+      setRevenue(result);
+    })();
+  }, [configState]);
+
+  // get all from api
   useEffect(() => {
     (async () => {
-      const result: operatorsFromKPICache[] =
+      const result: solutionsFromKPICache[] =
+        await fetchAllValidActiveSolutions();
+      setSolutions(result);
+    })();
+
+    (async () => {
+      const result: validOperatorsFromKPICache[] =
         await fetchAllValidActiveOperators();
       setOperators(result);
     })();
@@ -210,11 +269,67 @@ function Test() {
           mondaysMap!
         )
       );
+
+      // solutions =========
+      const mapSolutionsByWeek = newSolutionsPerWeek(
+        solutions,
+        mondays,
+        configState.view
+      );
+      setChartSolutionsData(
+        generateChartInfoTxsPerWeek(
+          labelTime,
+          `new solutions per ${labelTime}`,
+          `New Solutions Per ${labelTime}`,
+          "Newly created solutions.",
+          `new solutions this ${labelTime}`,
+          mapSolutionsByWeek,
+          mondaysMap!
+        )
+      );
+
+      // solutions requests =========
+      const mapSolutionsRequestsByWeek = solutionRequestsPerWeek(
+        solutionRequests,
+        mondays,
+        configState.view
+      );
+      setChartSolutionRequestsData(
+        generateChartInfoTxsPerWeek(
+          labelTime,
+          `solution requests per ${labelTime}`,
+          `Solution Requests Per ${labelTime}`,
+          "",
+          `solution requests this ${labelTime}`,
+          mapSolutionsRequestsByWeek,
+          mondaysMap!
+        )
+      );
+
+      // revenue ==============
+      setPieChartRevenue(
+        generatePieChart(
+          `New Solutions Per ${labelTime}`,
+          "Newly created solutions.",
+          `new solutions this ${labelTime}`,
+          revenuesArray
+        )
+      );
     })();
   }, [transfers, mondays, configState]);
 
   return (
     <>
+      <div className="w-full flex justify-center py-5 pb-10">
+        <h1 style={{ fontSize: "20px" }}>
+          <strong>
+            Data visualization from {configState.startDate.toLocaleDateString()}{" "}
+            to {configState.endDate.toLocaleDateString()}
+          </strong>
+          <span className="ml-1 text-sm"> (dd/mm/yyyy)</span>
+        </h1>
+      </div>
+
       <div className="w-[100vw] flex flex-wrap justify-center gap-10">
         {chartUPaymentsPerWeek && (
           <div className="w-full max-w-[600px] p-3">
@@ -267,6 +382,41 @@ function Test() {
               series={chartKpiActiveOperatorsData.series}
               xAxisLabel="Time"
               yAxisLabel="Active Operators"
+            />
+          </div>
+        )}
+
+        {chartSolutionsData && (
+          <div className="w-full max-w-[600px] p-3">
+            <ColumnChart
+              chartInfo={chartSolutionsData.chartInfo}
+              series={chartSolutionsData.series}
+              xAxisLabel="Time"
+              yAxisLabel="New Solutions"
+            />
+          </div>
+        )}
+
+        {chartSolutionRequestsData && (
+          <div className="w-full max-w-[600px] p-3">
+            <ColumnChart
+              chartInfo={chartSolutionRequestsData.chartInfo}
+              series={chartSolutionRequestsData.series}
+              xAxisLabel="Time"
+              yAxisLabel="New Solutions"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="w-full flex justify-center flex-wrap mt-5">
+        {pieChartRevenue && (
+          <div className="w-full max-w-[600px] p-3">
+            <ColumnChart
+              chartInfo={pieChartRevenue.chartInfo}
+              series={pieChartRevenue.series}
+              xAxisLabel="Time"
+              yAxisLabel="New Solutions"
             />
           </div>
         )}

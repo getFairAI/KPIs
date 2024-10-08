@@ -114,11 +114,79 @@ export const fetchAllTransactionsToKPICacheAPI = async () => {
   }
 };
 
+export const fetchAllTransactionsBetweenDates = async (
+  dateStartUnix: number,
+  dateEndUnix: number
+) => {
+  try {
+    const response = await fetch(
+      `${apiKPICacheSystemURL}/arbitrum-transfers/get-all-between-dates/${dateStartUnix}/${dateEndUnix}`,
+      { method: "GET" }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
 export const fetchAllValidActiveOperators = async () => {
   try {
     const response = await fetch(
       apiKPICacheSystemURL + "/operators/valid-operators",
       { method: "GET" }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const fetchAllValidActiveSolutions = async () => {
+  try {
+    const response = await fetch(apiKPICacheSystemURL + "/solutions/get-all", {
+      method: "GET",
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const fetchSolutionRequestsByDateInterval = async (
+  dateStartUnix: number,
+  dateEndUnix: number
+) => {
+  try {
+    const response = await fetch(
+      `${apiKPICacheSystemURL}/solutions-requests/get-all-between-dates/${dateStartUnix}/${dateEndUnix}`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const fetchTotalRevenueByDateInterval = async (
+  dateStartUnix: number,
+  dateEndUnix: number
+) => {
+  try {
+    const response = await fetch(
+      `${apiKPICacheSystemURL}/arbitrum-transfers/marketplace-revenue/${dateStartUnix}/${dateEndUnix}`,
+      {
+        method: "GET",
+      }
     );
     const data = await response.json();
     return data;
