@@ -6,12 +6,14 @@ export interface OperatorCancellations {
   owner: string;
   blockHeight: number;
   timestamp: number;
+  blockchainId: string;
 }
 
 const schema = new mongoose.Schema<OperatorCancellations>(
   {
     // _id: ObjectId
     registrationId: { type: String, required: true },
+    blockchainId: { type: String, required: true },
     owner: { type: String, required: true },
     blockHeight: { type: Number, required: true },
     timestamp: { type: Number, required: true },

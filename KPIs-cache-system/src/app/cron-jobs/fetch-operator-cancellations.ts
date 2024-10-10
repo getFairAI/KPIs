@@ -9,7 +9,7 @@ export const fetchOperatorCancellations = async () => {
   console.log('');
   console.log('OPERATOR CANCELLATIONS => Updating OPERATOR CANCELLATIONS collection on DB, this might some time ...');
 
-  let lastBlockHeight: number = startBlockArweave;
+  let lastBlockHeight: number = startBlockArweave; // use custom start block for operators
 
   // get most recent cursor saved on our DB
   const latestSavedOnDB = await OPERATOR_CANCELLATIONS_MODEL.find().lean().sort({ blockHeight: -1 }).limit(1).exec();
@@ -22,8 +22,8 @@ export const fetchOperatorCancellations = async () => {
   }
 
   const queryTags = [
-    { name: TAG_NAMES.protocolName, values: [constants.PROTOCOL_NAME, 'Fair Protocol'] },
-    { name: TAG_NAMES.protocolVersion, values: [constants.PROTOCOL_VERSION, '1.0'] },
+    { name: TAG_NAMES.protocolName, values: [ constants.PROTOCOL_NAME, 'Fair Protocol' ] },
+   //  { name: TAG_NAMES.protocolVersion, values: [constants.PROTOCOL_VERSION, '1.0' ] },
     { name: TAG_NAMES.operationName, values: [constants.OPERATOR_CANCELLATIONS] },
   ];
 
@@ -75,6 +75,7 @@ export const fetchOperatorCancellations = async () => {
     let dataPreparation = finalResults.map((itemFiltered: transactionEdge) => {
       return {
         owner: itemFiltered.node.owner.address,
+        blockchainId: itemFiltered.node.id,
         registrationId: findTag(itemFiltered, 'registrationTransaction'),
         blockHeight: itemFiltered.node.block?.height,
         timestamp: findTag(itemFiltered, 'unixTime'),
@@ -82,7 +83,6 @@ export const fetchOperatorCancellations = async () => {
     });
 
     dataPreparation.reverse(); // arweave returns more recent first so we need to reverse it
-
     console.log('OPERATOR CANCELLATIONS => Saving data on DB ...');
     // save to database
     // we use insertMany to add all items at once
