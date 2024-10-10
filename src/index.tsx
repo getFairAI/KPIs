@@ -23,8 +23,8 @@ import Root from "@/root";
 import "@/styles/index.css";
 import "@/styles/ui.css";
 import "@/styles/main.css";
-import Test from "./testVersion";
-import "./styles.css";
+import "./styles.scss";
+import Release1Version from "./release1Version";
 
 const router = createHashRouter([
   {
@@ -40,8 +40,8 @@ const router = createHashRouter([
       //   element:<Alpha />
       // },
       {
-        path: "test",
-        element: <Test />,
+        path: "",
+        element: <Release1Version />,
       },
     ],
   },

@@ -33,6 +33,13 @@ export interface ColumnChartInfo {
   formatter?: (val?: string, opts?: any) => string;
 }
 
+export interface PieChartInfo {
+  chartTitle: string;
+  subTitle: string;
+  labels: string[];
+  formatter?: (val?: string, opts?: any) => string;
+}
+
 export interface DonutInfo {
   labels: string[];
   donutTitle: string;
@@ -141,8 +148,15 @@ export interface solutionsFromKPICache {
 }
 
 export interface marketplaceRevenuePieChartDataEntry {
-  title: string;
-  total: number;
+  value: number;
+  count: number;
+}
+
+export interface marketplaceRevenueData {
+  total: marketplaceRevenuePieChartDataEntry;
+  requests: marketplaceRevenuePieChartDataEntry;
+  registrations: marketplaceRevenuePieChartDataEntry;
+  unknown: marketplaceRevenuePieChartDataEntry;
 }
 
 export interface solutionRequestsFromKPICache {

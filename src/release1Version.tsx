@@ -30,7 +30,9 @@ import {
   ChartInfo,
   ChartInfoSimple,
   DateInfo,
+  marketplaceRevenueData,
   marketplaceRevenuePieChartDataEntry,
+  PieChartInfo,
   solutionRequestsFromKPICache,
   solutionsFromKPICache,
   TransfersFromKPICache,
@@ -48,8 +50,8 @@ import {
   operatorsPrepareData,
   generateChartInfoTxsPerWeek,
   newSolutionsPerWeek,
-  generatePieChart,
   solutionRequestsPerWeek,
+  generatePieChartRevenue,
 } from "./kpisFunctions_new";
 import { Box } from "@mui/material";
 import ColumnChart from "./ColumnChart";
@@ -61,8 +63,9 @@ import {
 } from "./commonVars";
 import { ACTIVE_USERS_PER_WEEK, USERS_PER_WEEK } from "./constants";
 import { uniqueWalletsAlpha } from "./betaCommonVars";
+import PieChart from "./PieChart";
 
-function Test() {
+function Release1Version() {
   const [chartUPaymentsPerWeek, setChartUPaymentsPerWeek] = useState<{
     series: ChartData[];
     chartInfo: ChartInfoSimple;
@@ -92,8 +95,9 @@ function Test() {
 
   // pie charts
   const [pieChartRevenue, setPieChartRevenue] = useState<{
-    series: ChartData[];
-    chartInfo: ChartInfo;
+    series: number[];
+    chartInfo: PieChartInfo;
+    labels: string[];
   } | null>(null);
 
   const [transfers, setTransfers] = useState<TransfersFromKPICache[]>([]);
@@ -102,9 +106,7 @@ function Test() {
   const [solutionRequests, setSolutionRequests] = useState<
     solutionRequestsFromKPICache[]
   >([]);
-  const [revenuesArray, setRevenue] = useState<
-    marketplaceRevenuePieChartDataEntry[]
-  >([]);
+  const [revenueData, setRevenueData] = useState<marketplaceRevenueData>();
 
   const { state: configState } = useContext(ConfigurationContext);
   const [mondays, setMondays] = useState<DateInfo[]>([]);
@@ -131,12 +133,12 @@ function Test() {
     })();
 
     (async () => {
-      const result: marketplaceRevenuePieChartDataEntry[] =
+      const result: marketplaceRevenueData =
         await fetchTotalRevenueByDateInterval(
           configState.startDate.getTime(),
           configState.endDate.getTime()
         );
-      setRevenue(result);
+      setRevenueData(result);
     })();
   }, [configState]);
 
@@ -307,12 +309,12 @@ function Test() {
       );
 
       // revenue ==============
+
       setPieChartRevenue(
-        generatePieChart(
-          `New Solutions Per ${labelTime}`,
-          "Newly created solutions.",
-          `new solutions this ${labelTime}`,
-          revenuesArray
+        generatePieChartRevenue(
+          `Revenue Sources`,
+          "Were revenue came from, between the selected dates.",
+          revenueData!
         )
       );
     })();
@@ -320,8 +322,21 @@ function Test() {
 
   return (
     <>
-      <div className="w-full flex justify-center py-5 pb-10">
-        <h1 style={{ fontSize: "20px" }}>
+      <div
+        style={{
+          backgroundImage: 'url("./blurred_asbtract_bg.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "absolute",
+          zIndex: "-10",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100%",
+        }}
+      ></div>
+      <div className="w-full flex justify-center pt-10 pb-10">
+        <h1 style={{ fontSize: "24px" }}>
           <strong>
             Data visualization from {configState.startDate.toLocaleDateString()}{" "}
             to {configState.endDate.toLocaleDateString()}
@@ -330,99 +345,112 @@ function Test() {
         </h1>
       </div>
 
-      <div className="w-[100vw] flex flex-wrap justify-center gap-10">
-        {chartUPaymentsPerWeek && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartUPaymentsPerWeek.chartInfo}
-              series={chartUPaymentsPerWeek.series}
-              xAxisLabel="Time"
-              yAxisLabel="Amount Spent ($)"
-            />
-          </div>
-        )}
+      <div className="w-full flex flex-col justify-center items-center">
+        <div className="w-full max-w-[2000px] flex flex-wrap justify-center gap-10">
+          {chartUPaymentsPerWeek && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartUPaymentsPerWeek.chartInfo}
+                series={chartUPaymentsPerWeek.series}
+                xAxisLabel="Time"
+                yAxisLabel="Amount Spent ($)"
+              />
+            </div>
+          )}
 
-        {chartKpiAllUsers && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartKpiAllUsers.chartInfo}
-              series={chartKpiAllUsers.series}
-              xAxisLabel="Time"
-              yAxisLabel="Total Users"
-            />
-          </div>
-        )}
+          {chartKpiAllUsers && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartKpiAllUsers.chartInfo}
+                series={chartKpiAllUsers.series}
+                xAxisLabel="Time"
+                yAxisLabel="Total Users"
+              />
+            </div>
+          )}
 
-        {chartKpiNewUsersData && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartKpiNewUsersData.chartInfo}
-              series={chartKpiNewUsersData.series}
-              xAxisLabel="Time"
-              yAxisLabel="New Users"
-            />
-          </div>
-        )}
+          {chartKpiNewUsersData && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartKpiNewUsersData.chartInfo}
+                series={chartKpiNewUsersData.series}
+                xAxisLabel="Time"
+                yAxisLabel="New Users"
+              />
+            </div>
+          )}
 
-        {chartKpiActiveUsersData && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartKpiActiveUsersData.chartInfo}
-              series={chartKpiActiveUsersData.series}
-              xAxisLabel="Time"
-              yAxisLabel="Active Users"
-            />
-          </div>
-        )}
+          {chartKpiActiveUsersData && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartKpiActiveUsersData.chartInfo}
+                series={chartKpiActiveUsersData.series}
+                xAxisLabel="Time"
+                yAxisLabel="Active Users"
+              />
+            </div>
+          )}
 
-        {chartKpiActiveOperatorsData && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartKpiActiveOperatorsData.chartInfo}
-              series={chartKpiActiveOperatorsData.series}
-              xAxisLabel="Time"
-              yAxisLabel="Active Operators"
-            />
-          </div>
-        )}
+          {chartKpiActiveOperatorsData && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartKpiActiveOperatorsData.chartInfo}
+                series={chartKpiActiveOperatorsData.series}
+                xAxisLabel="Time"
+                yAxisLabel="Active Operators"
+              />
+            </div>
+          )}
 
-        {chartSolutionsData && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartSolutionsData.chartInfo}
-              series={chartSolutionsData.series}
-              xAxisLabel="Time"
-              yAxisLabel="New Solutions"
-            />
-          </div>
-        )}
+          {chartSolutionsData && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartSolutionsData.chartInfo}
+                series={chartSolutionsData.series}
+                xAxisLabel="Time"
+                yAxisLabel="New Solutions"
+              />
+            </div>
+          )}
 
-        {chartSolutionRequestsData && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={chartSolutionRequestsData.chartInfo}
-              series={chartSolutionRequestsData.series}
-              xAxisLabel="Time"
-              yAxisLabel="New Solutions"
-            />
-          </div>
-        )}
-      </div>
+          {chartSolutionRequestsData && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <ColumnChart
+                chartInfo={chartSolutionRequestsData.chartInfo}
+                series={chartSolutionRequestsData.series}
+                xAxisLabel="Time"
+                yAxisLabel="Solution Requests"
+              />
+            </div>
+          )}
+        </div>
 
-      <div className="w-full flex justify-center flex-wrap mt-5">
-        {pieChartRevenue && (
-          <div className="w-full max-w-[600px] p-3">
-            <ColumnChart
-              chartInfo={pieChartRevenue.chartInfo}
-              series={pieChartRevenue.series}
-              xAxisLabel="Time"
-              yAxisLabel="New Solutions"
-            />
-          </div>
-        )}
+        <div className="w-full flex justify-center py-10 pt-20">
+          <h1 style={{ fontSize: "24px" }}>
+            <strong>
+              Revenue sources from {configState.startDate.toLocaleDateString()}{" "}
+              to {configState.endDate.toLocaleDateString()}
+            </strong>
+            <span className="ml-1 text-sm"> (dd/mm/yyyy)</span>
+          </h1>
+        </div>
+
+        <div className="w-full flex justify-center flex-wrap mt-5">
+          {pieChartRevenue && (
+            <div className="w-full max-w-[600px] card-glasspane-container">
+              <PieChart
+                chartInfo={pieChartRevenue.chartInfo}
+                series={pieChartRevenue.series}
+                labels={pieChartRevenue.labels}
+              />
+            </div>
+          )}
+        </div>
+
+        <div style={{ height: "200px" }}></div>
       </div>
     </>
   );
 }
 
-export default Test;
+export default Release1Version;

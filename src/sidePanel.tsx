@@ -33,7 +33,8 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import CloseIcon from "@mui/icons-material/Close";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { useLocation } from "react-router-dom";
 import {
   differenceInCalendarDays,
@@ -158,6 +159,13 @@ const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
       isExtraEnabled,
       walletsContent,
     }));
+
+    // close configurations after applying new settings
+    enqueueSnackbar("New chart view configurations applied.", {
+      variant: "success",
+      autoHideDuration: 2000,
+    });
+    handleClose();
   }, [
     startDateFilter,
     endDateFilter,
@@ -180,19 +188,28 @@ const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
           <Typography
             sx={{ fontWeight: 700, fontSize: "23px", lineHeight: "31px" }}
           >
-            {"Configuration"}
+            {"Configurations"}
           </Typography>
+          <button
+            onClick={handleClose}
+            className="styled-fairai-button secondary"
+          >
+            Close
+            <ArrowForwardIosRoundedIcon sx={{ height: "16px", ml: "-5px" }} />
+          </button>
         </Box>
         <Box>
           <FormControl component="fieldset" variant="standard">
-            <FormLabel>View</FormLabel>
-            <RadioGroup value={viewValue} onChange={handleViewOptionChange}>
+            <FormLabel>View Type</FormLabel>
+            <RadioGroup
+              value={viewValue}
+              onChange={handleViewOptionChange}
+              row={true}
+              color="primary"
+            >
               <FormControlLabel
                 control={<Radio />}
                 value={"daily"}
@@ -243,18 +260,23 @@ const SidePanel = ({ handleClose }: { handleClose: () => void }) => {
         <Box>
           <TextField
             label={"Wallets to include"}
+            placeholder="One wallet address per line"
             value={walletsContent}
             onChange={handleTextAreaChange}
             multiline
             minRows={2}
-            maxRows={6}
+            maxRows={15}
             fullWidth
           />
         </Box>
         <Box display={"flex"} justifyContent={"center"}>
-          <Button variant="outlined" onClick={handleUpdateCharts}>
-            Update Charts
-          </Button>
+          <button
+            onClick={handleUpdateCharts}
+            className="styled-fairai-button primary"
+          >
+            <CheckRoundedIcon />
+            Apply configurations
+          </button>
         </Box>
       </Box>
     </>

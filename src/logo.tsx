@@ -16,13 +16,12 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { Icon } from '@mui/material';
-
 const Logo = () => {
   return (
-    <Icon sx={{ height: '100%', width: '100%', display: 'flex' }}>
-      <img src={'./fair-protocol-outline.svg'} style={{ color: '#1F1F26' }} />
-    </Icon>
+    <img
+      src={"./fairai_logo_png.png"}
+      style={{ width: "100%", maxWidth: "160px", filter: "brightness(0.1)" }}
+    />
   );
 };
 

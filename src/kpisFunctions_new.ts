@@ -32,6 +32,9 @@ import {
   validOperatorsFromKPICache,
   solutionsFromKPICache,
   solutionRequestsFromKPICache,
+  marketplaceRevenuePieChartDataEntry,
+  PieChartInfo,
+  marketplaceRevenueData,
 } from "./interfaces";
 import { findTag, sumArraySlice, getSecondsByViewOption } from "./utils/util";
 import { ViewOptions } from "./Enum";
@@ -561,27 +564,31 @@ export const generateChartInfoTxsPerWeek = (
   };
 };
 
-export const generatePieChart = (
+export const generatePieChartRevenue = (
   chartTitle: string,
   subTitle: string,
-  seriesTitle: string,
-  series: any[]
+  revenueData: marketplaceRevenueData
 ): any => {
-  const series2 = series.map((series1) => {
-    return {
-      name: seriesTitle,
-      data: series1,
-    };
-  });
+  const chartLabels = ["Total Revenue", "Requests", "Registrations", "Other"]; // we manually define the order of the items
 
-  const chartInfo = {
+  const chartInfo: PieChartInfo = {
     chartTitle: chartTitle,
     subTitle: subTitle,
+    labels: chartLabels,
   };
 
+  let dataPreparationSeries: number[] = new Array();
+
+  // we ignore the 'count' for now
+  dataPreparationSeries.push(+(revenueData?.total?.value ?? 0));
+  dataPreparationSeries.push(+(revenueData?.requests?.value ?? 0));
+  dataPreparationSeries.push(+(revenueData?.registrations?.value ?? 0));
+  dataPreparationSeries.push(+(revenueData?.unknown?.value ?? 0));
+
   return {
-    series2,
-    chartInfo,
+    series: dataPreparationSeries,
+    chartInfo: chartInfo,
+    labels: chartLabels,
   };
 };
 

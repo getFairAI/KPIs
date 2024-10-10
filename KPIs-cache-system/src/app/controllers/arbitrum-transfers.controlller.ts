@@ -197,7 +197,12 @@ router.get('/marketplace-revenue/:startDateUnix?/:endDateUnix?', async (req, res
       count: result.unknownCount,
     };
 
-    response.status(200).json([result.total, result.requests, result.registrations, result.unknown]);
+    response.status(200).json({
+      total: result.total,
+      registrations: result.registrations,
+      requests: result.requests,
+      unknown: result.unknown,
+    });
   } catch (error) {
     console.log(error);
     response.status(500).send(error);

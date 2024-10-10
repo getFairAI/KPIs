@@ -16,64 +16,78 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { Box, Container, Drawer } from '@mui/material';
-import { ReactElement, useCallback, useLayoutEffect, useRef, useState } from 'react';
-import Navbar from './NavBar';
-import useWindowDimensions from '@/hooks/useWindowDimensions';
-import useScroll from '@/hooks/useScroll';
-import SidePanel from './sidePanel';
+import { Box, Container, Drawer } from "@mui/material";
+import {
+  ReactElement,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import Navbar from "./NavBar";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
+import useScroll from "@/hooks/useScroll";
+import SidePanel from "./sidePanel";
 
 export default function Layout({ children }: { children: ReactElement }) {
-  const [headerHeight, setHeaderHeight] = useState('64px');
+  const [headerHeight, setHeaderHeight] = useState("64px");
   const scrollableRef = useRef<HTMLDivElement>(null);
   const { width, height } = useWindowDimensions();
   const { isScrolled } = useScroll(scrollableRef);
-  const [ configurationDrawerOpen, setConfigurationDrawerOpen ] = useState<boolean>(false);
+  const [configurationDrawerOpen, setConfigurationDrawerOpen] =
+    useState<boolean>(false);
 
   useLayoutEffect(() => {
-    const currHeaderHeight = document.querySelector('header')?.clientHeight;
+    const currHeaderHeight = document.querySelector("header")?.clientHeight;
     if (currHeaderHeight) {
       setHeaderHeight(`${currHeaderHeight}px`);
     }
   }, [width, height]);
 
-  const handleClose = useCallback(() => setConfigurationDrawerOpen(false), [ setConfigurationDrawerOpen]);
+  const handleClose = useCallback(
+    () => setConfigurationDrawerOpen(false),
+    [setConfigurationDrawerOpen]
+  );
 
   return (
     <>
-      <Navbar isScrolled={isScrolled} openDrawer={setConfigurationDrawerOpen}/>
+      <Navbar isScrolled={isScrolled} openDrawer={setConfigurationDrawerOpen} />
       <Container
         disableGutters
         sx={{
-          width: '100%',
-          height: `calc(100% - ${headerHeight})`,
-          top: headerHeight,
-          position: 'fixed',
+          width: "100%",
+          top: 0,
+          position: "fixed",
+          height: "100%",
         }}
         maxWidth={false}
       >
-        <Box height={'100%'}>
-        <Drawer
-            variant='persistent'
-            anchor='right'
+        <Box height={"100%"}>
+          <Drawer
+            variant="persistent"
+            anchor="right"
             open={configurationDrawerOpen}
             sx={{
-              '& .MuiDrawer-paper': {
-                width: '30%',
-                boxSizing: 'border-box',
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
                 top: headerHeight,
-                height: `calc(100% - ${headerHeight})`,
+                backgroundColor: "rgba(255,255,255,0.85)",
+                backdropFilter: "blur(20px)",
+                padding: "5px 10px",
               },
             }}
             PaperProps={{
-              elevation: 24,
+              elevation: 0,
             }}
           >
-            <Box sx={{ height: '100%', display: 'flex' }}>
+            <Box sx={{ height: "100%", display: "flex" }}>
               <SidePanel handleClose={handleClose} />
             </Box>
           </Drawer>
-          <main style={{ height: '100%' }} ref={scrollableRef}>
+          <main
+            style={{ height: "100%", paddingTop: headerHeight }}
+            ref={scrollableRef}
+          >
             {children}
           </main>
         </Box>
