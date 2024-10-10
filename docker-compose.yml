@@ -20,7 +20,7 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_BASICAUTH: false
   api:
-    build: .
+    build: ./KPIs-cache-system/
     ports:
       - 3005:3005
     env_file:
@@ -39,7 +39,6 @@ services:
   client:
     build: .
     volumes:
-      - ./src:/client/src
       - client:/home/node/client
   caddy:
     image: caddy:2.8.4-alpine
