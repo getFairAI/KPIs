@@ -1,0 +1,11 @@
+kpis.getfair.ai {
+  encode gzip
+  handle /api/* {
+    reverse_proxy api:3005
+  }
+  handle {
+    root * /client
+    try_files {path} /index.html
+    file_server
+  }
+}
