@@ -122,7 +122,7 @@ const Navbar = ({
               className="styled-fairai-button gradient-bg"
             >
               <img
-                src="./public/fair-protocol-face.svg"
+                src="/fair-protocol-face.svg"
                 style={{ width: "28px" }}
               />
               FairAI Main App

@@ -1,5 +1,6 @@
 services:
   mongo:
+    container_name: mongo
     image: mongo
     restart: always
     ports:
@@ -10,6 +11,7 @@ services:
     volumes:
       - db:/data/db
   mongo-express:
+    container_name: mongo-express
     image: mongo-express
     restart: always
     ports:
@@ -19,7 +21,12 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+    profiles:
+      - donotstart
+    depends_on:
+      - mongo
   api:
+    container_name: api
     build: ./KPIs-cache-system/
     ports:
       - 3005:3005
@@ -37,10 +44,14 @@ services:
     stdin_open: true
     tty: true
   client:
+    container_name: client
     build: .
     volumes:
       - client:/home/node/client
+    stdin_open: true
+    tty: true
   caddy:
+    container_name: caddy
     image: caddy:2.8.4-alpine
     restart: unless-stopped
     ports:
@@ -52,6 +63,8 @@ services:
       - client:/client
       - caddy_data:/data
       - caddy_config:/config
+    depends_on:
+      - client
 volumes:
   db:
   client:

@@ -1,4 +1,4 @@
-kpis.getfair.ai {
+localhost {
   encode gzip
   root * /client/dist
   reverse_proxy /kpis-cache/request/* api:3005

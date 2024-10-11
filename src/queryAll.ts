@@ -16,10 +16,9 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { QUERY_TXS_WITH } from "./queries/queries";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
-export const apiKPICacheSystemURL = "http://localhost:3005/kpis-cache/request";
+export const apiKPICacheSystemURL = "/kpis-cache/request";
 
 export const client = new ApolloClient({
   uri: "https://arweave.net/graphql",

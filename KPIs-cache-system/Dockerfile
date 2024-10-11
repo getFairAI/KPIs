@@ -1,4 +1,4 @@
-FROM node:current-alpine3.20
+FROM node:current-alpine3.20 AS base
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
@@ -12,9 +12,14 @@ COPY build.ts ./
 
 USER node
 
-RUN npm install && npm run build
+# -- install dependencies stage
+FROM base AS install
+RUN npm install 
 
-COPY --chown=node:node . .
+# -- build stage
+FROM install AS build
+RUN npm run build
+
 
 EXPOSE 3005
 
