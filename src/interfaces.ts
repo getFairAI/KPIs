@@ -149,7 +149,7 @@ export interface solutionsFromKPICache {
 }
 
 export interface marketplaceRevenuePieChartDataEntry {
-  value: number;
+  value: string; // float string
   count: number;
 }
 

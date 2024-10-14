@@ -574,7 +574,7 @@ export const generatePieChartRevenue = (
     chartTitle: chartTitle,
     subTitle: subTitle,
     labels: chartLabels,
-    formatter: (val: string | number) => `$ ${Number(val).toFixed(2)}`,
+    formatter: (val: string | number) => `${Number(val).toFixed(2)} %`,
     tooltipFormatter: (val: string | number) => `US$ ${Number(val).toFixed(2)}`,
   };
 
