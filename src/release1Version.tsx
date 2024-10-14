@@ -184,7 +184,7 @@ function Release1Version() {
         transfers,
         mondays,
         `Total Payments Per ${labelTime}`,
-        "Total amount spent, in USD",
+        "Total amount spent, in US$",
         configState.view,
         ""
       );
@@ -437,12 +437,21 @@ function Release1Version() {
 
         <div className="w-full flex justify-center flex-wrap mt-5">
           {pieChartRevenue && (
-            <div className="w-full max-w-[600px] card-glasspane-container">
+            <div className="w-full max-w-[600px] min-h-[450px] card-glasspane-container">
               <PieChart
                 chartInfo={pieChartRevenue.chartInfo}
                 series={pieChartRevenue.series}
                 labels={pieChartRevenue.labels}
               />
+
+              <div className="flex justify-center">
+                <strong style={{ fontSize: "14px" }}>
+                  Total Revenue: US${" "}
+                  {parseFloat(
+                    revenueData?.total?.value?.toString() ?? "0"
+                  ).toFixed(2)}
+                </strong>
+              </div>
             </div>
           )}
         </div>

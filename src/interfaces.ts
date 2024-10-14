@@ -37,7 +37,8 @@ export interface PieChartInfo {
   chartTitle: string;
   subTitle: string;
   labels: string[];
-  formatter?: (val?: string, opts?: any) => string;
+  formatter?: (val: string | number, opts?: any) => string;
+  tooltipFormatter?: (val: string | number, opts?: any) => string;
 }
 
 export interface DonutInfo {

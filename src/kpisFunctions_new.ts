@@ -32,7 +32,6 @@ import {
   validOperatorsFromKPICache,
   solutionsFromKPICache,
   solutionRequestsFromKPICache,
-  marketplaceRevenuePieChartDataEntry,
   PieChartInfo,
   marketplaceRevenueData,
 } from "./interfaces";
@@ -569,21 +568,35 @@ export const generatePieChartRevenue = (
   subTitle: string,
   revenueData: marketplaceRevenueData
 ): any => {
-  const chartLabels = ["Total Revenue", "Requests", "Registrations", "Other"]; // we manually define the order of the items
+  const chartLabels = ["Requests", "Registrations", "Other"]; // we manually define the order of the items
 
   const chartInfo: PieChartInfo = {
     chartTitle: chartTitle,
     subTitle: subTitle,
     labels: chartLabels,
+    formatter: (val: string | number) => `$ ${Number(val).toFixed(2)}`,
+    tooltipFormatter: (val: string | number) => `US$ ${Number(val).toFixed(2)}`,
   };
 
   let dataPreparationSeries: number[] = new Array();
 
   // we ignore the 'count' for now
-  dataPreparationSeries.push(+(revenueData?.total?.value ?? 0));
-  dataPreparationSeries.push(+(revenueData?.requests?.value ?? 0));
-  dataPreparationSeries.push(+(revenueData?.registrations?.value ?? 0));
-  dataPreparationSeries.push(+(revenueData?.unknown?.value ?? 0));
+  // the total is not to be added to the graph!
+  dataPreparationSeries.push(
+    +(
+      parseFloat(revenueData?.requests?.value.toString() ?? "0").toFixed(2) ?? 0
+    )
+  );
+  dataPreparationSeries.push(
+    +(
+      parseFloat(revenueData?.registrations?.value.toString() ?? "0").toFixed(
+        2
+      ) ?? 0
+    )
+  );
+  dataPreparationSeries.push(
+    +(parseFloat(revenueData?.unknown?.value.toString() ?? "0").toFixed(2) ?? 0)
+  );
 
   return {
     series: dataPreparationSeries,
@@ -828,7 +841,7 @@ export const AmountUTokenPaymentsPrepareData = (
 
     data.push(Number(amountU.toFixed(DECIMAL_PLACES)));
   }
-  series.push({ name: U_TOKEN, data });
+  series.push({ name: "US$", data });
   return { series, chartInfo };
 };
 

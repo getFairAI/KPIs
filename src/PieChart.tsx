@@ -28,15 +28,30 @@ interface Props {
 
 function PieChart({ chartInfo, series, labels }: Props) {
   const options: ApexOptions = {
-    chart: {
-      type: "bar",
-      height: 350,
-      stacked: true,
-      toolbar: {
-        show: true,
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontSize: "12px",
       },
-      zoom: {
+      ...(!!chartInfo.formatter && { formatter: chartInfo.formatter }),
+      background: {
         enabled: true,
+        foreColor: "#000000",
+      },
+      dropShadow: {
+        enabled: false, // this conflicts with the background enabled
+      },
+    },
+    tooltip: {
+      enabled: true,
+      // pie chart uses Y values on the tooltip
+      y: {
+        ...(!!chartInfo.tooltipFormatter && {
+          formatter: chartInfo.tooltipFormatter,
+        }),
+      },
+      style: {
+        fontSize: "13px",
       },
     },
     title: {
@@ -48,8 +63,8 @@ function PieChart({ chartInfo, series, labels }: Props) {
       align: "center",
     },
     legend: {
-      position: "right",
-      offsetY: 40,
+      position: "bottom",
+      offsetY: 0,
     },
     fill: {
       opacity: 1,
@@ -59,29 +74,25 @@ function PieChart({ chartInfo, series, labels }: Props) {
 
     // options to switch to, when bellow a certain breakpoint in px
     responsive: [
-      {
-        breakpoint: 500,
-        options: {
-          legend: {
-            position: "bottom",
-            offsetX: -10,
-            offsetY: 0,
-          },
-        },
-      },
+      // {
+      //   breakpoint: 500,
+      //   options: {
+      //     legend: {
+      //       offsetY: 0,
+      //     },
+      //   },
+      // },
     ],
   };
 
   return (
-    <div>
-      <Chart
-        options={options}
-        series={series}
-        type="pie"
-        height={350}
-        width={"100%"}
-      />
-    </div>
+    <Chart
+      options={options}
+      series={series}
+      type="pie"
+      height={"100%"}
+      width={"100%"}
+    />
   );
 }
 
